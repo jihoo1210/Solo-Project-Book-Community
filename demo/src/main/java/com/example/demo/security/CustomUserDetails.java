@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import com.example.demo.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static com.example.demo.entity.Role.ROLE_ADMIN;
+import static com.example.demo.entity.Role.ROLE_USER;
+
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
@@ -17,13 +21,13 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if(user.getRole().equals(ROLE.ROLE_ADMIN)) {
+        if(user.getRole().equals(ROLE_ADMIN)) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        } else if(user.getRole().equals(ROLE.ROLE_USER)) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"))
+        } else if(user.getRole().equals(ROLE_USER)) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         } else {
-            authorities.add(new SimpleGrantedAuthority("ROLE_TEMP"))
+            authorities.add(new SimpleGrantedAuthority("ROLE_TEMP"));
         }
         return authorities;
     }
