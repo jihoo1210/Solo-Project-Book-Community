@@ -8,7 +8,7 @@ import com.example.demo.dto.auth.SignupResponse;
 import com.example.demo.security.CustomUserDetailService;
 import com.example.demo.security.CustomUserDetails;
 import com.example.demo.security.JwtUtils;
-import com.example.demo.service.auth.AuthService;
+import com.example.demo.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,6 @@ public class AuthController {
             SignupResponse responseDto = authService.create(dto);
             ResponseDto response = ResponseDto.<SignupResponse>builder().result(responseDto).build();
             return ResponseEntity.ok().body(response);
-
         } catch (Exception ex) {
             log.error(ex.getMessage());
             ResponseDto response = ResponseDto.builder().error(ex.getMessage()).build();
