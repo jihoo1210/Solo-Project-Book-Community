@@ -30,6 +30,7 @@ public class JwtUtils {
      * @return HS256으로 암호화한 key로 토큰을 생성한다
      */
     public String createToken(UserDetails userDetails) {
+        log.info("userDetails: {}", userDetails);
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
 
