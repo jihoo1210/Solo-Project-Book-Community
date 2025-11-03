@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class SignupResponse {
-    private String username;
+    private String email;
 }

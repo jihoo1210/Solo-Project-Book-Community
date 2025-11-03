@@ -99,6 +99,7 @@ public class AuthController {
 
             // 5. 응답 DTO 구성
             SigninResponse responseDto = SigninResponse.builder()
+                    .username(service.findUsernameByEmail(dto.getEmail()))
                     .token(token)
                     .build();
 

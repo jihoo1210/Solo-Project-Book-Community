@@ -8,6 +8,8 @@ import com.example.backend.dto.auth.signup.SignupRequest;
 import com.example.backend.dto.auth.signup.SignupResponse;
 import com.example.backend.entity.User;
 import com.example.backend.repository.UserRepository;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -58,7 +60,12 @@ public class UserService {
         // 4. 응답 DTO 반환
         // 저장된 사용자의 이름 등을 포함하는 응답 DTO를 생성하여 반환합니다.
         return SignupResponse.builder()
-                .username(saved.getUsername())
+                .email(saved.getEmail())
                 .build();
+    }
+
+    public String findUsernameByEmail(String email) {
+        User user = repository.findByEmail(email).orElse(null);
+        return user.getUsername();
     }
 }
