@@ -1,4 +1,4 @@
-package com.example.demo.dto.auth;
+package com.example.demo.dto.auth.signup;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
