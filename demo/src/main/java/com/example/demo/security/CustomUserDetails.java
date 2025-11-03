@@ -7,11 +7,11 @@
 package com.example.demo.security;
 
 import com.example.demo.entity.User;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +21,7 @@ import static com.example.demo.entity.Role.ROLE_ADMIN;
 import static com.example.demo.entity.Role.ROLE_USER;
 
 @RequiredArgsConstructor
-@Component
+@Getter
 public class CustomUserDetails implements UserDetails {
 
     // 데이터베이스에서 조회된 실제 사용자 엔티티 객체
