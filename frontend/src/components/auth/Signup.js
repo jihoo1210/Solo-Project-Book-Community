@@ -66,8 +66,8 @@ const DuplicateCheckButton = styled(Button)(({ theme }) => ({
   color: TEXT_COLOR,
   borderColor: TEXT_COLOR,
   fontWeight: 600,
-  padding: theme.spacing(1.6, 4), // ← 높이와 가로폭 크게
-  minWidth: '140px',              // ← 버튼 최소 너비 확장 (기존보다 2배 이상)
+  padding: theme.spacing(1.6, 4), // 높이와 가로폭 조정
+  minWidth: '140px',              // 버튼 최소 너비 확장
   whiteSpace: 'nowrap',
   fontSize: '1rem',
   '&:hover': {
@@ -92,13 +92,13 @@ const Signup = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (name === 'username') setIsUsernameAvailable(null);
+    setFormData((prev) => ({ ...prev, [name]: value.trim() }));
+    if (name === 'username') setIsUsernameAvailable(null); // 회원명 변경 시 중복 상태 초기화
   };
 
   const handleClickShowPassword = () => setShowPassword((s) => !s);
 
-  // 중복 체크 메서드 (구현 예정)
+  // 회원명 중복 체크 메서드 (모의 구현)
   const handleDuplicateCheck = () => {
     const currentUsername = formData.username.trim();
     if (!currentUsername) {
@@ -106,17 +106,17 @@ const Signup = () => {
       return;
     }
     console.log(`${currentUsername} 중복 검사 실행...`);
-    if (currentUsername === 'testuser') {
-      setTimeout(() => {
-        setIsUsernameAvailable(false);
-        alert('이미 사용 중인 회원명입니다.');
-      }, 500);
-    } else {
-      setTimeout(() => {
-        setIsUsernameAvailable(true);
-        alert('사용 가능한 회원명입니다.');
-      }, 500);
-    }
+    // 실제 API 호출 대신 모의 로직 사용
+    apiClient.get(`auth/check-username?username=${currentUsername}`).then(response => {
+      console.log(response.data.result.available)
+        setIsUsernameAvailable(response.data.result.available)
+
+        if(response.data.result.available) {
+          alert('사용 가능한 회원명입니다.');
+        } else {
+          alert('이미 사용 중인 회원명입니다.');
+        }
+      })
   };
 
   // 회원가입 api 요청 메서드
@@ -135,7 +135,6 @@ const Signup = () => {
           alert(`회원가입 성공! 이메일: ${response.data.result.email}`);
           navigate("/auth/signin?email=" + response.data.result.email);
       } else {
-          // response.data가 비어있거나 email 속성이 없을 때
           alert('회원가입은 성공했으나, 서버 응답에서 이메일 정보를 받지 못했습니다. 로그인 페이지로 이동합니다.');
           navigate("/auth/signin");
       }
@@ -167,7 +166,7 @@ const Signup = () => {
 
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <Grid container spacing={3}>
-              {/* 이메일 */}
+              {/* 이메일 입력 필드 */}
               <Grid item size={{ xs: 12 }}>
                 <CustomTextField
                   fullWidth
@@ -180,14 +179,14 @@ const Signup = () => {
                 />
               </Grid>
 
-              {/* 회원명 + 중복검사 */}
+              {/* 회원명 + 중복검사 버튼 */}
               <Grid item size={{ xs: 12 }}>
                 <Box
                   sx={{
                     display: 'flex',
                     flexDirection: { xs: 'column', sm: 'row' },
                     gap: 1,
-                    alignItems: { xs: 'center', sm: 'flex-start' }, // ← 모바일에서 중앙 정렬
+                    alignItems: { xs: 'center', sm: 'flex-start' },
                   }}
                 >
                   <CustomTextField
@@ -206,6 +205,7 @@ const Signup = () => {
                     검사
                   </DuplicateCheckButton>
                 </Box>
+                {/* 중복 검사 결과 메시지 */}
                 {isUsernameAvailable !== null && (
                   <Typography
                     variant="caption"
@@ -213,7 +213,7 @@ const Signup = () => {
                       mt: 0.5,
                       ml: 1,
                       display: 'block',
-                      textAlign: { xs: 'center', sm: 'left' }, // ← 모바일 중앙 정렬
+                      textAlign: { xs: 'center', sm: 'left' },
                       color: isUsernameAvailable ? 'green' : 'red',
                     }}
                   >
@@ -224,7 +224,7 @@ const Signup = () => {
                 )}
               </Grid>
 
-              {/* 비밀번호 */}
+              {/* 비밀번호 입력 필드 */}
               <Grid item size={{ xs: 12 }}>
                 <FormControl fullWidth variant="outlined" required>
                   <InputLabel sx={{ color: LIGHT_TEXT_COLOR }}>비밀번호</InputLabel>
@@ -253,7 +253,7 @@ const Signup = () => {
                 </FormControl>
               </Grid>
 
-              {/* 회원가입 버튼 */}
+              {/* 회원가입 제출 버튼 */}
               <Grid item size={{ xs: 12 }}>
                 <ActionButton type="submit" fullWidth variant="contained">
                   회원가입
@@ -262,6 +262,7 @@ const Signup = () => {
             </Grid>
           </Box>
 
+          {/* 로그인 페이지 링크 */}
           <Typography
             variant="body2"
             align="center"
