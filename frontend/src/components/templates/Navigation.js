@@ -164,6 +164,7 @@ const Navigation = () => {
                                 width: '100%',
                                 justifyContent: 'flex-start',
                                 p: 2,
+                                textTransform: 'none',
                                 // 로그인/로그아웃 버튼만 variant="outlined" 스타일 적용
                                 ...((item.text === '로그인' || item.isLogout) && {
                                     border: `1px solid ${TEXT_COLOR}`,
@@ -239,6 +240,7 @@ const Navigation = () => {
                                             color="inherit"
                                             component={Link}
                                             to="/mypage"
+                                            sx={{ textTransform: 'none' }}
                                         >
                                             {user.username}
                                         </Button>
