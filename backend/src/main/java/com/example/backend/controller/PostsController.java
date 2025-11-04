@@ -13,12 +13,15 @@ import com.example.backend.service.PostsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -29,9 +32,14 @@ public class PostsController {
     private final PostsService service;
 
     @GetMapping
-    public ResponseEntity<?> index() {
-        List<PostsIndexResponse> responseDtos = service.index();
-        return ResponseController.success(responseDtos);
+    public ResponseEntity<?> index(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                   @RequestParam(required = false, defaultValue = "") String searchField,
+                                   @RequestParam(required = false, defaultValue = "") String searchTerm) {
+        log.info("Pageable: {}", pageable);
+        log.info("searchField: {}", searchField);
+        log.info("searchTerm: {}", searchTerm);
+        Page<PostsIndexResponse> responsePage = service.index(pageable, searchField, searchTerm);
+        return ResponseController.success(responsePage);
     }
 
     @GetMapping("/{postsId}")

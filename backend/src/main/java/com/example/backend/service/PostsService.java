@@ -10,12 +10,14 @@ import com.example.backend.dto.posts.update.PostsUpdateResponse;
 import com.example.backend.entity.Posts;
 import com.example.backend.entity.User;
 import com.example.backend.repository.PostsRepository;
+import com.example.backend.service.utilities.PostSearchSpec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,15 +26,25 @@ public class PostsService {
 
     private final PostsRepository repository;
 
-    public List<PostsIndexResponse> index() {
-        return repository.findAll().stream().map(post -> PostsIndexResponse.builder()
+    public Page<PostsIndexResponse> index(Pageable pageable,
+                                          String searchField,
+                                          String searchTerm) {
+
+        // 1. 검색 조건(Specification) 생성
+        Specification<Posts> spec = PostSearchSpec.search(searchField, searchTerm);
+
+        // 2. 검색 조건(spec)과 페이징 조건(pageable)을 함께 Repository에 전달
+        Page<Posts> postPage = repository.findAll(spec, pageable);
+
+        return postPage.map(post -> PostsIndexResponse.builder()
                 .id(post.getId())
+                .subject(post.getSubject())
                 .title(post.getTitle())
                 .username(post.getUser().getUsername())
                 .modifiedDate(post.getModifiedDate())
                 .likeCount(post.getLikeCount())
                 .viewCount(post.getViewCount())
-                .build()).toList();
+                .build());
     }
 
     @Transactional
@@ -43,12 +55,17 @@ public class PostsService {
 
         return PostsShowResponse.builder()
                 .id(target.getId())
+                .subject(target.getSubject())
                 .title(target.getTitle())
                 .content(target.getContent())
                 .username(target.getUser().getUsername())
                 .modifiedDate(target.getModifiedDate())
                 .likeCount(target.getLikeCount())
                 .viewCount(target.getViewCount())
+                .region(target.getRegion())
+                .meetingInfo(target.getMeetingInfo())
+                .bookTitle(target.getBookTitle())
+                .pageNumber(target.getPageNumber())
                 .build();
     }
 
@@ -63,18 +80,24 @@ public class PostsService {
         log.info("PostsCreateRequest: {}", dto);
         log.info("User: {}", user);
         Posts target = Posts.builder()
+                .subject(dto.getSubject())
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .user(user)
                 .build();
         Posts created = repository.save(target);
         return PostsCreateResponse.builder()
+                .subject(created.getSubject())
                 .title(created.getTitle())
                 .content(created.getContent())
                 .username(created.getUser().getUsername())
                 .modifiedDate(created.getModifiedDate())
                 .likeCount(created.getLikeCount())
                 .viewCount(created.getViewCount())
+                .region(created.getRegion())
+                .meetingInfo(created.getMeetingInfo())
+                .bookTitle(created.getBookTitle())
+                .pageNumber(created.getPageNumber())
                 .build();
     }
 
@@ -87,17 +110,23 @@ public class PostsService {
 
         if(!target.getUser().equals(user)) throw new IllegalAccessException("다른 사용자의 글을 수정할 수 없습니다.");
 
+        target.setSubject(dto.getSubject());
         target.setTitle(dto.getTitle());
         target.setContent(dto.getContent());
 
         return PostsUpdateResponse.builder()
                 .id(target.getId())
+                .subject(target.getSubject())
                 .title(target.getTitle())
                 .content(target.getContent())
                 .username(target.getUser().getUsername())
                 .modifiedDate(target.getModifiedDate())
                 .likeCount(target.getLikeCount())
                 .viewCount(target.getViewCount())
+                .region(target.getRegion())
+                .meetingInfo(target.getMeetingInfo())
+                .bookTitle(target.getBookTitle())
+                .pageNumber(target.getPageNumber())
                 .build();
     }
 
