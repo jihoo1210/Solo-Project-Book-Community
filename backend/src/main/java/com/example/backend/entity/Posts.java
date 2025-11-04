@@ -1,6 +1,7 @@
 package com.example.backend.entity;
 
 import com.example.backend.entity.utilities.BaseEntity;
+import com.example.backend.entity.utilities.Subject;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,8 +13,13 @@ import lombok.*;
 
 @Entity
 public class Posts extends BaseEntity {
+    
+    // 공통
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column
+    private Subject subject;
 
     @Column
     private String title;
@@ -32,6 +38,20 @@ public class Posts extends BaseEntity {
     @Column
     private Long viewCount = 0L;
 
+    // 모집 게시글
+    @Column
+    private String region;
+
+    @Column
+    private String meetingInfo;
+
+    // 질문 게시글
+    @Column
+    private String bookTitle;
+
+    @Column
+    private Integer pageNumber;
+    
     public void increaseViewCount() {
         this.viewCount = getViewCount() + 1;
     }

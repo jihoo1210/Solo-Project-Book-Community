@@ -1,5 +1,6 @@
 package com.example.backend.dto.posts.show;
 
+import com.example.backend.entity.utilities.Subject;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,10 +14,17 @@ import java.time.LocalDateTime;
 @Data
 public class PostsShowResponse {
     private Long id;
+    private Subject subject;
     private String title;
     private String content;
     private String username;
     private LocalDateTime modifiedDate;
     private Long viewCount;
     private Long likeCount;
+
+    private String region;
+    private String meetingInfo;
+
+    private String bookTitle;
+    private Integer pageNumber;
 }

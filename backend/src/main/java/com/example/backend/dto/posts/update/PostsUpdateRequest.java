@@ -1,5 +1,6 @@
 package com.example.backend.dto.posts.update;
 
+import com.example.backend.entity.utilities.Subject;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class PostsUpdateRequest {
+
+    @NotBlank
+    private Subject subject;
 
     @NotBlank
     private String title;
