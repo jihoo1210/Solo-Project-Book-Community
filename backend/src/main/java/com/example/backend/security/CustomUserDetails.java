@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.example.backend.entity.Role.ROLE_ADMIN;
-import static com.example.backend.entity.Role.ROLE_USER;
+import static com.example.backend.entity.utilities.Role.ROLE_ADMIN;
+import static com.example.backend.entity.utilities.Role.ROLE_USER;
 
 @RequiredArgsConstructor
 @Getter
