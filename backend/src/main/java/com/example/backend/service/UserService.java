@@ -4,6 +4,7 @@
  */
 package com.example.backend.service;
 
+import com.example.backend.dto.auth.CheckUsernameResponse;
 import com.example.backend.dto.auth.signup.SignupRequest;
 import com.example.backend.dto.auth.signup.SignupResponse;
 import com.example.backend.entity.User;
@@ -67,5 +68,17 @@ public class UserService {
     public String findUsernameByEmail(String email) {
         User user = repository.findByEmail(email).orElse(null);
         return user.getUsername();
+    }
+
+    public CheckUsernameResponse isUsernameAvailable(String username) {
+        if(repository.existsByUsername(username)) {
+            return CheckUsernameResponse.builder()
+                    .isAvailable(false)
+                    .build();
+        } else {
+            return CheckUsernameResponse.builder()
+                    .isAvailable(true)
+                    .build();
+        }
     }
 }

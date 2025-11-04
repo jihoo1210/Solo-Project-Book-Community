@@ -6,6 +6,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.controller.utilities.ResponseController;
+import com.example.backend.dto.auth.CheckUsernameResponse;
 import com.example.backend.dto.auth.signin.SigninRequest;
 import com.example.backend.dto.auth.signin.SigninResponse;
 import com.example.backend.dto.auth.signup.SignupRequest;
@@ -20,11 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -61,7 +60,7 @@ public class AuthController {
             // 4. 예외 처리
             log.warn("Exception: {}", e.getMessage());
 
-            // 실패 응답 반환
+            // 5. 실패 응답 반환
             return ResponseController.fail(e.getMessage());
         }
     }
@@ -109,6 +108,29 @@ public class AuthController {
             log.warn("Signin failed: {}", e.getMessage());
 
             // 실패 응답 반환
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
+    @GetMapping("/check-username")
+    public ResponseEntity<?> checkUsername(@RequestParam String username) {
+        try {
+            log.info("username: {}", username);
+
+            if(!StringUtils.hasText(username)) {
+                throw new IllegalArgumentException("형식이 올바르지 않습니다");
+            }
+            
+            // 1. 회원명 중복 검사
+            CheckUsernameResponse responseDto = service.isUsernameAvailable(username);
+            
+            // 2. 성공 응답 반환
+            return ResponseController.success(responseDto);
+        } catch (Exception e) {
+            // 3. 예외 처리
+            log.warn("Exception: {}", e.getMessage());
+            
+            // 4. 실패 응답 반환
             return ResponseController.fail(e.getMessage());
         }
     }
