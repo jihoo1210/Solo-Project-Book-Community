@@ -21,7 +21,7 @@ const MainInfoSection = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(4),
 }));
 
-// 🪪 저작권 섹션
+// 저작권 섹션
 const CopyrightSection = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(3),
   paddingTop: theme.spacing(2),
