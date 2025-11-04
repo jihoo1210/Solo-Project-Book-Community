@@ -94,10 +94,11 @@ const SignIn = () => {
           // 토큰을 세션 스토리지에 저장
           if(response.data.result.token) sessionStorage.setItem("ACCESS_TOKEN", response.data.result.token)
             login(response.data.result.username) // AuthContext의 login 함수 호출
+            alert(response.data.result.username)
             alert("로그인 되었습니다.")
             navigate("/")
         }).catch(error => {
-          if(error.response?.data?.message || error.response?.data || error.response) console.log('error.response.data.message', error.response.data.message)
+          if(error.response?.data?.message || error.response?.data || error.response) alert(error.response.data.message)
         })
     };
 
