@@ -13,7 +13,6 @@ import { useAuth } from '../auth/AuthContext';
 // 색상 정의
 const BG_COLOR = '#FFFFFF';
 const TEXT_COLOR = '#000000';
-const LIGHT_TEXT_COLOR = '#555555';
 
 // AppBar 커스텀 스타일
 const ModernAppBar = styled(AppBar)(({ theme }) => ({
@@ -33,7 +32,6 @@ const LogoTypography = styled(Typography)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     cursor: 'pointer',
-    flexGrow: 1,
     textDecoration: 'none',
 
     fontSize: '1.6rem',
@@ -198,6 +196,8 @@ const Navigation = () => {
                         >
                             BBBB
                         </LogoTypography>
+
+                        <Box sx={{ flexGrow: 1 }} />
 
                         {/* 메뉴 및 아이콘 영역 */}
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>

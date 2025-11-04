@@ -98,7 +98,7 @@ const Signup = () => {
 
   const handleClickShowPassword = () => setShowPassword((s) => !s);
 
-  // 회원명 중복 체크 메서드 (모의 구현)
+  // 회원명 중복 체크 메서드
   const handleDuplicateCheck = () => {
     const currentUsername = formData.username.trim();
     if (!currentUsername) {
@@ -106,7 +106,7 @@ const Signup = () => {
       return;
     }
     console.log(`${currentUsername} 중복 검사 실행...`);
-    // 실제 API 호출 대신 모의 로직 사용
+    // API 호출
     apiClient.get(`auth/check-username?username=${currentUsername}`).then(response => {
       console.log(response.data.result.available)
         setIsUsernameAvailable(response.data.result.available)
