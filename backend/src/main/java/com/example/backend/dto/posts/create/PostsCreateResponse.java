@@ -1,6 +1,5 @@
 package com.example.backend.dto.posts.create;
 
-import com.example.backend.entity.utilities.Subject;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 public class PostsCreateResponse {
     private Long id;
-    private Subject subject;
+    private String subject;
     private String title;
     private String content;
     private String username;

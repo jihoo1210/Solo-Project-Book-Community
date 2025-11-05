@@ -1,7 +1,7 @@
 package com.example.backend.dto.posts.create;
 
-import com.example.backend.entity.utilities.Subject;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,12 +13,20 @@ import lombok.NoArgsConstructor;
 @Data
 public class PostsCreateRequest {
 
-    @NotBlank
-    private Subject subject;
+    @NotNull
+    private String subject;
 
     @NotBlank
     private String title;
 
     @NotBlank
     private String content;
+
+    private String region;
+
+    private String meetingInfo;
+
+    private String bookTitle;
+
+    private Integer pageNumber;
 }
