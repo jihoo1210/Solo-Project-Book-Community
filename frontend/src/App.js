@@ -6,6 +6,10 @@ import Navigation from './components/templates/Navigation';
 import Footer from './components/templates/Footer';
 import { Box } from '@mui/material';
 import { AuthProvider } from './components/auth/AuthContext';
+import PostsList from './components/posts/PostsList';
+import PostsDetail from './components/posts/PostsDetail';
+import PostsCreate from './components/posts/PostsCreate';
+import PostsEdit from './components/posts/PostsEdit';
 
 function App() {
 
@@ -17,10 +21,15 @@ function App() {
 
     <Box sx={{ flexGrow: 1 }} flex justifyContent={'center'} alignContent={'center'} flexDirection={'column'} >
           <Routes>
-            <Route path='/' element={'main'} />
+            <Route path='/' element={<PostsList />} />
             <Route path='/auth'>
               <Route path='signup' element={<Signup />} />
               <Route path='signin' element={<Signin />} />
+            </Route>
+            <Route path='/post'>
+             <Route path=':id' element={<PostsDetail />} />
+             <Route path='create' element={<PostsCreate />} />
+             <Route path='update/:id' element={<PostsEdit />} />
             </Route>
           </Routes>
     </Box>

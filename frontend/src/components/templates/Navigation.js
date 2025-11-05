@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     AppBar, Toolbar, Typography, Button, Box, Container, InputBase,
     IconButton, Drawer, List, ListItem, ListItemText, Slide
@@ -8,14 +8,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../auth/AuthContext'; // useAuth 임포트
+import { useAuth } from '../auth/AuthContext';
 
-// 1. 색상 정의
+// 색상 정의
 const BG_COLOR = '#FFFFFF';
 const TEXT_COLOR = '#000000';
-const LIGHT_TEXT_COLOR = '#555555'; // LIGHT_TEXT_COLOR 정의 추가 (일관성 유지)
 
-// 2. AppBar 커스텀 스타일
+// AppBar 커스텀 스타일
 const ModernAppBar = styled(AppBar)(({ theme }) => ({
     backgroundColor: BG_COLOR,
     boxShadow: 'none',
@@ -24,7 +23,7 @@ const ModernAppBar = styled(AppBar)(({ theme }) => ({
     zIndex: theme.zIndex.drawer + 1,
 }));
 
-// 3. 로고 타이포그래피 커스텀 스타일
+// 로고 타이포그래피 커스텀 스타일
 const LogoTypography = styled(Typography)(({ theme }) => ({
     fontFamily: 'Roboto, Arial, sans-serif',
     fontWeight: 700,
@@ -33,7 +32,6 @@ const LogoTypography = styled(Typography)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     cursor: 'pointer',
-    flexGrow: 1,
     textDecoration: 'none',
 
     fontSize: '1.6rem',
@@ -50,7 +48,7 @@ const LogoTypography = styled(Typography)(({ theme }) => ({
 }));
 
 
-// 4. 오버레이 검색 영역 스타일
+// 오버레이 검색 영역 스타일
 const SearchOverlay = styled(Box)(({ theme }) => ({
     position: 'fixed',
     top: 0,
@@ -68,7 +66,7 @@ const SearchOverlay = styled(Box)(({ theme }) => ({
     WebkitBackdropFilter: 'blur(3px)',
 }));
 
-// 5. 검색 입력 필드 스타일
+// 검색 입력 필드 스타일
 const SearchInput = styled(InputBase)(({ theme }) => ({
     fontSize: '1.5rem',
     width: '80%',
@@ -92,8 +90,7 @@ const Navigation = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    // [수정] logout 함수를 useAuth에서 가져옴
-    const { isLoggedIn, user, logout } = useAuth();
+    const { isLoggedIn, user, logout } = useAuth(); // 인증 상태 및 함수 가져오기
 
     const handleDrawerToggle = () => {
         setIsDrawerOpen(!isDrawerOpen);
@@ -124,13 +121,11 @@ const Navigation = () => {
         }
     };
 
-    // [수정] navItems에 로그아웃 항목 추가
+    // 로그인 상태에 따른 네비게이션 아이템 정의
     const navItems = isLoggedIn ?
         [
-            // 사용자 정보 버튼
-            { text: user.username, path: '/mypage', isUser: true }, 
-            // 로그아웃 버튼 (onClick 속성 추가)
-            { text: '로그아웃', path: '#', onClick: logout, isLogout: true } 
+            { text: user.username, path: '/mypage', isUser: true }, // 사용자 정보 버튼
+            { text: '로그아웃', path: '#', onClick: logout, isLogout: true } // 로그아웃 버튼
         ] :
         [
             { text: '회원가입', path: '/auth/signup' },
@@ -150,16 +145,15 @@ const Navigation = () => {
                     <ListItem
                         key={item.text}
                         disablePadding
-                        // [수정] path가 '#'이면 div로 렌더링하여 Link 동작을 막고, onClick을 사용합니다.
+                        // path가 '#'이면 div로 렌더링하고 onClick 사용 (로그아웃 버튼)
                         component={item.path !== '#' ? Link : 'div'}
                         to={item.path !== '#' ? item.path : null}
                         sx={{
-                            // Link 컴포넌트의 기본 텍스트 데코레이션을 제거합니다.
                             textDecoration: 'none',
                             color: 'inherit',
-                            // 로그인/로그아웃 버튼 스타일링을 위한 조건부 margin 조정
+                            // 로그인/로그아웃 버튼 스타일 조정
                             ...((item.text === '로그인' || item.isLogout) && {
-                                margin: '0 16px 8px 16px', // 좌우 마진 추가
+                                margin: '0 16px 8px 16px',
                                 width: 'calc(100% - 32px)',
                             })
                         }}
@@ -170,14 +164,15 @@ const Navigation = () => {
                                 width: '100%',
                                 justifyContent: 'flex-start',
                                 p: 2,
-                                // 로그인/로그아웃 버튼만 variant="outlined" 스타일 시뮬레이션
+                                textTransform: 'none',
+                                // 로그인/로그아웃 버튼만 variant="outlined" 스타일 적용
                                 ...((item.text === '로그인' || item.isLogout) && {
                                     border: `1px solid ${TEXT_COLOR}`,
                                     fontWeight: 600,
                                 })
                             }}
                             variant={item.isUser ? 'text' : ((item.text === '로그인' || item.isLogout) ? 'outlined' : 'text')}
-                            // [수정] 로그아웃 버튼의 경우 onClick 이벤트 처리
+                            // 로그아웃 버튼의 경우 onClick 이벤트 처리
                             onClick={item.onClick ? (e) => { e.preventDefault(); item.onClick(); handleDrawerToggle(); } : undefined}
                         >
                             <ListItemText primary={item.text} />
@@ -194,7 +189,7 @@ const Navigation = () => {
                 <Container maxWidth="xl" disableGutters={false}>
                     <Toolbar sx={{ minHeight: '64px', px: { xs: 2, md: 0 } }}>
 
-                        {/* 1. 로고 영역 - Link 사용 */}
+                        {/* 로고 영역 */}
                         <LogoTypography
                             variant="h6"
                             component={Link}
@@ -203,10 +198,12 @@ const Navigation = () => {
                             BBBB
                         </LogoTypography>
 
-                        {/* 2. 메뉴 및 아이콘 영역 */}
+                        <Box sx={{ flexGrow: 1 }} />
+
+                        {/* 메뉴 및 아이콘 영역 */}
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
-                            {/* 검색/닫기 아이콘 버튼 (생략) */}
+                            {/* 검색/닫기 아이콘 버튼 */}
                             <IconButton
                                 color="inherit"
                                 onClick={isSearchOpen ? handleSearchClose : () => setIsSearchOpen(true)}
@@ -222,7 +219,7 @@ const Navigation = () => {
                                 )}
                             </IconButton>
 
-                            {/* 햄버거 메뉴 버튼 (모바일) (생략) */}
+                            {/* 햄버거 메뉴 버튼 (모바일) */}
                             <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
                                 <IconButton
                                     color="inherit"
@@ -234,7 +231,7 @@ const Navigation = () => {
                                 </IconButton>
                             </Box>
 
-                            {/* [수정] 회원가입/로그인/사용자명/로그아웃 버튼 (데스크톱) - 조건부 렌더링 적용 */}
+                            {/* 회원가입/로그인/사용자명/로그아웃 버튼 (데스크톱) */}
                             <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 3 }}>
                                 {isLoggedIn ? (
                                     <>
@@ -243,6 +240,7 @@ const Navigation = () => {
                                             color="inherit"
                                             component={Link}
                                             to="/mypage"
+                                            sx={{ textTransform: 'none' }}
                                         >
                                             {user.username}
                                         </Button>
@@ -282,7 +280,7 @@ const Navigation = () => {
                 </Container>
             </ModernAppBar>
 
-            {/* ... 토글 검색 오버레이 (생략) */}
+            {/* 토글 검색 오버레이 */}
             {isSearchOpen && (
                 <SearchOverlay onClick={handleSearchClose}>
                     <Slide direction="down" in={isSearchOpen} mountOnEnter unmountOnExit>
@@ -308,7 +306,7 @@ const Navigation = () => {
                 </SearchOverlay>
             )}
 
-            {/* 토글 사이드바 (생략) */}
+            {/* 토글 사이드바 (모바일용) */}
             <nav>
                 <Drawer
                     variant="temporary"

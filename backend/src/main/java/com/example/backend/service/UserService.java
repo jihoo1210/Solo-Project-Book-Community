@@ -4,19 +4,18 @@
  */
 package com.example.backend.service;
 
+import com.example.backend.dto.auth.CheckUsernameResponse;
 import com.example.backend.dto.auth.signup.SignupRequest;
 import com.example.backend.dto.auth.signup.SignupResponse;
 import com.example.backend.entity.User;
 import com.example.backend.repository.UserRepository;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static com.example.backend.entity.Role.ROLE_USER;
+import static com.example.backend.entity.utilities.Role.ROLE_USER;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -67,5 +66,17 @@ public class UserService {
     public String findUsernameByEmail(String email) {
         User user = repository.findByEmail(email).orElse(null);
         return user.getUsername();
+    }
+
+    public CheckUsernameResponse isUsernameAvailable(String username) {
+        if(repository.existsByUsername(username)) {
+            return CheckUsernameResponse.builder()
+                    .isAvailable(false)
+                    .build();
+        } else {
+            return CheckUsernameResponse.builder()
+                    .isAvailable(true)
+                    .build();
+        }
     }
 }

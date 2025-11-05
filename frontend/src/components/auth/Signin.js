@@ -3,14 +3,12 @@ import {
     Box, Container, Typography, TextField, Button, Grid, Paper,
     IconButton, InputAdornment, FormControl, InputLabel, OutlinedInput
 } from '@mui/material';
-import { styled, alpha } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { Link, useNavigate } from 'react-router-dom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import apiClient from '../../api/Api-Service';
 import { useAuth } from './AuthContext';
-
-// 🎨 회원가입 페이지와 동일한 디자인 변수 및 스타일 재사용
 
 // 색상 정의
 const BG_COLOR = '#FFFFFF';
@@ -19,9 +17,8 @@ const LIGHT_TEXT_COLOR = '#555555';
 
 const HEADER_HEIGHT = '64px';
 
-// 1. 레이아웃 래퍼
+// 레이아웃 래퍼
 const SigninWrapper = styled(Box)(({ theme }) => ({
-    // 회원가입 페이지의 SignupWrapper와 동일한 스타일 적용
     marginTop: HEADER_HEIGHT,
     display: 'flex',
     justifyContent: 'center',
@@ -30,9 +27,8 @@ const SigninWrapper = styled(Box)(({ theme }) => ({
     padding: theme.spacing(4),
 }));
 
-// 2. 카드 컨테이너
+// 카드 컨테이너
 const SigninCard = styled(Paper)(({ theme }) => ({
-    // 회원가입 페이지의 SignupCard와 동일한 스타일 적용
     padding: theme.spacing(5),
     width: '60%',
     borderRadius: (theme.shape?.borderRadius || 4) * 2,
@@ -44,9 +40,8 @@ const SigninCard = styled(Paper)(({ theme }) => ({
     },
 }));
 
-// 3. 텍스트 필드 스타일
+// 텍스트 필드 스타일
 const CustomTextField = styled(TextField)(({ theme }) => ({
-    // 회원가입 페이지의 CustomTextField와 동일한 스타일 적용
     '& .MuiInputLabel-root': { color: LIGHT_TEXT_COLOR },
     '& .MuiOutlinedInput-root': {
         '& fieldset': { borderColor: TEXT_COLOR },
@@ -58,17 +53,14 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
     },
 }));
 
-// 4. 로그인 버튼 (회원가입의 ActionButton과 동일)
+// 로그인 버튼
 const ActionButton = styled(Button)(({ theme }) => ({
-    // 회원가입 페이지의 ActionButton과 동일한 스타일 적용
     color: BG_COLOR,
     backgroundColor: TEXT_COLOR,
     fontWeight: 600,
     padding: theme.spacing(1.5),
     '&:hover': { backgroundColor: LIGHT_TEXT_COLOR },
 }));
-
-// 중복 검사 버튼은 로그인 페이지에서 사용되지 않으므로 정의하지 않습니다.
 
 const SignIn = () => {
     const [formData, setFormData] = useState({
@@ -79,6 +71,7 @@ const SignIn = () => {
     const {login} = useAuth();
     const navigate = useNavigate();
 
+    // URL 파라미터에서 이메일 추출하여 폼 데이터에 설정
     useEffect(() => {
       const urlParams = new window.URLSearchParams(window.location.search)
       const email = urlParams.get('email');
@@ -92,23 +85,25 @@ const SignIn = () => {
 
     const handleClickShowPassword = () => setShowPassword((s) => !s);
 
+    // 로그인 API 요청 처리
     const handleSubmit = (e) => {
         e.preventDefault();
         
         console.log('로그인 요청 데이터:', formData);
         apiClient.post("/auth/signin", formData).then(response => {
+          // 토큰을 세션 스토리지에 저장
           if(response.data.result.token) sessionStorage.setItem("ACCESS_TOKEN", response.data.result.token)
-            login()
+            login(response.data.result.username) // AuthContext의 login 함수 호출
+            alert(response.data.result.username)
             alert("로그인 되었습니다.")
             navigate("/")
         }).catch(error => {
-          if(error.response?.data?.message || error.response?.data || error.response) console.log('error.response.data.message', error.response.data.message)
+          if(error.response?.data?.message || error.response?.data || error.response) alert(error.response.data.message)
         })
     };
 
     return (
         <SigninWrapper>
-            {/* Container의 maxWidth="md" 유지 */}
             <Container maxWidth="md" disableGutters sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <SigninCard elevation={0}>
                     <Typography
@@ -119,7 +114,6 @@ const SignIn = () => {
                             fontWeight: 700,
                             mb: 4,
                             color: TEXT_COLOR,
-                            // 회원가입 페이지와 동일한 반응형 폰트 사이즈
                             fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.4rem' },
                         }}
                     >
@@ -127,11 +121,10 @@ const SignIn = () => {
                     </Typography>
 
                     <Box component="form" onSubmit={handleSubmit} noValidate>
-                        {/* Grid container와 spacing={3} 유지 */}
                         <Grid container spacing={3}>
                             
-                            {/* 1. 회원명 (email) - size={{ xs: 12 }} 속성 유지 */}
-                            <Grid item size={{ xs: 12 }}>
+                            {/* 이메일 입력 필드 */}
+                            <Grid size={{ xs: 12 }}>
                                 <CustomTextField
                                     fullWidth
                                     label="이메일"
@@ -143,8 +136,8 @@ const SignIn = () => {
                                 />
                             </Grid>
 
-                            {/* 2. 비밀번호 (Password) - size={{ xs: 12 }} 속성 유지 */}
-                            <Grid item size={{ xs: 12 }}>
+                            {/* 비밀번호 입력 필드 */}
+                            <Grid size={{ xs: 12 }}>
                                 <FormControl fullWidth variant="outlined" required>
                                     <InputLabel sx={{ color: LIGHT_TEXT_COLOR }}>비밀번호</InputLabel>
                                     <OutlinedInput
@@ -154,7 +147,6 @@ const SignIn = () => {
                                         onChange={handleChange}
                                         label="비밀번호"
                                         sx={{
-                                            // CustomTextField와 동일한 디자인 스타일 적용
                                             '& fieldset': { borderColor: TEXT_COLOR },
                                             '&:hover fieldset': { borderColor: TEXT_COLOR },
                                             '&.Mui-focused fieldset': {
@@ -173,8 +165,8 @@ const SignIn = () => {
                                 </FormControl>
                             </Grid>
 
-                            {/* 3. 로그인 버튼 - size={{ xs: 12 }} 속성 유지 */}
-                            <Grid item size={{ xs: 12 }}>
+                            {/* 로그인 제출 버튼 */}
+                            <Grid size={{ xs: 12 }}>
                                 <ActionButton type="submit" fullWidth variant="contained">
                                     로그인
                                 </ActionButton>
@@ -182,7 +174,7 @@ const SignIn = () => {
                         </Grid>
                     </Box>
 
-                    {/* 4. 회원가입 페이지로 이동하는 링크 추가 (디자인 일관성 유지) */}
+                    {/* 회원가입 페이지 링크 */}
                     <Typography
                         variant="body2"
                         align="center"
