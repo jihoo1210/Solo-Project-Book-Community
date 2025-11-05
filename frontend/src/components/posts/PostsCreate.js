@@ -22,7 +22,6 @@ const HEADER_HEIGHT = '64px';
 
 const CreateWrapper = styled(Box)(({ theme }) => ({
     marginTop: HEADER_HEIGHT,
-    minHeight: `calc(100vh - ${HEADER_HEIGHT} - 150px)`,
     backgroundColor: BG_COLOR,
     padding: theme.spacing(4, 0),
     display: 'flex',
@@ -142,7 +141,12 @@ const PostsCreate = () => {
     const showRecruitmentFields = formData.subject === '모집';
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        let { name, value } = e.target;
+
+        if(name === 'pageNumber') {
+            value = value.replace(/[^0-9]/g, '')
+        }
+
         setFormData(prev => ({
             ...prev,
             [name]: value
