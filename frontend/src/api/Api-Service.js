@@ -31,7 +31,7 @@ error => {
     const { response } = error
     if(response && response.status === 403) {
         console.error("인증 오류(401/403) 발생: 접근 권한이 없습니다. 다시 로그인해 주세요.");
-        alert("111세션이 만료되었거나 접근 권한이 없습니다. 다시 로그인해 주세요.");
+        alert("세션이 만료되었거나 접근 권한이 없습니다. 다시 로그인해 주세요.");
         window.location.href = "/auth/signin";
 
         // 리디렉션 후 요청 체인을 중단하기 위해 비표준적인 방식으로 요청 체인을 중단

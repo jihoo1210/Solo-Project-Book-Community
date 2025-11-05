@@ -124,7 +124,7 @@ const SignIn = () => {
                         <Grid container spacing={3}>
                             
                             {/* 이메일 입력 필드 */}
-                            <Grid item size={{ xs: 12 }}>
+                            <Grid size={{ xs: 12 }}>
                                 <CustomTextField
                                     fullWidth
                                     label="이메일"
@@ -137,7 +137,7 @@ const SignIn = () => {
                             </Grid>
 
                             {/* 비밀번호 입력 필드 */}
-                            <Grid item size={{ xs: 12 }}>
+                            <Grid size={{ xs: 12 }}>
                                 <FormControl fullWidth variant="outlined" required>
                                     <InputLabel sx={{ color: LIGHT_TEXT_COLOR }}>비밀번호</InputLabel>
                                     <OutlinedInput
@@ -166,7 +166,7 @@ const SignIn = () => {
                             </Grid>
 
                             {/* 로그인 제출 버튼 */}
-                            <Grid item size={{ xs: 12 }}>
+                            <Grid size={{ xs: 12 }}>
                                 <ActionButton type="submit" fullWidth variant="contained">
                                     로그인
                                 </ActionButton>
