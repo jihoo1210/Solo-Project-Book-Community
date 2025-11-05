@@ -7,6 +7,7 @@ package com.example.backend.controller;
 
 import com.example.backend.controller.utilities.ResponseController;
 import com.example.backend.dto.auth.CheckUsernameResponse;
+import com.example.backend.dto.auth.UsernameResponse;
 import com.example.backend.dto.auth.signin.SigninRequest;
 import com.example.backend.dto.auth.signin.SigninResponse;
 import com.example.backend.dto.auth.signup.SignupRequest;
@@ -15,12 +16,15 @@ import com.example.backend.security.CustomUserDetails;
 import com.example.backend.security.CustomUserDetailsService;
 import com.example.backend.security.TokenProvider;
 import com.example.backend.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -72,7 +76,7 @@ public class AuthController {
      * @return 성공 시 200 OK와 JWT가 포함된 응답 DTO를, 실패 시 400 Bad Request와 에러 메시지를 반환합니다.
      */
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@Valid @RequestBody SigninRequest dto, BindingResult bindingResult) {
+    public ResponseEntity<?> signin(HttpServletResponse response, @Valid @RequestBody SigninRequest dto, BindingResult bindingResult) {
         try {
             log.info("SigninRequest: {}", dto);
 
@@ -96,13 +100,24 @@ public class AuthController {
             // 로드된 사용자 정보를 기반으로 JWT 토큰을 생성합니다.
             String token = tokenProvider.tokenProvide(customUserDetails);
 
-            // 5. 응답 DTO 구성
+            // 5. 화면 표시용 username 가져오기
+            String username = customUserDetails.getUser().getUsername();
+
+            // 6. JWT를 HttpOnly 쿠키로 설정 (가장 중요)
+            long maxAgeSeconds = tokenProvider.getExpiration() / 1000; // 밀리초를 초로 변환
+
+            Cookie cookie = new Cookie("ACCESS_TOKEN", token);
+            cookie.setHttpOnly(true); // JavaScript 접근 불가
+            // cookie.setSecure(true); // 운영 환경(HTTPS)에서는 주석 해제 필수
+            cookie.setPath("/");
+            cookie.setMaxAge((int) maxAgeSeconds);
+
+            response.addCookie(cookie); // HTTP 응답에 쿠키를 추가
+
             SigninResponse responseDto = SigninResponse.builder()
-                    .username(service.findUsernameByEmail(dto.getEmail()))
-                    .token(token)
+                    .username(username)
                     .build();
 
-            // 6. 성공 응답 반환
             return ResponseController.success(responseDto);
         } catch (Exception e) {
             log.warn("Signin failed: {}", e.getMessage());
@@ -133,5 +148,40 @@ public class AuthController {
             // 4. 실패 응답 반환
             return ResponseController.fail(e.getMessage());
         }
+    }
+
+    /**
+     * POST /auth/logout
+     * HttpOnly 쿠키 삭제 (세션 만료)
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        // 1. 기존 JWT 쿠키를 덮어쓰고 만료 시간을 0으로 설정하여 삭제
+        Cookie cookie = new Cookie("ACCESS_TOKEN", null);
+        cookie.setHttpOnly(true);
+        // cookie.setSecure(true); // 운영 환경에서는 주석 해제 필수
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // 만료 시간을 0으로 설정하여 즉시 삭제
+
+        response.addCookie(cookie);
+
+        return ResponseController.success("로그아웃 되었습니다.");
+    }
+
+    /**
+     * GET /auth/me
+     * 쿠키의 유효성을 검사하고 현재 인증된 사용자 정보를 반환 (프론트엔드 AuthContext에서 사용)
+     * 이 API는 SecurityConfig에 의해 인증이 필요하도록 설정되어야 합니다.
+     */
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        if(userDetails == null) return ResponseController.fail("인증 정보가 유효하지 않습니다.");
+
+        String username = userDetails.getUser().getUsername();
+
+        UsernameResponse userResponse = new UsernameResponse(username);
+
+        return ResponseController.success(userResponse); // 응답 본문에 닉네임만 전달
     }
 }

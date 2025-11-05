@@ -5,25 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#7 검색 및 페이지네이션 기능 구현">
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/UsernameResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/PostsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/PostsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/create/PostsCreateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/create/PostsCreateRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/create/PostsCreateResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/create/PostsCreateResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/index/PostsIndexResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/index/PostsIndexResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/utilities/Subject.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/utilities/Subject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/DemoApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/DemoApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/show/PostsShowResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/show/PostsShowResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/update/PostsUpdateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/update/PostsUpdateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/JwtAuthorizationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/JwtAuthorizationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/TokenProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/TokenProvider.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/PostSearchSpec.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/PostSearchSpec.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/AuthContext.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/AuthContext.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/templates/Footer.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/templates/Footer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,12 +76,12 @@
     &quot;assignee&quot;: &quot;jihoo1210&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/jihoo1210/Solo-Project-Book-Community.git",
-    "accountId": "981623e4-9cc5-4c69-9507-d334c6a6570f"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/jihoo1210/Solo-Project-Book-Community.git&quot;,
+    &quot;accountId&quot;: &quot;981623e4-9cc5-4c69-9507-d334c6a6570f&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 2
