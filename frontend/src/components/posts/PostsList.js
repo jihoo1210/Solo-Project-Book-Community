@@ -9,11 +9,13 @@ import {
     CircularProgress
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // useNavigate 훅 추가
 import SearchIcon from '@mui/icons-material/Search';
 import SortIcon from '@mui/icons-material/Sort';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import FavoriteIcon from '@mui/icons-material/Favorite'; // 좋아요 아이콘 추가
+import VisibilityIcon from '@mui/icons-material/Visibility'; // 조회수 아이콘 추가
 import apiClient from '../../api/Api-Service';
 
 // 상수 정의
@@ -105,8 +107,38 @@ const StyledChip = styled(Chip)(({ theme, subject }) => {
     };
 });
 
+/**
+ * 날짜를 조건부로 포매팅하는 함수
+ * - 오늘 날짜와 같으면: 시간:분 (HH:MM)
+ * - 다르면: 월/일 (MM/DD)
+ */
+const formatDate = (dateString) => {
+    const postDate = new Date(dateString);
+    const today = new Date();
+
+    // 날짜 비교를 위해 시, 분, 초를 0으로 설정
+    const postDay = new Date(postDate.getFullYear(), postDate.getMonth(), postDate.getDate());
+    const todayDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    // 1. 날짜가 오늘과 같을 경우: "시간:분" (예: 10:05)
+    if (postDay.getTime() === todayDay.getTime()) {
+        const hours = String(postDate.getHours()).padStart(2, '0');
+        const minutes = String(postDate.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    } 
+    // 2. 날짜가 오늘과 다를 경우: "월/일" (예: 11/04)
+    else {
+        const month = String(postDate.getMonth() + 1).padStart(2, '0');
+        const day = String(postDate.getDate()).padStart(2, '0');
+        return `${month}/${day}`;
+    }
+};
+
 
 const PostsList = () => {
+    // useNavigate 훅 선언
+    const navigate = useNavigate();
+
     // API 연동 및 데이터 관련 상태
     const [posts, setPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -119,18 +151,19 @@ const PostsList = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortOrder, setSortOrder] = useState('desc'); // 정렬 순서 ('desc' 또는 'asc')
     const [searchField, setSearchField] = useState('제목'); // 검색 필드 ('제목', '작성자', '내용')
+    const [rowsPerPage, setRowsPerPage] = useState(10); // 🌟 rowsPerPage를 상태로 변경 (기본값 10)
 
     // 메뉴 Anchor 상태
     const [sortAnchorEl, setSortAnchorEl] = useState(null);
     const openSortMenu = Boolean(sortAnchorEl);
     const [filterAnchorEl, setFilterAnchorEl] = useState(null);
     const openFilterMenu = Boolean(filterAnchorEl);
-
-    const rowsPerPage = 10;
+    const [perPageAnchorEl, setPerPageAnchorEl] = useState(null); // 🌟 페이지당 항목 수 메뉴 상태 추가
+    const openPerPageMenu = Boolean(perPageAnchorEl); // 🌟 페이지당 항목 수 메뉴 열림 상태
 
     // 게시글 목록 API 호출 로직
     useEffect(() => {
-        const fetchPosts = async (currentPage, currentTab, currentSortOrder, currentSearchField, currentSearchTerm) => {
+        const fetchPosts = async (currentPage, currentTab, currentSortOrder, currentRowsPerPage, currentSearchField, currentSearchTerm) => {
             setIsLoading(true);
             setError(null);
 
@@ -141,33 +174,25 @@ const PostsList = () => {
             // 탭 필터링 (0은 '전체'이므로 필터링하지 않음)
             const tabParam = currentTab > 0 ? `&tab=${currentTab}` : '';
 
-            const url = `/posts?page=${pageNumberForBackend}&size=${rowsPerPage}&sort=${sortParam}&${searchFieldParam}&${searchTermParam}${tabParam}`;
+            // 🌟 API URL에 currentRowsPerPage (변경된 rowsPerPage 상태) 반영
+            const url = `/posts?page=${pageNumberForBackend}&size=${currentRowsPerPage}&sort=${sortParam}&${searchFieldParam}&${searchTermParam}${tabParam}`;
 
             try {
                 const response = await apiClient.get(url);
                 const result = response.data.result;
 
-                if (result) {
-                    let newPosts = [];
-                    let newTotalPosts = 0;
-
-                    if (result.content && Array.isArray(result.content)) {
+                    if (result && result.content && Array.isArray(result.content)) {
                         // Spring Page 객체 구조인 경우 처리
-                        newPosts = result.content;
-                        newTotalPosts = result.totalElements || 0;
-                    } else if (Array.isArray(result)) {
-                        // 결과가 게시글 배열을 직접 포함하는 경우 (Page 객체가 아닌 경우)
-                        newPosts = result;
-                        // totalPosts 정보가 없어 페이지네이션이 불완전할 수 있음 (서버 수정 권장)
-                        // 임시로 posts.length를 사용하거나, 서버에서 totalElements를 받도록 수정 필요
-                    }
+                        const newPosts = result.content;
+                        const newTotalPosts = result.totalElements || 0; // totalElements를 통해 전체 게시글 수 확보
 
-                    setPosts(newPosts);
-                    setTotalPosts(newTotalPosts);
-                } else {
-                    setPosts([]);
-                    setTotalPosts(0);
-                }
+                        setPosts(newPosts);
+                        setTotalPosts(newTotalPosts);
+                    } else {
+                        // 응답은 왔으나 내용이 없거나 예상치 못한 구조인 경우
+                        setPosts([]);
+                        setTotalPosts(0);
+                    }
 
             } catch (error) {
                 const errorMsg = error.response?.data?.message || "게시글을 불러오는 중 오류가 발생했습니다.";
@@ -181,9 +206,11 @@ const PostsList = () => {
         };
 
         // 종속성 배열의 상태가 변경될 때마다 API 호출
-        fetchPosts(page, selectedTab, sortOrder, searchField, searchTerm);
+        // 🌟 rowsPerPage 상태를 fetchPosts 함수 호출 인자로 전달
+        fetchPosts(page, selectedTab, sortOrder, rowsPerPage, searchField, searchTerm);
 
-    }, [page, selectedTab, sortOrder, searchField, searchTerm]);
+    // 🌟 rowsPerPage를 종속성 배열에 추가하여 변경 시 API 재요청
+    }, [page, selectedTab, sortOrder, searchField, searchTerm, rowsPerPage]);
 
     // 이벤트 핸들러
     const handleSortClick = (event) => { setSortAnchorEl(event.currentTarget); };
@@ -211,11 +238,30 @@ const PostsList = () => {
         setPage(value);
     };
 
+    /**
+     * 🌟 페이지당 항목 수 메뉴 핸들러 추가
+     */
+    const handlePerPageClick = (event) => { setPerPageAnchorEl(event.currentTarget); };
+    const handlePerPageClose = () => { setPerPageAnchorEl(null); };
+    const handlePerPageSelect = (value) => {
+        setRowsPerPage(value);
+        setPage(1); // 항목 수 변경 시 1페이지로 초기화
+        setPerPageAnchorEl(null);
+    };
+
+    /**
+     * 🚨🚨🚨 오류 수정 부분: TableRow 클릭 핸들러 추가 🚨🚨🚨
+     * HTML 표준을 준수하기 위해 TableRow에 Link 대신 onClick 이벤트를 사용합니다.
+     */
+    const handleRowClick = (postId) => {
+        navigate(`/post/${postId}`);
+    };
+
     // 전체 게시글 수와 페이지당 행 수를 기반으로 페이지 수 계산
     const pageCount = Math.ceil(totalPosts / rowsPerPage);
 
-    // 모바일 뷰에서 사용할 레이블 및 스타일
-    const mobileLabels = ['ID', '주제', '제목', '작성자', '작성일'];
+    // 모바일 뷰에서 사용할 레이블 및 스타일 (좋아요, 조회수 추가)
+    const mobileLabels = ['ID', '주제', '제목', '작성자', '좋아요', '조회수', '작성일'];
     const labelStyles = { fontWeight: 'bold', color: TEXT_COLOR, minWidth: '60px', marginRight: '8px' };
 
     return (
@@ -367,19 +413,54 @@ const PostsList = () => {
                                         setPage(1); // 검색어 변경 시 1페이지로 초기화
                                     }}
                                     sx={{ minWidth: { xs: '100%', md: '200px' }, flexGrow: 1, mt: { xs: 1, md: 0 } }}
-                                    slotProps={{
-                                        input: {
-                                            endAdornment: (
-                                                <InputAdornment position="end">
-                                                    <IconButton sx={{ color: TEXT_COLOR }} edge="end">
-                                                        <SearchIcon />
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            ),
-                                        }
-                                    }
-                                    }
+                                    slotProps={{ // slotProps 대신 InputProps 사용 (안정성 개선)
+                                        input: {endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton sx={{ color: TEXT_COLOR }} edge="end">
+                                                    <SearchIcon />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                }
                                 />
+                                {/* 🌟 몇 개씩 보여줄지 선택 메뉴 (Rows Per Page) 추가 */}
+                                <FilterButton
+                                    variant="outlined"
+                                    onClick={handlePerPageClick}
+                                    aria-controls={openPerPageMenu ? 'per-page-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={openPerPageMenu ? 'true' : undefined}
+                                    sx={{ flex: { xs: 1, md: 'none' } }}
+                                >
+                                    {rowsPerPage}개씩 보기
+                                </FilterButton>
+                                {/* Rows Per Page 메뉴 */}
+                                <Menu
+                                    anchorEl={perPageAnchorEl}
+                                    open={openPerPageMenu}
+                                    onClose={handlePerPageClose}
+                                    id="per-page-menu"
+                                    slotProps={{
+                                        paper: {
+                                            sx: {
+                                                border: `1px solid ${TEXT_COLOR}`,
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                            },
+                                        },
+                                    }}
+                                >
+                                    {[10, 15, 30, 50].map((count) => (
+                                        <MenuItem 
+                                            key={count} 
+                                            onClick={() => handlePerPageSelect(count)}
+                                            selected={count === rowsPerPage}
+                                        >
+                                            {count}개씩 보기
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
+                                {/* 🌟 추가 끝 */}
                             </Box>
 
                             {/* 글쓰기 버튼 */}
@@ -407,18 +488,15 @@ const PostsList = () => {
                         <Table aria-label="게시글 목록">
                             <TableHead>
                                 <TableRow>
-                                    <CustomTableCell>ID</CustomTableCell>
-                                    <CustomTableCell>주제</CustomTableCell>
-                                    <CustomTableCell>제목</CustomTableCell>
-                                    <CustomTableCell>작성자</CustomTableCell>
-                                    <CustomTableCell>작성일</CustomTableCell>
+                                    {/* TableCell들을 한 줄에 붙여서 작성하여 whitespace text node 제거 */}
+                                    <CustomTableCell sx={{ width: '5%' }}>ID</CustomTableCell><CustomTableCell sx={{ width: '8%' }}>주제</CustomTableCell><CustomTableCell sx={{ width: '35%' }}>제목</CustomTableCell><CustomTableCell sx={{ width: '15%' }}>작성자</CustomTableCell><CustomTableCell sx={{ width: '10%' }}>좋아요</CustomTableCell><CustomTableCell sx={{ width: '10%' }}>조회수</CustomTableCell><CustomTableCell sx={{ width: '17%' }}>작성일</CustomTableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {/* 로딩 상태 */}
                                 {isLoading ? (
                                     <TableRow>
-                                        <TableCell colSpan={5} sx={{ textAlign: 'center', py: 5 }}>
+                                        <TableCell colSpan={7} sx={{ textAlign: 'center', py: 5 }}>
                                             <CircularProgress sx={{ color: TEXT_COLOR }} size={30} />
                                             <Typography variant="body1" sx={{ mt: 1, color: LIGHT_TEXT_COLOR }}>게시글을 불러오는 중...</Typography>
                                         </TableCell>
@@ -426,14 +504,14 @@ const PostsList = () => {
                                 ) : error ? (
                                     /* 에러 상태 */
                                     <TableRow>
-                                        <TableCell colSpan={5} sx={{ textAlign: 'center', py: 5 }}>
+                                        <TableCell colSpan={7} sx={{ textAlign: 'center', py: 5 }}>
                                             <Typography variant="body1" color="error">{error}</Typography>
                                         </TableCell>
                                     </TableRow>
                                 ) : posts.length === 0 ? (
                                     /* 게시글 없음 상태 */
                                     <TableRow>
-                                        <TableCell colSpan={5} sx={{ textAlign: 'center', py: 5 }}>
+                                        <TableCell colSpan={7} sx={{ textAlign: 'center', py: 5 }}>
                                             <Typography variant="body1" sx={{ color: LIGHT_TEXT_COLOR }}>
                                                 {searchTerm ? `"${searchTerm}"에 대한 검색 결과가 없습니다.` : '게시글이 없습니다.'}
                                             </Typography>
@@ -444,26 +522,27 @@ const PostsList = () => {
                                     posts.map((post) => (
                                         <TableRow
                                             key={post.id}
-                                            component={Link}
-                                            to={`/post/${post.id}`}
+                                            // 🚨🚨🚨 오류 수정: component={Link} 제거 🚨🚨🚨
+                                            // component={Link} 대신 onClick 핸들러를 사용하여 라우팅합니다.
+                                            onClick={() => handleRowClick(post.id)} // 클릭 핸들러 추가
                                             sx={(theme) => ({
                                                 textDecoration: 'none',
                                                 '& > .MuiTableCell-root': { borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` },
                                                 '&:last-child > .MuiTableCell-root': { borderBottom: 'none' },
                                                 '&:hover': {
                                                     backgroundColor: alpha(TEXT_COLOR, 0.05),
-                                                    cursor: 'pointer'
+                                                    cursor: 'pointer' // 클릭 가능함을 표시
                                                 },
                                                 [theme.breakpoints.down('sm')]: {
                                                     display: 'block',
                                                     borderBottom: `1px solid ${TEXT_COLOR} !important`,
                                                     padding: theme.spacing(1, 0),
-                                                    '&:last-child': { borderBottom: `1px solid ${TEXT_COLOR} !important` },
                                                     '& > .MuiTableCell-root': { borderBottom: 'none !important' },
                                                 }
                                             })}
                                         >
-                                            {/* ID (모바일에서는 레이블과 함께 표시) */}
+                                            {/* TableCell들 사이의 줄 바꿈을 제거하여 whitespace text node 제거 */}
+                                            {/* ID */}
                                             <TableCell component="th" scope="row"
                                                 sx={(theme) => ({
                                                     [theme.breakpoints.down('sm')]: {
@@ -472,13 +551,12 @@ const PostsList = () => {
                                                         fontSize: '0.8rem',
                                                         color: LIGHT_TEXT_COLOR,
                                                         padding: theme.spacing(0, 2, 0.5, 2),
-                                                        order: 5,
+                                                        order: 7,
                                                         '&::before': { content: `'${mobileLabels[0]}: '`, ...labelStyles }
                                                     }
                                                 })}
                                             >{post.id}</TableCell>
-
-                                            {/* 주제 (Chip으로 표시) */}
+                                            {/* 주제 */}
                                             <TableCell
                                                 sx={(theme) => ({
                                                     [theme.breakpoints.down('sm')]: {
@@ -491,8 +569,7 @@ const PostsList = () => {
                                             >
                                                 <StyledChip label={post.subject} subject={post.subject} size="small" />
                                             </TableCell>
-
-                                            {/* 제목 및 댓글 수 */}
+                                            {/* 제목 */}
                                             <TableCell sx={(theme) => ({
                                                 fontWeight: 600, color: TEXT_COLOR,
                                                 [theme.breakpoints.down('sm')]: {
@@ -509,11 +586,7 @@ const PostsList = () => {
                                                 <Box component="span" sx={{ flexGrow: 1, minWidth: 0 }}>
                                                     {post.title}
                                                 </Box>
-                                                <Box component="span" sx={{ color: '#F44336', fontWeight: 600, ml: 1.5, flexShrink: 0 }}>
-                                                    [{post.comments}]
-                                                </Box>
                                             </TableCell>
-
                                             {/* 작성자 */}
                                             <TableCell sx={(theme) => ({
                                                 color: LIGHT_TEXT_COLOR,
@@ -525,8 +598,44 @@ const PostsList = () => {
                                                     order: 3,
                                                     '&::before': { content: `'${mobileLabels[3]}: '`, ...labelStyles }
                                                 }
-                                            })}>{post.writer}</TableCell>
-
+                                            })}>{post.username}</TableCell>
+                                            {/* 좋아요 수 (추가) */}
+                                            <TableCell sx={(theme) => ({
+                                                color: '#F44336',
+                                                fontWeight: 600,
+                                                [theme.breakpoints.down('sm')]: {
+                                                    display: 'flex',
+                                                    justifyContent: 'flex-start',
+                                                    fontSize: '0.85rem',
+                                                    padding: theme.spacing(0.5, 2, 0.5, 2),
+                                                    order: 5,
+                                                    color: LIGHT_TEXT_COLOR,
+                                                    fontWeight: 400,
+                                                    '&::before': { content: `'${mobileLabels[4]}: '`, ...labelStyles }
+                                                }
+                                            })}>
+                                                <Box component="span" sx={{ display: { xs: 'none', md: 'inline' }, mr: 0.5, mt: 0.2 }}>
+                                                    <FavoriteIcon sx={{ fontSize: '1rem', verticalAlign: 'middle', color: '#F44336' }} />
+                                                </Box>
+                                                {post.likeCount || 0}
+                                            </TableCell>
+                                            {/* 조회수 (추가) */}
+                                            <TableCell sx={(theme) => ({
+                                                color: LIGHT_TEXT_COLOR,
+                                                [theme.breakpoints.down('sm')]: {
+                                                    display: 'flex',
+                                                    justifyContent: 'flex-start',
+                                                    fontSize: '0.85rem',
+                                                    padding: theme.spacing(0.5, 2, 0.5, 2),
+                                                    order: 6,
+                                                    '&::before': { content: `'${mobileLabels[5]}: '`, ...labelStyles }
+                                                }
+                                            })}>
+                                                <Box component="span" sx={{ display: { xs: 'none', md: 'inline' }, mr: 0.5, mt: 0.2 }}>
+                                                    <VisibilityIcon sx={{ fontSize: '1rem', verticalAlign: 'middle' }} />
+                                                </Box>
+                                                {post.viewCount || 0}
+                                            </TableCell>
                                             {/* 작성일 */}
                                             <TableCell sx={(theme) => ({
                                                 color: LIGHT_TEXT_COLOR,
@@ -536,9 +645,9 @@ const PostsList = () => {
                                                     fontSize: '0.85rem',
                                                     padding: theme.spacing(0.5, 2, 0.5, 2),
                                                     order: 4,
-                                                    '&::before': { content: `'${mobileLabels[4]}: '`, ...labelStyles }
+                                                    '&::before': { content: `'${mobileLabels[6]}: '`, ...labelStyles }
                                                 }
-                                            })}>{post.createdDate}</TableCell>
+                                            })}>{formatDate(post.modifiedDate)}</TableCell>
                                         </TableRow>
                                     ))
                                 )}
