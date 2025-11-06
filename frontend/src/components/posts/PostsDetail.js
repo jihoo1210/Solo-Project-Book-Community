@@ -22,6 +22,9 @@ const TEXT_COLOR = '#000000';
 const LIGHT_TEXT_COLOR = '#555555';
 const HEADER_HEIGHT = '64px'; 
 const RED_COLOR = '#f44336';
+// 🛠️ 보라색 상수 추가 (자연스러운 보라색 - MUI Purple 계열)
+const PURPLE_COLOR = '#9c27b0';
+const DARK_PURPLE_COLOR = '#6a1b9a'; // 보라색 호버/어두운 버전
 
 // 스타일 컴포넌트 정의 
 const DetailWrapper = styled(Box)(({ theme }) => ({
@@ -53,13 +56,7 @@ const ActionButton = styled(Button)(({ theme, colorName }) => ({
     padding: theme.spacing(1, 2), 
     minWidth: '100px',
     '&:hover': { 
-        // 'delete' 일 때 호버 배경색을 약간 더 어둡거나 밝은 빨간색 (예: RED_COLOR의 dark 버전) 또는 
-        // 투명도를 적용한 빨간색(alpha(RED_COLOR, 0.9))으로 변경하는 것이 좋습니다. 
-        // 여기서는 예시로 `theme.palette.error.dark`와 유사한 `DARK_RED_COLOR`를 가정하거나, 
-        // RED_COLOR에 alpha를 적용하는 방식으로 변경합니다.
-
         // 자연스러운 효과를 위해 alpha 함수 사용 예시 (RED_COLOR가 HEX 코드일 경우)
-        // 만약 MUI palatte를 사용한다면 theme.palette.error.dark 등을 사용하세요.
         backgroundColor: colorName === 'delete' ? alpha(RED_COLOR, 0.9) : alpha(TEXT_COLOR, 0.05),
         borderColor: colorName === 'delete' ? alpha(RED_COLOR, 0.9) : LIGHT_TEXT_COLOR,
     },
@@ -184,7 +181,9 @@ const PostsDetail = () => {
     const [post, setPost] = useState(null); 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [postLikes, setPostLikes] = useState(0); 
+    const [postLikes, setPostLikes] = useState(0);
+    // 🛠️ `alreadySavedInLikes` 초기값을 `false`로 설정 (로그인하지 않은 사용자 기준)
+    const [alreadySavedInLikes, setAlreadySavedInLikes] = useState(false)
     // 댓글 입력 상태 추가
     const [newCommentText, setNewCommentText] = useState('');
     const [comments, setComments] = useState([]); 
@@ -202,7 +201,9 @@ const PostsDetail = () => {
                 if (postData) {
                     setPost(postData);
                     // API 응답에서 좋아요 수와 댓글 목록을 초기화
-                    setPostLikes(postData.likeCount || 0);
+                    setPostLikes(postData.likes || 0);
+                    // 🛠️ 좋아요 등록 여부 초기화 (API 응답에서 좋아요 여부 필드가 있다고 가정)
+                    setAlreadySavedInLikes(postData.alreadySavedInLikes || false);
                     // API에서 받아온 댓글 데이터에 id가 없는 경우를 대비하여 목 데이터 구조 유지
                     // setComments(postData.comments?.map((comment, index) => ({
                     //     id: comment.id || `mock-id-${index}`,
@@ -229,15 +230,25 @@ const PostsDetail = () => {
         fetchPostDetails();
     }, [id]); // id가 변경될 때마다 재요청
 
-    const handlePostLike = () => {
-        const increaseLikeCount = () => {
+    const handlePostLike =  () => {
+        const increaseLikeCount = async () => {
             try {
-                apiClient.get(`/posts/${id}/increase-likeCount`)
-                setPostLikes(prev => prev + 1);
+                const response = await apiClient.get(`/posts/${id}/handle-likes`)
+                const isSavedInLikes = response.data.result.savedInLikes;
+                
+                // 🛠️ API 응답에 따라 상태 변경 (좋아요 등록/취소 여부)
+                setAlreadySavedInLikes(isSavedInLikes)
+                
+                // '좋아요에 등록했음' 여부
+                if(isSavedInLikes) {
+                    setPostLikes(postLikes + 1)
+                } else {
+                    setPostLikes(postLikes - 1)
+                }
             } catch(err) {
                 console.error("좋아요 증가 오류:", err.response?.data?.message || err.message);
-                setError("오류가 발생했습니다.");
-                setPost(null);
+                // 🛠️ 오류 발생 시 에러 메시지만 설정하고, post 상태는 유지하여 화면에 표시
+                setError("좋아요 처리 중 오류가 발생했습니다.");
             }
         }
         increaseLikeCount();
@@ -267,7 +278,7 @@ const PostsDetail = () => {
         const mockNewComment = {
             id: `mock-new-${Date.now()}`,
             writer: user?.username || 'Guest',
-            date: formatDate(new Date().toISOString()),
+            date: new Date().toISOString(), // 원본 코드에서는 formatDate()를 썼지만, 임시 데이터에선 ISO string으로 저장 후 렌더링 시 formatDate() 호출
             text: newCommentText,
             likes: 0
         };
@@ -288,12 +299,44 @@ const PostsDetail = () => {
         navigate(`/post/edit/${id}`);
     };
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if (window.confirm('정말 이 게시글을 삭제하시겠습니까?')) {
             console.log(`게시글 ${id} 삭제`);
+            try {
+                    const postResponse = await apiClient.delete(`/posts/${id}`)
+                    if(postResponse.data.result.id) {
+                        alert(`${id}번 게시글이 성공적으로 삭제되었습니다.`)
+                    } else {
+                        setError(`${id}번 게시글을 삭제하는데 실패했습니다.`)
+                    }
+                    navigate('/')
+            } catch (err) {
+                alert('에러 발생:' + err.response.data.message || '예상하지 못한 에러.')
+            }
             // 삭제 API 호출 후 navigate('/');
         }
     };
+
+    // 🛠️ 재사용 가능한 수정/삭제 버튼 그룹 정의 (MD 이상에서는 minWidth 유지, SM 이하에서는 조정)
+    const EditDeleteButtons = (
+        <>
+            <ActionButton 
+                variant="outlined"
+                startIcon={<EditIcon />}
+                onClick={handleEdit}
+            >
+                수정
+            </ActionButton>
+            <ActionButton 
+                variant="contained"
+                colorName="delete" 
+                startIcon={<DeleteIcon />}
+                onClick={handleDelete}
+            >
+                삭제
+            </ActionButton>
+        </>
+    );
 
     // 로딩 및 에러 상태 처리
     if (isLoading) {
@@ -341,16 +384,20 @@ const PostsDetail = () => {
     // post 객체가 있을 때만 렌더링
     return (
         <DetailWrapper>
-            {/* 🛠️ sx 속성 제거: Container가 기본 반응형 여백을 담당하도록 수정 */}
+            {/* 🛠️ 1. 목록 버튼과 수정/삭제 버튼을 포함할 최상단 Box 수정: MD 이상에서는 기존 디자인 유지, SM 이하에서는 한 줄에 정렬 */}
             <Container maxWidth="lg"> 
-                {/* 🛠️ Box에 모바일 padding 추가 */}
                 <Box sx={(theme) => ({ 
                     mb: 2,
+                    display: 'flex', 
+                    justifyContent: 'space-between', // 목록 <-> 수정/삭제 버튼을 양 끝에 정렬
+                    alignItems: 'center',
                     paddingLeft: '0px !important',
+                    // 모바일에서는 좌우 패딩 적용
                     [theme.breakpoints.down('sm')]: {
                         paddingX: theme.spacing(2),
                     },
                 })}>
+                    {/* 목록으로 버튼 */}
                     <Button 
                         component={Link} 
                         to="/" 
@@ -359,6 +406,23 @@ const PostsDetail = () => {
                     >
                         목록으로
                     </Button>
+                    
+                    {/* 🛠️ 2. 수정/삭제 버튼 (모바일에서만 표시) */}
+                    {user?.username === post.username && 
+                        <Box sx={(theme) => ({ 
+                            display: { xs: 'flex', md: 'none' }, // SM 이하에서만 표시, MD 이상에서는 숨김
+                            gap: 1, 
+                            flexShrink: 0, 
+                            // 모바일에서 버튼 크기 조정으로 반응성 확보
+                            '& > *': { 
+                                minWidth: 'auto', 
+                                padding: theme.spacing(0.5, 1),
+                                fontSize: '0.75rem' // ActionButton 기본 폰트 사이즈보다 약간 작게 조정
+                            }
+                        })}>
+                            {EditDeleteButtons}
+                        </Box>
+                    }
                 </Box>
                 
                 <DetailCard elevation={0}>
@@ -430,10 +494,15 @@ const PostsDetail = () => {
                             variant="contained"
                             startIcon={<ThumbUpIcon />}
                             onClick={handlePostLike}
+                            // 🛠️ `alreadySavedInLikes` 값에 따라 버튼 스타일 동적 변경
                             sx={{
-                                color: BG_COLOR, 
-                                backgroundColor: TEXT_COLOR,
-                                '&:hover': { backgroundColor: LIGHT_TEXT_COLOR }
+                                color: alreadySavedInLikes ? BG_COLOR : BG_COLOR, 
+                                backgroundColor: alreadySavedInLikes ? PURPLE_COLOR : TEXT_COLOR,
+                                '&:hover': { 
+                                    backgroundColor: alreadySavedInLikes ? DARK_PURPLE_COLOR : LIGHT_TEXT_COLOR 
+                                },
+                                // 🛠️ 테두리 색상도 변경된 배경색에 맞게 조정 (좋아요 상태일 때는 테두리 제거)
+                                border: '1px solid transparent', 
                             }}
                         >
                             좋아요 ({postLikes})
@@ -447,33 +516,21 @@ const PostsDetail = () => {
                         </ActionButton>
                     </Box>
 
+                    {/* 🛠️ 3. 기존 수정/삭제 버튼 위치 (md 이상에서만 표시) */}
                     {/* 기존 수정/삭제 버튼 (작성자에게만 표시) */}
-                    {/* 🛠️ Box에 모바일 padding 추가 */}
-                    {user?.username === post.username && <Box sx={(theme) => ({ 
-                        display: 'flex', 
-                        justifyContent: 'flex-end', 
-                        gap: 1.5, 
-                        mb: 5,
-                        [theme.breakpoints.down('sm')]: {
-                            paddingX: theme.spacing(2),
-                        },
-                    })}>
-                        <ActionButton 
-                            variant="outlined"
-                            startIcon={<EditIcon />}
-                            onClick={handleEdit}
-                        >
-                            수정
-                        </ActionButton>
-                        <ActionButton 
-                            variant="contained"
-                            colorName="delete" 
-                            startIcon={<DeleteIcon />}
-                            onClick={handleDelete}
-                        >
-                            삭제
-                        </ActionButton>
-                    </Box>}
+                    {user?.username === post.username && 
+                        <Box sx={(theme) => ({ 
+                            display: { xs: 'none', md: 'flex' }, // MD 이상에서만 표시 (기존 디자인 유지), SM 이하에서는 숨김
+                            justifyContent: 'flex-end', 
+                            gap: 1.5, 
+                            mb: 5,
+                            [theme.breakpoints.down('sm')]: {
+                                paddingX: theme.spacing(2),
+                            },
+                        })}>
+                            {EditDeleteButtons}
+                        </Box>
+                    }
                     
                     {/* 🛠️ Box에 모바일 padding 추가 */}
                     <Box sx={(theme) => ({

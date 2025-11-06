@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.controller.utilities.ResponseController;
+import com.example.backend.dto.posts.LikesResponse;
 import com.example.backend.dto.posts.create.PostsCreateRequest;
 import com.example.backend.dto.posts.create.PostsCreateResponse;
 import com.example.backend.dto.posts.delete.PostsDeleteResponse;
@@ -33,16 +34,20 @@ public class PostsController {
 
     // 게시글 목록 조회 (검색 및 페이징 적용)
     @GetMapping
-    public ResponseEntity<?> index(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+    public ResponseEntity<?> index(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                   @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                    @RequestParam(required = false, defaultValue = "") String searchField,
                                    @RequestParam(required = false, defaultValue = "") String searchTerm,
                                    @RequestParam(required = false, defaultValue = "0") Integer tab) {
+        log.info("CustomUserDetails: {}", userDetails);
         log.info("Pageable: {}", pageable);
         log.info("searchField: {}", searchField);
         log.info("searchTerm: {}", searchTerm);
 
+        String email = userDetails.getUsername();
+
         // Service에서 Page 객체를 받아 ResponseController로 감싸서 반환
-        Page<PostsIndexResponse> responsePage = service.index(pageable, searchField, searchTerm, tab);
+        Page<PostsIndexResponse> responsePage = service.index(email, pageable, searchField, searchTerm, tab);
         return ResponseController.success(responsePage);
     }
 
@@ -59,13 +64,17 @@ public class PostsController {
         }
     }
 
-    // 게시글 좋아요 수 증가
-    @GetMapping("/{postsId}/increase-likeCount")
-    public ResponseEntity<?> increaseLikeCount(@PathVariable Long postsId) {
+    // 게시글 좋아요 수 증감
+    @GetMapping("/{postsId}/handle-likes")
+    public ResponseEntity<?> handleLikes(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long postsId) {
         try {
+            log.info("CustomUserDetails: {}", userDetails);
             log.info("posts id: {}", postsId);
-            service.increaseLikeCount(postsId);
-            return ResponseEntity.ok().build();
+
+            String email = userDetails.getUsername();
+
+            LikesResponse responseDto = service.handleLikes(postsId, email);
+            return ResponseController.success(responseDto);
         } catch (Exception e) {
             return ResponseController.fail(e.getMessage());
         }

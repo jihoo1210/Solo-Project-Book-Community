@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.dto.posts.LikesResponse;
 import com.example.backend.dto.posts.create.PostsCreateRequest;
 import com.example.backend.dto.posts.create.PostsCreateResponse;
 import com.example.backend.dto.posts.delete.PostsDeleteResponse;
@@ -7,10 +8,13 @@ import com.example.backend.dto.posts.index.PostsIndexResponse;
 import com.example.backend.dto.posts.show.PostsShowResponse;
 import com.example.backend.dto.posts.update.PostsUpdateRequest;
 import com.example.backend.dto.posts.update.PostsUpdateResponse;
+import com.example.backend.entity.PostsLikes;
 import com.example.backend.entity.Posts;
 import com.example.backend.entity.User;
 import com.example.backend.entity.utilities.Subject;
+import com.example.backend.repository.LikesRepository;
 import com.example.backend.repository.PostsRepository;
+import com.example.backend.repository.UserRepository;
 import com.example.backend.service.utilities.PostSearchSpec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +32,12 @@ import static com.example.backend.entity.utilities.Subject.*;
 public class PostsService {
 
     private final PostsRepository repository;
+    private final UserRepository userRepository;
+    private final LikesRepository likesRepository;
 
     // 게시글 목록을 검색 조건과 페이징 조건에 따라 조회
-    public Page<PostsIndexResponse> index(Pageable pageable,
+    public Page<PostsIndexResponse> index(String email,
+                                          Pageable pageable,
                                           String searchField,
                                           String searchTerm,
                                           Integer tab) {
@@ -41,14 +48,19 @@ public class PostsService {
         // 2. 검색 조건(spec)과 페이징 조건(pageable)을 함께 Repository에 전달
         Page<Posts> postPage = repository.findAll(spec, pageable);
 
+        // 3.
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
+
         // 조회된 Page<Posts>를 Page<PostsIndexResponse>로 변환하여 반환
         return postPage.map(post -> PostsIndexResponse.builder()
                 .id(post.getId())
                 .subject(post.getSubject().getSubject())
                 .title(post.getTitle())
                 .username(post.getUser().getUsername())
+                .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
-                .likeCount(post.getLikeCount())
+                .likes(post.getLikes().size())
+                .savedInLikes(likesRepository.existsByUserAndPosts(user, post))
                 .viewCount(post.getViewCount())
                 .build());
     }
@@ -67,7 +79,8 @@ public class PostsService {
                 .content(target.getContent())
                 .username(target.getUser().getUsername())
                 .modifiedDate(target.getModifiedDate())
-                .likeCount(target.getLikeCount())
+                .likes(target.getLikes().size())
+                .alreadySavedInLikes(likesRepository.existsByUserAndPosts(target.getUser(), target))
                 .viewCount(target.getViewCount())
                 .region(target.getRegion())
                 .meetingInfo(target.getMeetingInfo())
@@ -76,11 +89,36 @@ public class PostsService {
                 .build();
     }
 
-    // 게시글 좋아요 수 증가
+    // 게시글 좋아요 수 증감
     @Transactional
-    public void increaseLikeCount(Long postsId) {
+    public LikesResponse handleLikes(Long postsId, String email) {
         Posts target = repository.findById(postsId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-        target.setLikeCount(target.getLikeCount() + 1);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
+
+        // 이미 좋아요가 되어 있을 때
+        if(likesRepository.existsByUserAndPosts(user, target)) {
+            log.warn("User {} already liked post {}", email, postsId);
+            PostsLikes removedTarget = likesRepository.findByUserAndPosts(user, target).orElseThrow(() -> new IllegalArgumentException("해당 게시글 또는 사용자가 존재하지 않습니다."));
+            likesRepository.delete(removedTarget);
+
+            // 좋아요를 취소 했으니 '좋아요에 등록되어 있음'을 거짓으로
+            return LikesResponse.builder()
+                    .savedInLikes(false)
+                    .build();
+        }
+
+        // 좋아요가 되어있지 않았을 때
+        PostsLikes likes = PostsLikes.builder()
+                .user(user)
+                .posts(target)
+                .build();
+        likesRepository.save(likes);
+
+        log.info("User {} successfully liked post {}", email, postsId);
+        // 좋아요를 등록 했으니 '좋아요에 등록되어 있음'을 참으로
+        return LikesResponse.builder()
+                .savedInLikes(true)
+                .build();
     }
 
     // 새로운 게시글 생성
@@ -119,7 +157,7 @@ public class PostsService {
                 .content(created.getContent())
                 .username(created.getUser().getUsername())
                 .modifiedDate(created.getModifiedDate())
-                .likeCount(created.getLikeCount())
+                .likes(created.getLikes().size())
                 .viewCount(created.getViewCount())
                 .region(created.getRegion())
                 .meetingInfo(created.getMeetingInfo())
@@ -159,7 +197,7 @@ public class PostsService {
                 .content(target.getContent())
                 .username(target.getUser().getUsername())
                 .modifiedDate(target.getModifiedDate())
-                .likeCount(target.getLikeCount())
+                .likes(target.getLikes().size())
                 .viewCount(target.getViewCount())
                 .region(target.getRegion())
                 .meetingInfo(target.getMeetingInfo())
@@ -183,4 +221,5 @@ public class PostsService {
                 .id(target.getId())
                 .build();
     }
+
 }

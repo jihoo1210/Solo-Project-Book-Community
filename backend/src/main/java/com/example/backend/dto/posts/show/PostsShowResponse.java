@@ -19,7 +19,8 @@ public class PostsShowResponse {
     private String username;
     private LocalDateTime modifiedDate;
     private Long viewCount;
-    private Long likeCount;
+    private Integer likes;
+    private boolean alreadySavedInLikes;
 
     private String region;
     private String meetingInfo;
