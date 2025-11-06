@@ -1,53 +1,67 @@
 // src/components/PostsDetail.js
 
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import { 
     Box, Container, Typography, Paper, Chip, Button, Divider, 
-    List, ListItem, ListItemText, TextField, IconButton 
+    List, ListItem, ListItemText, TextField, IconButton,
+    CircularProgress 
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp'; 
 import FlagIcon from '@mui/icons-material/Flag'; 
 import { useAuth } from '../auth/AuthContext';
+import apiClient from '../../api/Api-Service'; // API 서비스 추가
 
+// 상수 정의
 const BG_COLOR = '#FFFFFF';
 const TEXT_COLOR = '#000000';
 const LIGHT_TEXT_COLOR = '#555555';
 const HEADER_HEIGHT = '64px'; 
+const RED_COLOR = '#f44336';
 
+// 스타일 컴포넌트 정의 
 const DetailWrapper = styled(Box)(({ theme }) => ({
     marginTop: HEADER_HEIGHT, 
-    minHeight: `calc(100vh - ${HEADER_HEIGHT} - 150px)`, 
     backgroundColor: BG_COLOR,
     padding: theme.spacing(4, 0),
 }));
 
 const DetailCard = styled(Paper)(({ theme }) => ({
-    padding: theme.spacing(5),
+    padding: theme.spacing(4),
     borderRadius: (theme.shape?.borderRadius || 4) * 2,
     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
     border: `1px solid ${TEXT_COLOR}`,
     backgroundColor: BG_COLOR,
     width: '100%',
     [theme.breakpoints.down('sm')]: {
-        padding: theme.spacing(3),
+        padding: theme.spacing(2, 0),
     },
 }));
 
 const ActionButton = styled(Button)(({ theme, colorName }) => ({
-    color: colorName === 'delete' ? BG_COLOR : TEXT_COLOR,
-    backgroundColor: colorName === 'delete' ? TEXT_COLOR : BG_COLOR,
-    border: `1px solid ${TEXT_COLOR}`,
+    // 'delete' 일 때 배경색을 RED_COLOR로 변경
+    backgroundColor: colorName === 'delete' ? RED_COLOR : BG_COLOR,
+    // 'delete' 일 때 글자색을 대비가 좋은 흰색 계열로 변경 (TEXT_COLOR가 어두운 색일 경우)
+    color: colorName === 'delete' ? '#fff' : TEXT_COLOR, 
+    // border 색상도 통일
+    border: `1px solid ${colorName === 'delete' ? RED_COLOR : TEXT_COLOR}`,
     fontWeight: 600,
     padding: theme.spacing(1, 2), 
     minWidth: '100px',
     '&:hover': { 
-        backgroundColor: colorName === 'delete' ? LIGHT_TEXT_COLOR : alpha(TEXT_COLOR, 0.05),
-        borderColor: LIGHT_TEXT_COLOR,
+        // 'delete' 일 때 호버 배경색을 약간 더 어둡거나 밝은 빨간색 (예: RED_COLOR의 dark 버전) 또는 
+        // 투명도를 적용한 빨간색(alpha(RED_COLOR, 0.9))으로 변경하는 것이 좋습니다. 
+        // 여기서는 예시로 `theme.palette.error.dark`와 유사한 `DARK_RED_COLOR`를 가정하거나, 
+        // RED_COLOR에 alpha를 적용하는 방식으로 변경합니다.
+
+        // 자연스러운 효과를 위해 alpha 함수 사용 예시 (RED_COLOR가 HEX 코드일 경우)
+        // 만약 MUI palatte를 사용한다면 theme.palette.error.dark 등을 사용하세요.
+        backgroundColor: colorName === 'delete' ? alpha(RED_COLOR, 0.9) : alpha(TEXT_COLOR, 0.05),
+        borderColor: colorName === 'delete' ? alpha(RED_COLOR, 0.9) : LIGHT_TEXT_COLOR,
     },
 }));
 
@@ -75,7 +89,7 @@ const StyledChip = styled(Chip)(({ theme, subject }) => {
 });
 
 
-// ------------------ NEW: 게시글 타입별 상세 정보 표시 컴포넌트 ------------------
+// ------------------ 게시글 타입별 상세 정보 표시 컴포넌트 ------------------
 
 const DetailItem = ({ label, value }) => {
     if (!value) return null;
@@ -99,21 +113,29 @@ const DetailItem = ({ label, value }) => {
 };
 
 const SubjectSpecificDetails = ({ post }) => {
+    // post가 null인 경우 처리
+    if (!post) return null;
+
+    const commonSx = (theme) => ({
+        mt: 3, mb: 4, p: 2, 
+        border: `1px dashed ${LIGHT_TEXT_COLOR}`, 
+        borderRadius: 1, 
+        backgroundColor: alpha(TEXT_COLOR, 0.02),
+        [theme.breakpoints.down('sm')]: {
+            marginX: theme.spacing(2),
+        },
+    });
+
     // 1. 질문 게시글 상세 정보 (PostCreate.js의 QuestionFields에 대응)
     if (post.subject === '질문' && (post.bookTitle || post.pageNumber)) {
         return (
-            <Box sx={{ 
-                mt: 3, mb: 4, p: 2, 
-                border: `1px dashed ${LIGHT_TEXT_COLOR}`, 
-                borderRadius: 1, 
-                backgroundColor: alpha(TEXT_COLOR, 0.02)
-            }}>
+            <Box sx={commonSx}>
                 <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2, color: TEXT_COLOR }}>
                     질문 상세 정보
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', '& > *': { minWidth: { xs: '100%', sm: '45%' } } }}>
                     <DetailItem label="참고 서적" value={post.bookTitle} />
-                    <DetailItem label="페이지" value={post.pageNumber} />
+                    <DetailItem label="페이지" value={post.pageNumber + 'p'} />
                 </Box>
             </Box>
         );
@@ -122,12 +144,7 @@ const SubjectSpecificDetails = ({ post }) => {
     // 2. 모집 게시글 상세 정보 (PostCreate.js의 RecruitmentFields에 대응)
     if (post.subject === '모집' && (post.region || post.meetingInfo)) {
         return (
-            <Box sx={{ 
-                mt: 3, mb: 4, p: 2, 
-                border: `1px dashed ${LIGHT_TEXT_COLOR}`, 
-                borderRadius: 1, 
-                backgroundColor: alpha(TEXT_COLOR, 0.02)
-            }}>
+            <Box sx={commonSx}>
                 <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2, color: TEXT_COLOR }}>
                     모집 상세 정보
                 </Typography>
@@ -144,65 +161,131 @@ const SubjectSpecificDetails = ({ post }) => {
 
 // ------------------------------------------------------------------------
 
-const mockPost = { 
-    id: 10, 
-    subject: '모집', // <--- 현재 모집 게시글 Mock Data
-    title: '사이드 프로젝트 함께 할 프론트엔드 개발자 모집', 
-    writer: '프로젝트C', 
-    createdDate: '2025-11-03', 
-    likes: 8, 
-    // 모집 필드
-    region: '온라인/서울 강남', 
-    meetingInfo: '매주 토요일 오후 2시', 
-    // 질문 필드 (모집이므로 null)
-    bookTitle: null, 
-    pageNumber: null, 
-    
-    content: `안녕하세요, 사이드 프로젝트 팀원 모집을 위해 글을 올립니다.
-    저희는 Next.js와 Typescript 기반의 소셜 미디어 서비스를 개발할 예정이며,
-    현재 기획 단계에 있습니다. 함께 성장하고 포트폴리오를 만들 분을 찾습니다.
-    
-    관심 있으신 분들은 댓글로 지원 부탁드립니다.`,
-    comments: [
-        { id: 1, writer: '개발자B', text: '프로젝트 주제가 흥미롭네요. 연락처를 쪽지로 보냈습니다.', date: '2025-11-04', likes: 3 }, 
-        { id: 2, writer: 'ReactGuru', text: '프론트엔드 포지션 지원합니다. 제 깃허브 링크는 ... 입니다.', date: '2025-11-04', likes: 7 }, 
-    ]
+/**
+ * 🛠️ 작성일 형식: PostsList.js와 동일한 조건부 로직 적용
+ */
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+        const postDate = new Date(dateString);
+        const month = String(postDate.getMonth() + 1).padStart(2, '0');
+        const day = String(postDate.getDate()).padStart(2, '0');
+        const hours = String(postDate.getHours()).padStart(2, '0');
+        const minutes = String(postDate.getMinutes()).padStart(2, '0');
+        return `${month}/${day} ${hours}:${minutes}`;
 };
+
 
 const PostsDetail = () => {
     const { id } = useParams();
-    const { user } = useAuth(); 
-    const post = mockPost; 
+    const { user } = useAuth();
+    const navigate = useNavigate();
+    
+    // API 연동을 위한 상태 및 로딩 관리 (Mock 데이터 제거)
+    const [post, setPost] = useState(null); 
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [postLikes, setPostLikes] = useState(0); 
+    // 댓글 입력 상태 추가
+    const [newCommentText, setNewCommentText] = useState('');
+    const [comments, setComments] = useState([]); 
 
-    // 게시글과 댓글 좋아요 수 관리를 위한 상태
-    const [postLikes, setPostLikes] = useState(post.likes); 
-    const [comments, setComments] = useState(mockPost.comments); 
+    // API 호출 로직 (게시글 상세 정보 및 댓글 가져오기)
+    useEffect(() => {
+        const fetchPostDetails = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                // 게시글 상세 API 호출 가정
+                const postResponse = await apiClient.get(`/posts/${id}`); 
+                const postData = postResponse.data.result;
+
+                if (postData) {
+                    setPost(postData);
+                    // API 응답에서 좋아요 수와 댓글 목록을 초기화
+                    setPostLikes(postData.likeCount || 0);
+                    // API에서 받아온 댓글 데이터에 id가 없는 경우를 대비하여 목 데이터 구조 유지
+                    // setComments(postData.comments?.map((comment, index) => ({
+                    //     id: comment.id || `mock-id-${index}`,
+                    //     writer: comment.writer || '익명',
+                    //     date: comment.date || new Date().toISOString(),
+                    //     text: comment.text,
+                    //     likes: comment.likes || 0
+                    // })) || []);
+
+                } else {
+                    setError("게시글 데이터를 찾을 수 없습니다.");
+                    setPost(null);
+                }
+
+            } catch (err) {
+                console.error("게시글 상세 로드 오류:", err.response?.data?.message || err.message);
+                setError("게시글을 불러오는 중 오류가 발생했습니다.");
+                setPost(null);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchPostDetails();
+    }, [id]); // id가 변경될 때마다 재요청
 
     const handlePostLike = () => {
-        // 좋아요 수 증가 (요청 2)
-        setPostLikes(prev => prev + 1);
-        // 실제 API 호출 로직은 여기에 추가됩니다.
+        const increaseLikeCount = () => {
+            try {
+                apiClient.get(`/posts/${id}/increase-likeCount`)
+                setPostLikes(prev => prev + 1);
+            } catch(err) {
+                console.error("좋아요 증가 오류:", err.response?.data?.message || err.message);
+                setError("오류가 발생했습니다.");
+                setPost(null);
+            }
+        }
+        increaseLikeCount();
     };
 
     const handleCommentLike = (commentId) => {
+        // 실제 API 호출 로직 (댓글 좋아요 API)은 여기에 추가됩니다.
+        // 예를 들어: apiClient.post(`/comment/${commentId}/like`);
         setComments(prevComments => 
             prevComments.map(comment => 
                 comment.id === commentId ? { ...comment, likes: comment.likes + 1 } : comment
             )
         );
-        // 실제 API 호출 로직은 여기에 추가됩니다.
+    };
+    
+    // 댓글 등록 핸들러 추가
+    const handleCommentSubmit = async () => {
+        if (!newCommentText.trim()) {
+            alert("댓글 내용을 입력해주세요.");
+            return;
+        }
+
+        // 실제 API 호출 로직 (댓글 등록 API)은 여기에 추가됩니다.
+        // const newComment = await apiClient.post(`/posts/${id}/comments`, { text: newCommentText });
+
+        // API 연동 전 임시 처리
+        const mockNewComment = {
+            id: `mock-new-${Date.now()}`,
+            writer: user?.username || 'Guest',
+            date: formatDate(new Date().toISOString()),
+            text: newCommentText,
+            likes: 0
+        };
+
+        setComments(prev => [mockNewComment, ...prev]); // 새 댓글을 목록 맨 앞에 추가
+        setNewCommentText('');
     };
 
     const handleReport = (type, targetId) => {
         if (window.confirm(`${type} (${targetId})를 신고하시겠습니까? 신고 후에는 되돌릴 수 없습니다.`)) {
-            alert(`${type} (${targetId})를 신고했습니다. 감사합니다.`);
             // 실제 신고 API 호출 로직은 여기에 추가됩니다.
+            alert(`${type} (${targetId})를 신고했습니다. 감사합니다.`);
         }
     };
 
     const handleEdit = () => {
         console.log(`게시글 ${id} 수정`);
-        // navigate(`/posts/edit/${id}`);
+        navigate(`/post/edit/${id}`);
     };
 
     const handleDelete = () => {
@@ -212,23 +295,62 @@ const PostsDetail = () => {
         }
     };
 
-    if (!post) {
+    // 로딩 및 에러 상태 처리
+    if (isLoading) {
+        // 🛠️ DetailWrapper 내부 Box에 모바일 padding 반영
         return (
             <DetailWrapper>
                 <Container maxWidth="lg">
-                    <Typography variant="h5" align="center" color={LIGHT_TEXT_COLOR}>게시글을 찾을 수 없습니다.</Typography>
-                    <Box sx={{ mt: 3, textAlign: 'center' }}>
-                        <Button component={Link} to="/" startIcon={<ArrowBackIcon />}>목록으로</Button>
+                    <Box sx={(theme) => ({
+                        textAlign: 'center', 
+                        py: 10,
+                        [theme.breakpoints.down('sm')]: {
+                            paddingX: theme.spacing(2),
+                        },
+                    })}>
+                        <CircularProgress sx={{ color: TEXT_COLOR }} size={40} />
+                        <Typography variant="h6" sx={{ mt: 2, color: LIGHT_TEXT_COLOR }}>게시글을 불러오는 중입니다...</Typography>
                     </Box>
                 </Container>
             </DetailWrapper>
         );
     }
 
+    if (error || !post) {
+        // 🛠️ DetailWrapper 내부 Box에 모바일 padding 반영
+        return (
+            <DetailWrapper>
+                <Container maxWidth="lg">
+                    <Box sx={(theme) => ({
+                        [theme.breakpoints.down('sm')]: {
+                            paddingX: theme.spacing(2),
+                        },
+                    })}>
+                        <Typography variant="h5" align="center" color="error" sx={{ mt: 5 }}>
+                            {error || "게시글을 찾을 수 없습니다."}
+                        </Typography>
+                        <Box sx={{ mt: 3, textAlign: 'center' }}>
+                            <Button component={Link} to="/" startIcon={<ArrowBackIcon />}>목록으로</Button>
+                        </Box>
+                    </Box>
+                </Container>
+            </DetailWrapper>
+        );
+    }
+    
+    // post 객체가 있을 때만 렌더링
     return (
         <DetailWrapper>
-            <Container maxWidth="lg" sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}> 
-                <Box sx={{ mb: 2 }}>
+            {/* 🛠️ sx 속성 제거: Container가 기본 반응형 여백을 담당하도록 수정 */}
+            <Container maxWidth="lg"> 
+                {/* 🛠️ Box에 모바일 padding 추가 */}
+                <Box sx={(theme) => ({ 
+                    mb: 2,
+                    paddingLeft: '0px !important',
+                    [theme.breakpoints.down('sm')]: {
+                        paddingX: theme.spacing(2),
+                    },
+                })}>
                     <Button 
                         component={Link} 
                         to="/" 
@@ -240,7 +362,13 @@ const PostsDetail = () => {
                 </Box>
                 
                 <DetailCard elevation={0}>
-                    <Box sx={{ mb: 3 }}>
+                    {/* 🛠️ DetailCard 내부 Box에 모바일 padding 추가 */}
+                    <Box sx={(theme) => ({ 
+                        mb: 3,
+                        [theme.breakpoints.down('sm')]: {
+                            paddingX: theme.spacing(2),
+                        },
+                    })}>
                         <StyledChip label={post.subject} subject={post.subject} sx={{ mb: 1.5 }} />
                         <Typography 
                             variant="h5" 
@@ -254,32 +382,50 @@ const PostsDetail = () => {
 
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', color: LIGHT_TEXT_COLOR }}>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                작성자: {post.writer}
+                                작성자: {post.username}
                             </Typography>
                             <Typography variant="body2">
-                                작성일: {post.createdDate}
+                                작성일: {formatDate(post.modifiedDate)} {/* 🛠️ formatDate 적용 */}
                             </Typography>
                         </Box>
                     </Box>
 
-                    {/* NEW: 조건부 상세 정보 표시 (요청 2) */}
+                    {/* 조건부 상세 정보 표시 (내부에서 모바일 패딩 처리됨) */}
                     <SubjectSpecificDetails post={post} /> 
 
-                    <Box sx={{ 
+                    {/* 🚨 HTML 렌더링을 위한 dangerouslySetInnerHTML 유지 */}
+                    {/* 🛠️ Box에 모바일 padding 추가 */}
+                    <Box sx={(theme) => ({ 
                         p: 3, 
                         minHeight: '200px', 
                         border: `1px solid ${LIGHT_TEXT_COLOR}`, 
                         borderRadius: 1, 
-                        whiteSpace: 'pre-wrap', 
-                        mb: 4 
-                    }}>
-                        <Typography variant="body1" color={TEXT_COLOR}>
-                            {post.content}
-                        </Typography>
+                        mb: 4,
+                        '& p': { margin: '0 0 1em 0' }, 
+                        '& strong': { fontWeight: 700, color: TEXT_COLOR },
+                        [theme.breakpoints.down('sm')]: {
+                            paddingX: theme.spacing(2),
+                            marginX: theme.spacing(2),
+                        },
+                    })}>
+                        <div 
+                            dangerouslySetInnerHTML={{ __html: post.content }} 
+                            style={{ color: TEXT_COLOR, wordBreak: 'break-word' }}
+                        />
                     </Box>
+                    {/* HTML 렌더링 수정 끝 */}
 
-                    {/* 게시글 본문과 댓글란 사이의 좋아요/신고 버튼 (이전 요청) */}
-                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 5 }}>
+                    {/* 게시글 본문과 댓글란 사이의 좋아요/신고 버튼 */}
+                    {/* 🛠️ Box에 모바일 padding 추가 */}
+                    <Box sx={(theme) => ({ 
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        gap: 2, 
+                        mb: 5,
+                        [theme.breakpoints.down('sm')]: {
+                            paddingX: theme.spacing(2),
+                        },
+                    })}>
                         <ActionButton 
                             variant="contained"
                             startIcon={<ThumbUpIcon />}
@@ -290,7 +436,7 @@ const PostsDetail = () => {
                                 '&:hover': { backgroundColor: LIGHT_TEXT_COLOR }
                             }}
                         >
-                            좋아요 ({postLikes}) {/* 요청 3 */}
+                            좋아요 ({postLikes})
                         </ActionButton>
                         <ActionButton 
                             variant="outlined"
@@ -302,7 +448,16 @@ const PostsDetail = () => {
                     </Box>
 
                     {/* 기존 수정/삭제 버튼 (작성자에게만 표시) */}
-                    {user?.username === post.writer && <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.5, mb: 5 }}>
+                    {/* 🛠️ Box에 모바일 padding 추가 */}
+                    {user?.username === post.username && <Box sx={(theme) => ({ 
+                        display: 'flex', 
+                        justifyContent: 'flex-end', 
+                        gap: 1.5, 
+                        mb: 5,
+                        [theme.breakpoints.down('sm')]: {
+                            paddingX: theme.spacing(2),
+                        },
+                    })}>
                         <ActionButton 
                             variant="outlined"
                             startIcon={<EditIcon />}
@@ -319,18 +474,35 @@ const PostsDetail = () => {
                             삭제
                         </ActionButton>
                     </Box>}
-
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: TEXT_COLOR, mb: 2 }}>
-                        댓글 ({comments.length})
-                    </Typography>
                     
-                    <Box sx={{ mb: 3 }}>
+                    {/* 🛠️ Box에 모바일 padding 추가 */}
+                    <Box sx={(theme) => ({
+                         [theme.breakpoints.down('sm')]: {
+                            paddingX: theme.spacing(2),
+                        },
+                    })}>
+                        <Typography variant="h6" sx={{ fontWeight: 700, color: TEXT_COLOR, mb: 2 }}>
+                            댓글 ({comments.length})
+                        </Typography>
+                    </Box>
+                    
+
+                    {/* 댓글 입력 영역 */}
+                    {/* 🛠️ Box에 모바일 padding 추가 */}
+                    <Box sx={(theme) => ({ 
+                        mb: 3,
+                        [theme.breakpoints.down('sm')]: {
+                            paddingX: theme.spacing(2),
+                        },
+                    })}>
                         <TextField
                             fullWidth
                             multiline
                             rows={3}
                             placeholder="댓글을 입력하세요..."
                             variant="outlined"
+                            value={newCommentText}
+                            onChange={(e) => setNewCommentText(e.target.value)}
                             sx={{
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': { borderColor: TEXT_COLOR },
@@ -343,19 +515,29 @@ const PostsDetail = () => {
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                             <ActionButton 
                                 variant="contained"
+                                onClick={handleCommentSubmit} // 댓글 등록 핸들러 연결
                             >
                                 등록
                             </ActionButton>
                         </Box>
                     </Box>
 
-                    <List sx={{ border: `1px solid ${LIGHT_TEXT_COLOR}`, borderRadius: 1, p: 0 }}>
+                    {/* 댓글 목록 */}
+                    {/* 🛠️ List에 모바일 margin/padding 추가 */}
+                    <List sx={(theme) => ({ 
+                        border: `1px solid ${LIGHT_TEXT_COLOR}`, 
+                        borderRadius: 1, 
+                        p: 0,
+                        [theme.breakpoints.down('sm')]: {
+                            marginX: theme.spacing(2), // 좌우 마진 추가
+                        },
+                    })}>
                         {comments.map((comment) => ( 
                             <ListItem 
                                 key={comment.id}
                                 disableGutters
                                 sx={{ 
-                                    borderBottom: comment.id !== comments.length ? `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` : 'none', 
+                                    borderBottom: comment.id !== comments[comments.length - 1]?.id ? `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` : 'none', 
                                     py: 1.5,
                                     px: 2,
                                     flexDirection: 'column', 
@@ -366,14 +548,14 @@ const PostsDetail = () => {
                                     primary={
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5, width: '100%' }}>
                                             <Typography variant="subtitle2" sx={{ fontWeight: 600, color: TEXT_COLOR }}>{comment.writer}</Typography>
-                                            <Typography variant="caption" color={LIGHT_TEXT_COLOR}>{comment.date}</Typography>
+                                            <Typography variant="caption" color={LIGHT_TEXT_COLOR}>{formatDate(comment.date)}</Typography> {/* 🛠️ formatDate 적용 */}
                                         </Box>
                                     }
                                     secondary={
                                         <Box sx={{ width: '100%' }}>
                                             <Typography variant="body2" color={TEXT_COLOR} sx={{ mb: 1 }}>{comment.text}</Typography>
                                             
-                                            {/* 댓글 좋아요/신고 버튼 및 좋아요 수 표시 (이전 요청 4) */}
+                                            {/* 댓글 좋아요/신고 버튼 및 좋아요 수 표시 */}
                                             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, alignItems: 'center', mt: 1 }}>
                                                 <Typography variant="caption" color={LIGHT_TEXT_COLOR} sx={{ fontWeight: 600, mr: 0.5 }}>
                                                     좋아요: {comment.likes}

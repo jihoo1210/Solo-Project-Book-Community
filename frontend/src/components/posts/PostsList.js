@@ -9,13 +9,13 @@ import {
     CircularProgress
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
-import { Link, useNavigate } from 'react-router-dom'; // useNavigate 훅 추가
+import { Link, useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import SortIcon from '@mui/icons-material/Sort';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import FavoriteIcon from '@mui/icons-material/Favorite'; // 좋아요 아이콘 추가
-import VisibilityIcon from '@mui/icons-material/Visibility'; // 조회수 아이콘 추가
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import apiClient from '../../api/Api-Service';
 
 // 상수 정의
@@ -27,7 +27,6 @@ const HEADER_HEIGHT = '64px';
 // 스타일 컴포넌트 정의
 const PostsListWrapper = styled(Box)(({ theme }) => ({
     marginTop: HEADER_HEIGHT,
-    minHeight: `calc(100vh - ${HEADER_HEIGHT} - 150px)`,
     backgroundColor: BG_COLOR,
     padding: theme.spacing(4, 0),
 }));
@@ -108,9 +107,7 @@ const StyledChip = styled(Chip)(({ theme, subject }) => {
 });
 
 /**
- * 날짜를 조건부로 포매팅하는 함수
- * - 오늘 날짜와 같으면: 시간:분 (HH:MM)
- * - 다르면: 월/일 (MM/DD)
+ * 🛠️ 작성일 형식 복원: 날짜를 조건부로 포매팅하는 함수 (오늘: HH:MM, 그 외: MM/DD)
  */
 const formatDate = (dateString) => {
     const postDate = new Date(dateString);
@@ -148,7 +145,8 @@ const PostsList = () => {
     // 필터링, 정렬, 페이지네이션 상태
     const [selectedTab, setSelectedTab] = useState(0); // 0: 전체, 1: 질문, 2: 공유, 3: 모집
     const [page, setPage] = useState(1);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(''); // 💡 API 호출에 사용되는 실제 검색어 상태 (유지)
+    const [pendingSearchTerm, setPendingSearchTerm] = useState(''); // 💡 입력 필드에 바인딩되는 임시 검색어 상태 (유지)
     const [sortOrder, setSortOrder] = useState('desc'); // 정렬 순서 ('desc' 또는 'asc')
     const [searchField, setSearchField] = useState('제목'); // 검색 필드 ('제목', '작성자', '내용')
     const [rowsPerPage, setRowsPerPage] = useState(10); // 🌟 rowsPerPage를 상태로 변경 (기본값 10)
@@ -250,8 +248,15 @@ const PostsList = () => {
     };
 
     /**
-     * 🚨🚨🚨 오류 수정 부분: TableRow 클릭 핸들러 추가 🚨🚨🚨
-     * HTML 표준을 준수하기 위해 TableRow에 Link 대신 onClick 이벤트를 사용합니다.
+     * 💡 검색 버튼/아이콘 클릭 시 검색 실행 핸들러 (유지)
+     */
+    const handleSearchSubmit = () => {
+        setSearchTerm(pendingSearchTerm); // 임시 검색어를 실제 검색어 상태에 반영
+        setPage(1); // 검색 실행 시 1페이지로 초기화
+    };
+
+    /**
+     * TableRow 클릭 핸들러 (유지)
      */
     const handleRowClick = (postId) => {
         navigate(`/post/${postId}`);
@@ -271,11 +276,10 @@ const PostsList = () => {
                     variant="h4"
                     align="left"
                     gutterBottom
-                    sx={{ fontWeight: 700, mb: 4, color: TEXT_COLOR, fontSize: { xs: '2rem', md: '2.5rem' } }}
+                    sx={{ fontWeight: 700, mb: 4, color: TEXT_COLOR, fontSize: { xs: '2rem', md: '2.5rem' }, display: {xs: 'none', sm: 'block'} }}
                 >
                     게시판
                 </Typography>
-
                 <PostsCard elevation={0}>
                     <Box
                         sx={(theme) => ({
@@ -407,16 +411,24 @@ const PostsList = () => {
                                     label={`검색 (${searchField})`}
                                     variant="outlined"
                                     size="small"
-                                    value={searchTerm}
+                                    value={pendingSearchTerm} // 💡 임시 상태에 바인딩 (유지)
                                     onChange={(e) => {
-                                        setSearchTerm(e.target.value);
-                                        setPage(1); // 검색어 변경 시 1페이지로 초기화
+                                        setPendingSearchTerm(e.target.value); // 💡 임시 상태만 업데이트 (유지)
                                     }}
-                                    sx={{ minWidth: { xs: '100%', md: '200px' }, flexGrow: 1, mt: { xs: 1, md: 0 } }}
-                                    slotProps={{ // slotProps 대신 InputProps 사용 (안정성 개선)
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            handleSearchSubmit(); // Enter 키 입력 시 검색 실행 (유지)
+                                        }
+                                    }}
+                                    sx={{ minWidth: { xs: '100%', md: '200px' }, flexGrow: 1, mt: { xs: 1, md: 0 }, color: {xs: LIGHT_TEXT_COLOR} }}
+                                    slotProps={{ 
                                         input: {endAdornment: (
                                             <InputAdornment position="end">
-                                                <IconButton sx={{ color: TEXT_COLOR }} edge="end">
+                                                <IconButton 
+                                                    sx={{ color: TEXT_COLOR }} 
+                                                    edge="end"
+                                                    onClick={handleSearchSubmit} // 💡 검색 아이콘 클릭 시 검색 실행 (유지)
+                                                >
                                                     <SearchIcon />
                                                 </IconButton>
                                             </InputAdornment>
@@ -431,7 +443,7 @@ const PostsList = () => {
                                     aria-controls={openPerPageMenu ? 'per-page-menu' : undefined}
                                     aria-haspopup="true"
                                     aria-expanded={openPerPageMenu ? 'true' : undefined}
-                                    sx={{ flex: { xs: 1, md: 'none' } }}
+                                    sx={{ width: { xs: '100%', md: '100px' } }}
                                 >
                                     {rowsPerPage}개씩 보기
                                 </FilterButton>
@@ -522,9 +534,7 @@ const PostsList = () => {
                                     posts.map((post) => (
                                         <TableRow
                                             key={post.id}
-                                            // 🚨🚨🚨 오류 수정: component={Link} 제거 🚨🚨🚨
-                                            // component={Link} 대신 onClick 핸들러를 사용하여 라우팅합니다.
-                                            onClick={() => handleRowClick(post.id)} // 클릭 핸들러 추가
+                                            onClick={() => handleRowClick(post.id)} // 클릭 핸들러 유지
                                             sx={(theme) => ({
                                                 textDecoration: 'none',
                                                 '& > .MuiTableCell-root': { borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` },
@@ -636,7 +646,7 @@ const PostsList = () => {
                                                 </Box>
                                                 {post.viewCount || 0}
                                             </TableCell>
-                                            {/* 작성일 */}
+                                            {/* 작성일 🛠️ (formatDate 조건부 로직 복원 적용) */}
                                             <TableCell sx={(theme) => ({
                                                 color: LIGHT_TEXT_COLOR,
                                                 [theme.breakpoints.down('sm')]: {

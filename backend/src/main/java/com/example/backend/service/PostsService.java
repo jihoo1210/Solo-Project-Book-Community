@@ -62,7 +62,7 @@ public class PostsService {
 
         return PostsShowResponse.builder()
                 .id(target.getId())
-                .subject(target.getSubject())
+                .subject(target.getSubject().getSubject())
                 .title(target.getTitle())
                 .content(target.getContent())
                 .username(target.getUser().getUsername())
@@ -138,9 +138,19 @@ public class PostsService {
 
         if(!target.getUser().equals(user)) throw new IllegalAccessException("다른 사용자의 글을 수정할 수 없습니다.");
 
-        target.setSubject(dto.getSubject());
+        Subject dtoSubjectToEnum = switch (dto.getSubject()) {
+            case "질문" -> QUESTION;
+            case "모집" -> RECRUIT;
+            default -> SHARE;
+        };
+
+        target.setSubject(dtoSubjectToEnum);
         target.setTitle(dto.getTitle());
         target.setContent(dto.getContent());
+        target.setRegion(dto.getRegion());
+        target.setMeetingInfo(dto.getMeetingInfo());
+        target.setBookTitle(dto.getBookTitle());
+        target.setPageNumber(dto.getPageNumber());
 
         return PostsUpdateResponse.builder()
                 .id(target.getId())
