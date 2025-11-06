@@ -23,6 +23,9 @@ const BG_COLOR = '#FFFFFF';
 const TEXT_COLOR = '#000000';
 const LIGHT_TEXT_COLOR = '#555555';
 const HEADER_HEIGHT = '64px';
+// 🛠️ 좋아요 버튼과 동일한 보라색 상수 추가
+const PURPLE_COLOR = '#9c27b0';
+const RED_COLOR = '#F44336'; // 기존 좋아요 아이콘 색상을 명확히 정의
 
 // 스타일 컴포넌트 정의
 const PostsListWrapper = styled(Box)(({ theme }) => ({
@@ -30,6 +33,8 @@ const PostsListWrapper = styled(Box)(({ theme }) => ({
     backgroundColor: BG_COLOR,
     padding: theme.spacing(4, 0),
 }));
+
+// (중략: PostsCard, ActionButton, CustomSearchField, FilterButton, CustomTableCell, StyledChip 스타일은 변경 없음)
 
 const PostsCard = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(4),
@@ -611,7 +616,8 @@ const PostsList = () => {
                                             })}>{post.username}</TableCell>
                                             {/* 좋아요 수 (추가) */}
                                             <TableCell sx={(theme) => ({
-                                                color: '#F44336',
+                                                // 🛠️ savedInLikes 값에 따라 색상을 동적으로 변경 (데스크탑 뷰)
+                                                color: post.savedInLikes ? PURPLE_COLOR : RED_COLOR,
                                                 fontWeight: 600,
                                                 [theme.breakpoints.down('sm')]: {
                                                     display: 'flex',
@@ -624,10 +630,18 @@ const PostsList = () => {
                                                     '&::before': { content: `'${mobileLabels[4]}: '`, ...labelStyles }
                                                 }
                                             })}>
+                                                {/* 🛠️ 아이콘 색상도 savedInLikes 값에 따라 동적으로 변경 */}
                                                 <Box component="span" sx={{ display: { xs: 'none', md: 'inline' }, mr: 0.5, mt: 0.2 }}>
-                                                    <FavoriteIcon sx={{ fontSize: '1rem', verticalAlign: 'middle', color: '#F44336' }} />
+                                                    <FavoriteIcon 
+                                                        sx={{ 
+                                                            fontSize: '1rem', 
+                                                            verticalAlign: 'middle', 
+                                                            // 🛠️ savedInLikes가 true이면 PURPLE_COLOR, 아니면 RED_COLOR
+                                                            color: post.savedInLikes ? PURPLE_COLOR : RED_COLOR 
+                                                        }} 
+                                                    />
                                                 </Box>
-                                                {post.likeCount || 0}
+                                                {post.likes || 0}
                                             </TableCell>
                                             {/* 조회수 (추가) */}
                                             <TableCell sx={(theme) => ({

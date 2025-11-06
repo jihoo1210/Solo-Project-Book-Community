@@ -16,7 +16,9 @@ public class PostsIndexResponse {
     private String subject;
     private String title;
     private String username;
+    private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private Long viewCount;
-    private Long likeCount;
+    private Integer likes;
+    private boolean savedInLikes;
 }

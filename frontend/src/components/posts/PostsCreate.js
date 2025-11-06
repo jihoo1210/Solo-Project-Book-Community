@@ -231,6 +231,7 @@ const PostsCreate = () => {
             }
         })
         .catch(error => {
+            console.log('error.response.data.result.message', error)
             if(error.response.data.result.message) {
                 alert(error.resposne.data.result.message)
                 return;

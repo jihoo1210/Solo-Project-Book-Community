@@ -5,6 +5,9 @@ import com.example.backend.entity.utilities.Subject;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,8 +34,8 @@ public class Posts extends BaseEntity {
     private User user;
 
     @Builder.Default
-    @Column
-    private Long likeCount = 0L;
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostsLikes> likes = new ArrayList<>();
 
     @Builder.Default
     @Column
@@ -54,9 +57,5 @@ public class Posts extends BaseEntity {
     
     public void increaseViewCount() {
         this.viewCount = getViewCount() + 1;
-    }
-
-    public void increaseLikeCount() {
-        this.likeCount = getLikeCount() + 1;
     }
 }

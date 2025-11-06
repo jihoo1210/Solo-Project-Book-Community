@@ -20,7 +20,7 @@ public class PostsUpdateResponse {
     private String username;
     private LocalDateTime modifiedDate;
     private Long viewCount;
-    private Long likeCount;
+    private Integer likes;
 
     private String region;
     private String meetingInfo;
