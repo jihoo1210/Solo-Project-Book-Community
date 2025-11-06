@@ -8,6 +8,7 @@ package com.example.backend.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -70,16 +72,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * HTTP 요청 헤더에서 "Authorization: Bearer <JWT>" 형식의 토큰을 추출합니다.
-     *
-     * @param request 현재 HTTP 요청
-     * @return "Bearer " 접두사를 제거한 JWT 문자열, 또는 토큰이 없거나 형식이 잘못된 경우 null
+     * HTTP 요청 쿠키에서 'ACCESS_TOKEN'이라는 이름의 토큰을 추출합니다.
      */
     private String parseBearerToken(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        if(StringUtils.hasText(token) && token.startsWith("Bearer ")) {
-            return token.substring(7);
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
         }
-        return null;
+
+        // 'ACCESS_TOKEN' 이름의 쿠키를 찾아 값을 반환합니다.
+        return Arrays.stream(cookies)
+                .filter(cookie -> "ACCESS_TOKEN".equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElse(null);
     }
 }

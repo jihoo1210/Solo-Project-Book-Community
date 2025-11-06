@@ -29,7 +29,7 @@ function App() {
             <Route path='/post'>
              <Route path=':id' element={<PostsDetail />} />
              <Route path='create' element={<PostsCreate />} />
-             <Route path='update/:id' element={<PostsEdit />} />
+             <Route path='edit/:id' element={<PostsEdit />} />
             </Route>
           </Routes>
     </Box>

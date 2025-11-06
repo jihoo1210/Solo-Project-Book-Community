@@ -67,7 +67,7 @@ const Footer = () => {
             alignItems="flex-start"
           >
             {/* 왼쪽 정보 */}
-            <Grid item size={{ xs: 12, md: 3 }}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <Typography
                 variant="h6"
                 sx={{ fontWeight: 700, letterSpacing: '0.1em', mb: 1 }}
@@ -88,17 +88,17 @@ const Footer = () => {
             </Grid>
 
             {/* 오른쪽 그룹 (사이트맵 + 개발 링크) */}
-            <Grid item size={{ xs: 12, md: 8 }}>
+            <Grid size={{ xs: 12, md: 8 }}>
               <Grid
                 container
                 spacing={{ xs: 2, md: 4 }}
                 justifyContent={{ xs: 'flex-start', md: 'flex-end' }}
               >
                 {/* 사이트맵 영역 */}
-                <Grid item size={{ xs: 12, sm: 8, md: 8 }}>
+                <Grid size={{ xs: 12, sm: 8, md: 8 }}>
                   <Grid container spacing={{ xs: 2, md: 4 }}>
                     {sitemapItems.map((section, index) => (
-                      <Grid item size={{ xs: 6, sm: 4 }} key={index}>
+                      <Grid size={{ xs: 6, sm: 4 }} key={index}>
                         <SitemapTitle>{section.title}</SitemapTitle>
                         <Box>
                           {section.links.map((link, linkIndex) => (
@@ -124,7 +124,7 @@ const Footer = () => {
                 </Grid>
 
                 {/* 개발 및 프로젝트 링크 */}
-                <Grid item size={{ xs: 12, sm: 4, md: 4 }}>
+                <Grid size={{ xs: 12, sm: 4, md: 4 }}>
                   <SitemapTitle>개발 및 링크</SitemapTitle>
                   <Box>
                     {devLinks.map((link, index) => (
