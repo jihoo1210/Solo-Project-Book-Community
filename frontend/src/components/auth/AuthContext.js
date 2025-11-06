@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
     const [authLoading, setAuthLoading] = useState(true); 
 
     // 추가: 서버에 현재 인증 상태(쿠키 유효성)를 확인하는 함수
+    // 페이지가 새로고침될 때 username을 다시 가져와서 오류 방지
     const fetchCurrentUser = useCallback(async () => {
         try {
             // HttpOnly 쿠키는 자동으로 전송되며, 서버가 유효성을 검사합니다.
@@ -45,10 +46,10 @@ export const AuthProvider = ({ children }) => {
         // 수정: sessionStorage 토큰 확인/저장 로직 전체 제거
         
         // 백엔드 로그인 API(/auth/signin) 호출 후 성공 시,
-        // 백엔드에서 응답 본문에 담아준 사용자 이름(nickname)만 프론트 상태에 저장합니다.
+        // 백엔드에서 응답 본문에 담아준 사용자 이름(username)만 프론트 상태에 저장합니다.
         setIsLoggedIn(true);
+        // user.username에 저장
         setUser({ username });
-        // alert('로그인 성공!') // UX를 위해 alert 제거 권장
     };
 
     // 로그아웃 처리 함수: 서버에 쿠키 삭제 요청을 보낸 후 상태 초기화
