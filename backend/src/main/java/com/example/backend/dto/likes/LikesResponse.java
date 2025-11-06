@@ -1,4 +1,4 @@
-package com.example.backend.dto.posts;
+package com.example.backend.dto.likes;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

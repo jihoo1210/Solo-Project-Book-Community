@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface LikesRepository extends JpaRepository<PostsLikes, Long> {
+public interface PostsLikesRepository extends JpaRepository<PostsLikes, Long> {
     Optional<PostsLikes> findByUserAndPosts(User user, Posts posts);
     boolean existsByUserAndPosts(User user, Posts posts);
 }

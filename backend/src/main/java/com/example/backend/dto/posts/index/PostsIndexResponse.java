@@ -19,6 +19,7 @@ public class PostsIndexResponse {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private Long viewCount;
+    private Integer commentNumber;
     private Integer likes;
     private boolean savedInLikes;
 }

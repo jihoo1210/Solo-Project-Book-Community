@@ -41,6 +41,11 @@ public class Posts extends BaseEntity {
     @Column
     private Long viewCount = 0L;
 
+    // 댓글
+    @Builder.Default
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
     // 모집 게시글
     @Column
     private String region;
