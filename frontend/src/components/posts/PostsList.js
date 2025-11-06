@@ -623,8 +623,23 @@ const PostsList = () => {
                                                     wordBreak: 'break-word',
                                                 }
                                             })}>
-                                                <Box component="span" sx={{ flexGrow: 1, minWidth: 0 }}>
+                                                <Box component="span" sx={{ flexGrow: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>
                                                     {post.title}
+                                                    {/* 🛠️ 수정: 댓글 수 표시 조건부 렌더링 (2, 3번 조건) */}
+                                                    {post.commentNumber > 0 && (
+                                                        <Typography
+                                                            component="span" // span으로 설정하여 제목 옆에 인라인으로 표시
+                                                            sx={{
+                                                                ml: 1,
+                                                                fontWeight: 600,
+                                                                color: RED_COLOR, // 붉은 글씨
+                                                                fontSize: '0.8rem', // 제목보다 약간 작게
+                                                                flexShrink: 0, // 공간 부족 시 축소되지 않도록
+                                                            }}
+                                                        >
+                                                            [{post.commentNumber}]
+                                                        </Typography>
+                                                    )}
                                                 </Box>
                                             </TableCell>
                                             {/* 작성자 */}
