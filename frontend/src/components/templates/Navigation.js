@@ -124,7 +124,7 @@ const Navigation = () => {
     // 로그인 상태에 따른 네비게이션 아이템 정의
     const navItems = isLoggedIn ?
         [
-            { text: user.username, path: '/mypage', isUser: true }, // 사용자 정보 버튼
+            { text: user.username, path: '/my/page', isUser: true }, // 사용자 정보 버튼
             { text: '로그아웃', path: '#', onClick: logout, isLogout: true } // 로그아웃 버튼
         ] :
         [
@@ -239,7 +239,7 @@ const Navigation = () => {
                                         <Button
                                             color="inherit"
                                             component={Link}
-                                            to="/mypage"
+                                            to="/my/page"
                                             sx={{ textTransform: 'none' }}
                                         >
                                             {user.username}
