@@ -1,18 +1,19 @@
 package com.example.backend.service;
 
-import com.example.backend.dto.posts.LikesResponse;
+import com.example.backend.dto.comment.CommentResponse;
+import com.example.backend.dto.likes.LikesResponse;
 import com.example.backend.dto.posts.create.PostsCreateRequest;
-import com.example.backend.dto.posts.create.PostsCreateResponse;
 import com.example.backend.dto.posts.delete.PostsDeleteResponse;
 import com.example.backend.dto.posts.index.PostsIndexResponse;
 import com.example.backend.dto.posts.show.PostsShowResponse;
 import com.example.backend.dto.posts.update.PostsUpdateRequest;
 import com.example.backend.dto.posts.update.PostsUpdateResponse;
-import com.example.backend.entity.PostsLikes;
 import com.example.backend.entity.Posts;
+import com.example.backend.entity.PostsLikes;
 import com.example.backend.entity.User;
 import com.example.backend.entity.utilities.Subject;
-import com.example.backend.repository.LikesRepository;
+import com.example.backend.repository.CommentLikesRepository;
+import com.example.backend.repository.PostsLikesRepository;
 import com.example.backend.repository.PostsRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.utilities.PostSearchSpec;
@@ -24,6 +25,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static com.example.backend.entity.utilities.Subject.*;
 
 @Slf4j
@@ -33,10 +36,11 @@ public class PostsService {
 
     private final PostsRepository repository;
     private final UserRepository userRepository;
-    private final LikesRepository likesRepository;
+    private final PostsLikesRepository postsLikesRepository;
+    private final CommentLikesRepository commentLikesRepository;
 
     // 게시글 목록을 검색 조건과 페이징 조건에 따라 조회
-    public Page<PostsIndexResponse> index(String email,
+    public Page<PostsIndexResponse> index(User user,
                                           Pageable pageable,
                                           String searchField,
                                           String searchTerm,
@@ -48,9 +52,6 @@ public class PostsService {
         // 2. 검색 조건(spec)과 페이징 조건(pageable)을 함께 Repository에 전달
         Page<Posts> postPage = repository.findAll(spec, pageable);
 
-        // 3.
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
-
         // 조회된 Page<Posts>를 Page<PostsIndexResponse>로 변환하여 반환
         return postPage.map(post -> PostsIndexResponse.builder()
                 .id(post.getId())
@@ -60,17 +61,28 @@ public class PostsService {
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
                 .likes(post.getLikes().size())
-                .savedInLikes(likesRepository.existsByUserAndPosts(user, post))
+                .commentNumber(post.getComments().size())
+                .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, post))
                 .viewCount(post.getViewCount())
                 .build());
     }
 
     // 특정 게시글 상세 조회 및 조회수 증가 처리
     @Transactional
-    public PostsShowResponse show(Long postsId) {
+    public PostsShowResponse show(User user, Long postsId) {
         Posts target = repository.findById(postsId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
         target.setViewCount(target.getViewCount() + 1);
+
+        List<CommentResponse> comments = target.getComments().stream().map(comment -> CommentResponse.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .username(comment.getUser().getUsername())
+                .likes(comment.getLikes().size())
+                .savedInLikes(commentLikesRepository.existsByUserAndComment(user, comment))
+                .createdDate(comment.getCreatedDate())
+                .modifiedDate(comment.getModifiedDate())
+                .build()).toList();
 
         return PostsShowResponse.builder()
                 .id(target.getId())
@@ -79,9 +91,11 @@ public class PostsService {
                 .content(target.getContent())
                 .username(target.getUser().getUsername())
                 .modifiedDate(target.getModifiedDate())
+
                 .likes(target.getLikes().size())
-                .alreadySavedInLikes(likesRepository.existsByUserAndPosts(target.getUser(), target))
+                .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, target))
                 .viewCount(target.getViewCount())
+                .comments(comments)
                 .region(target.getRegion())
                 .meetingInfo(target.getMeetingInfo())
                 .bookTitle(target.getBookTitle())
@@ -91,15 +105,14 @@ public class PostsService {
 
     // 게시글 좋아요 수 증감
     @Transactional
-    public LikesResponse handleLikes(Long postsId, String email) {
+    public LikesResponse handleLikes(Long postsId, User user) {
         Posts target = repository.findById(postsId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
 
         // 이미 좋아요가 되어 있을 때
-        if(likesRepository.existsByUserAndPosts(user, target)) {
-            log.warn("User {} already liked post {}", email, postsId);
-            PostsLikes removedTarget = likesRepository.findByUserAndPosts(user, target).orElseThrow(() -> new IllegalArgumentException("해당 게시글 또는 사용자가 존재하지 않습니다."));
-            likesRepository.delete(removedTarget);
+        if(postsLikesRepository.existsByUserAndPosts(user, target)) {
+            log.warn("User {} already liked post {}", user, postsId);
+            PostsLikes removedTarget = postsLikesRepository.findByUserAndPosts(user, target).orElseThrow(() -> new IllegalArgumentException("해당 게시글 또는 사용자가 존재하지 않습니다."));
+            postsLikesRepository.delete(removedTarget);
 
             // 좋아요를 취소 했으니 '좋아요에 등록되어 있음'을 거짓으로
             return LikesResponse.builder()
@@ -112,9 +125,9 @@ public class PostsService {
                 .user(user)
                 .posts(target)
                 .build();
-        likesRepository.save(likes);
+        postsLikesRepository.save(likes);
 
-        log.info("User {} successfully liked post {}", email, postsId);
+        log.info("User {} successfully liked post {}", user, postsId);
         // 좋아요를 등록 했으니 '좋아요에 등록되어 있음'을 참으로
         return LikesResponse.builder()
                 .savedInLikes(true)
@@ -123,7 +136,7 @@ public class PostsService {
 
     // 새로운 게시글 생성
     @Transactional
-    public PostsCreateResponse create(PostsCreateRequest dto, User user) throws IllegalAccessException {
+    public void create(PostsCreateRequest dto, User user) throws IllegalAccessException {
         log.info("PostsCreateRequest: {}", dto);
         log.info("User: {}", user);
 
@@ -132,12 +145,6 @@ public class PostsService {
             case "모집" -> RECRUIT;
             default -> SHARE;
         };
-
-        if(dtoSubjectToEnum.equals(RECRUIT)) {
-            if(dto.getRegion() == null || dto.getMeetingInfo() == null) {
-                throw new IllegalAccessException("유효하지 않은 형식입니다.");
-            }
-        }
 
         Posts target = Posts.builder()
                 .subject(dtoSubjectToEnum)
@@ -150,20 +157,7 @@ public class PostsService {
                 .user(user)
                 .build();
 
-        Posts created = repository.save(target);
-        return PostsCreateResponse.builder()
-                .subject(created.getSubject().getSubject())
-                .title(created.getTitle())
-                .content(created.getContent())
-                .username(created.getUser().getUsername())
-                .modifiedDate(created.getModifiedDate())
-                .likes(created.getLikes().size())
-                .viewCount(created.getViewCount())
-                .region(created.getRegion())
-                .meetingInfo(created.getMeetingInfo())
-                .bookTitle(created.getBookTitle())
-                .pageNumber(created.getPageNumber())
-                .build();
+        repository.save(target);
     }
 
     // 게시글 수정 (작성자 검증 포함)

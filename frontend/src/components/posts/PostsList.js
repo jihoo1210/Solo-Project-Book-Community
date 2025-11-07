@@ -48,6 +48,19 @@ const PostsCard = styled(Paper)(({ theme }) => ({
     },
 }));
 
+const CustomTab = styled(Tab)(({ theme }) => ({
+    color: TEXT_COLOR,
+    fontWeight: 600,
+    flexShrink: 1,
+    minWidth: '80px',
+    padding: '12px 16px',
+    // sm 이하: 25% 너비, md 이상: 80px 최소 너비 유지
+    [theme.breakpoints.down('sm')]: {
+        minWidth: '25%',
+        padding: 0,
+    }
+}));
+
 const ActionButton = styled(Button)(({ theme }) => ({
     color: BG_COLOR,
     backgroundColor: TEXT_COLOR,
@@ -127,7 +140,7 @@ const formatDate = (dateString) => {
         const hours = String(postDate.getHours()).padStart(2, '0');
         const minutes = String(postDate.getMinutes()).padStart(2, '0');
         return `${hours}:${minutes}`;
-    } 
+    }
     // 2. 날짜가 오늘과 다를 경우: "월/일" (예: 11/04)
     else {
         const month = String(postDate.getMonth() + 1).padStart(2, '0');
@@ -184,18 +197,18 @@ const PostsList = () => {
                 const response = await apiClient.get(url);
                 const result = response.data.result;
 
-                    if (result && result.content && Array.isArray(result.content)) {
-                        // Spring Page 객체 구조인 경우 처리
-                        const newPosts = result.content;
-                        const newTotalPosts = result.totalElements || 0; // totalElements를 통해 전체 게시글 수 확보
+                if (result && result.content && Array.isArray(result.content)) {
+                    // Spring Page 객체 구조인 경우 처리
+                    const newPosts = result.content;
+                    const newTotalPosts = result.totalElements || 0; // totalElements를 통해 전체 게시글 수 확보
 
-                        setPosts(newPosts);
-                        setTotalPosts(newTotalPosts);
-                    } else {
-                        // 응답은 왔으나 내용이 없거나 예상치 못한 구조인 경우
-                        setPosts([]);
-                        setTotalPosts(0);
-                    }
+                    setPosts(newPosts);
+                    setTotalPosts(newTotalPosts);
+                } else {
+                    // 응답은 왔으나 내용이 없거나 예상치 못한 구조인 경우
+                    setPosts([]);
+                    setTotalPosts(0);
+                }
 
             } catch (error) {
                 const errorMsg = error.response?.data?.message || "게시글을 불러오는 중 오류가 발생했습니다.";
@@ -212,7 +225,7 @@ const PostsList = () => {
         // 🌟 rowsPerPage 상태를 fetchPosts 함수 호출 인자로 전달
         fetchPosts(page, selectedTab, sortOrder, rowsPerPage, searchField, searchTerm);
 
-    // 🌟 rowsPerPage를 종속성 배열에 추가하여 변경 시 API 재요청
+        // 🌟 rowsPerPage를 종속성 배열에 추가하여 변경 시 API 재요청
     }, [page, selectedTab, sortOrder, searchField, searchTerm, rowsPerPage]);
 
     // 이벤트 핸들러
@@ -281,7 +294,7 @@ const PostsList = () => {
                     variant="h4"
                     align="left"
                     gutterBottom
-                    sx={{ fontWeight: 700, mb: 4, color: TEXT_COLOR, fontSize: { xs: '2rem', md: '2.5rem' }, display: {xs: 'none', sm: 'block'} }}
+                    sx={{ fontWeight: 700, mb: 4, color: TEXT_COLOR, fontSize: { xs: '2rem', md: '2.5rem' }, display: { xs: 'none', sm: 'block' } }}
                 >
                     게시판
                 </Typography>
@@ -301,26 +314,36 @@ const PostsList = () => {
                         <Box sx={{
                             display: 'flex',
                             justifyContent: { xs: 'flex-start', md: 'flex-start' },
-                            overflowX: { xs: 'auto', md: 'visible' },
-                            '&::-webkit-scrollbar': { display: 'none' },
-                            msOverflowStyle: 'none',
-                            scrollbarWidth: 'none',
+                            // 🛠️ xs에서 스크롤 방지를 위해 overflowX를 hidden으로 설정
+                            overflowX: { xs: 'hidden', md: 'visible' },
                         }}>
                             <Tabs
                                 value={selectedTab}
                                 onChange={handleTabChange}
                                 aria-label="게시글 주제 탭"
+                                // variant와 scrollButtons은 유지
                                 variant="scrollable"
                                 scrollButtons="auto"
                                 sx={{
+                                    // 🛠️ Tabs 컴포넌트 자체를 모바일에서 100% 너비로 확장
+                                    width: { xs: '100%', md: 'auto' },
                                     '& .MuiTabs-indicator': { backgroundColor: TEXT_COLOR },
-                                    '& .MuiTabs-flexContainer': { minWidth: 'fit-content' },
+                                    // 🛠️ flexContainer가 100% 너비를 차지하도록 설정 (25%씩 나눌 공간 확보)
+                                    '& .MuiTabs-flexContainer': {
+                                        minWidth: { xs: '100%', md: 'fit-content' },
+                                    },
+                                    // 🛠️ Tabs 내부 스크롤바 숨김 스타일 (기존 Box에서 옮겨옴)
+                                    overflowX: 'hidden',
+                                    '&::-webkit-scrollbar': { display: 'none' },
+                                    msOverflowStyle: 'none',
+                                    scrollbarWidth: 'none',
                                 }}
                             >
-                                <Tab label="전체" value={0} sx={{ color: TEXT_COLOR, fontWeight: 600, flexShrink: 0 }} />
-                                <Tab label="질문" value={1} sx={{ color: TEXT_COLOR, fontWeight: 600, flexShrink: 0 }} />
-                                <Tab label="공유" value={2} sx={{ color: TEXT_COLOR, fontWeight: 600, flexShrink: 0 }} />
-                                <Tab label="모집" value={3} sx={{ color: TEXT_COLOR, fontWeight: 600, flexShrink: 0 }} />
+                                {/* 🛠️ CustomTab 컴포넌트 적용 */}
+                                <CustomTab label="전체" value={0} />
+                                <CustomTab label="질문" value={1} />
+                                <CustomTab label="공유" value={2} />
+                                <CustomTab label="모집" value={3} />
                             </Tabs>
                         </Box>
 
@@ -425,21 +448,23 @@ const PostsList = () => {
                                             handleSearchSubmit(); // Enter 키 입력 시 검색 실행 (유지)
                                         }
                                     }}
-                                    sx={{ minWidth: { xs: '100%', md: '200px' }, flexGrow: 1, mt: { xs: 1, md: 0 }, color: {xs: LIGHT_TEXT_COLOR} }}
-                                    slotProps={{ 
-                                        input: {endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton 
-                                                    sx={{ color: TEXT_COLOR }} 
-                                                    edge="end"
-                                                    onClick={handleSearchSubmit} // 💡 검색 아이콘 클릭 시 검색 실행 (유지)
-                                                >
-                                                    <SearchIcon />
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                }
+                                    sx={{ minWidth: { xs: '100%', md: '200px' }, flexGrow: 1, mt: { xs: 1, md: 0 }, color: { xs: LIGHT_TEXT_COLOR } }}
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        sx={{ color: TEXT_COLOR }}
+                                                        edge="end"
+                                                        onClick={handleSearchSubmit} // 💡 검색 아이콘 클릭 시 검색 실행 (유지)
+                                                    >
+                                                        <SearchIcon />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }
+                                    }
+                                    }
                                 />
                                 {/* 🌟 몇 개씩 보여줄지 선택 메뉴 (Rows Per Page) 추가 */}
                                 <FilterButton
@@ -468,8 +493,8 @@ const PostsList = () => {
                                     }}
                                 >
                                     {[10, 15, 30, 50].map((count) => (
-                                        <MenuItem 
-                                            key={count} 
+                                        <MenuItem
+                                            key={count}
                                             onClick={() => handlePerPageSelect(count)}
                                             selected={count === rowsPerPage}
                                         >
@@ -598,8 +623,23 @@ const PostsList = () => {
                                                     wordBreak: 'break-word',
                                                 }
                                             })}>
-                                                <Box component="span" sx={{ flexGrow: 1, minWidth: 0 }}>
+                                                <Box component="span" sx={{ flexGrow: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>
                                                     {post.title}
+                                                    {/* 🛠️ 수정: 댓글 수 표시 조건부 렌더링 (2, 3번 조건) */}
+                                                    {post.commentNumber > 0 && (
+                                                        <Typography
+                                                            component="span" // span으로 설정하여 제목 옆에 인라인으로 표시
+                                                            sx={{
+                                                                ml: 1,
+                                                                fontWeight: 600,
+                                                                color: RED_COLOR, // 붉은 글씨
+                                                                fontSize: '0.8rem', // 제목보다 약간 작게
+                                                                flexShrink: 0, // 공간 부족 시 축소되지 않도록
+                                                            }}
+                                                        >
+                                                            [{post.commentNumber}]
+                                                        </Typography>
+                                                    )}
                                                 </Box>
                                             </TableCell>
                                             {/* 작성자 */}
@@ -622,6 +662,7 @@ const PostsList = () => {
                                                 [theme.breakpoints.down('sm')]: {
                                                     display: 'flex',
                                                     justifyContent: 'flex-start',
+                                                    alignItems: 'center', // 🛠️ 아이콘/텍스트 세로 정렬 문제 해결
                                                     fontSize: '0.85rem',
                                                     padding: theme.spacing(0.5, 2, 0.5, 2),
                                                     order: 5,
@@ -631,14 +672,21 @@ const PostsList = () => {
                                                 }
                                             })}>
                                                 {/* 🛠️ 아이콘 색상도 savedInLikes 값에 따라 동적으로 변경 */}
-                                                <Box component="span" sx={{ display: { xs: 'none', md: 'inline' }, mr: 0.5, mt: 0.2 }}>
-                                                    <FavoriteIcon 
-                                                        sx={{ 
-                                                            fontSize: '1rem', 
-                                                            verticalAlign: 'middle', 
+                                                <Box 
+                                                    component="span" 
+                                                    sx={{ 
+                                                        display: 'inline', 
+                                                        mr: 0.5, 
+                                                        mt: { xs: 0, md: 0.2 } // 🛠️ 모바일에서 mt: 0 제거하여 수직 정렬 문제 해결
+                                                    }}
+                                                >
+                                                    <FavoriteIcon
+                                                        sx={{
+                                                            fontSize: '1rem',
+                                                            verticalAlign: 'middle',
                                                             // 🛠️ savedInLikes가 true이면 PURPLE_COLOR, 아니면 RED_COLOR
-                                                            color: post.savedInLikes ? PURPLE_COLOR : RED_COLOR 
-                                                        }} 
+                                                            color: post.savedInLikes ? PURPLE_COLOR : RED_COLOR
+                                                        }}
                                                     />
                                                 </Box>
                                                 {post.likes || 0}
@@ -649,13 +697,21 @@ const PostsList = () => {
                                                 [theme.breakpoints.down('sm')]: {
                                                     display: 'flex',
                                                     justifyContent: 'flex-start',
+                                                    alignItems: 'center', // 🛠️ 아이콘/텍스트 세로 정렬 문제 해결
                                                     fontSize: '0.85rem',
                                                     padding: theme.spacing(0.5, 2, 0.5, 2),
                                                     order: 6,
                                                     '&::before': { content: `'${mobileLabels[5]}: '`, ...labelStyles }
                                                 }
                                             })}>
-                                                <Box component="span" sx={{ display: { xs: 'none', md: 'inline' }, mr: 0.5, mt: 0.2 }}>
+                                                <Box 
+                                                    component="span" 
+                                                    sx={{ 
+                                                        display: 'inline', 
+                                                        mr: 0.5, 
+                                                        mt: { xs: 0, md: 0.2 } // 🛠️ 모바일에서 mt: 0 제거하여 수직 정렬 문제 해결
+                                                    }}
+                                                >
                                                     <VisibilityIcon sx={{ fontSize: '1rem', verticalAlign: 'middle' }} />
                                                 </Box>
                                                 {post.viewCount || 0}

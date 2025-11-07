@@ -1,4 +1,4 @@
-package com.example.backend.dto.posts.index;
+package com.example.backend.dto.comment.create;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,15 +11,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class PostsIndexResponse {
+public class CommentCreateResponse {
     private Long id;
-    private String subject;
-    private String title;
+    private String content;
     private String username;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private Long viewCount;
-    private Integer commentNumber;
     private Integer likes;
-    private boolean savedInLikes;
 }

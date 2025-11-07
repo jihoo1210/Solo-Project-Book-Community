@@ -4,26 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#7 검색 및 페이지네이션 기능 구현">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/LikesResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Comment.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/CommentLikes.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/PostsLikes.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/LikesRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/PostsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/PostsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/create/PostsCreateResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/create/PostsCreateResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/index/PostsIndexResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/index/PostsIndexResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/show/PostsShowResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/show/PostsShowResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/update/PostsUpdateResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/update/PostsUpdateResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/AuthContext.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/AuthContext.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" afterDir="false" />
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="resolves #3 Create Signup, Signin page link with backend function (#4)&#10;&#10;* Spring init&#10;&#10;* #1 Jwt and Security config&#10;&#10;* #1 User Entity, Dto, Service, Repository&#10;&#10;* #1 User Controller init&#10;&#10;* java version update&#10;&#10;* #1 Signup, Signin, Response Dto&#10;&#10;* #1 Update User Entity, Repository&#10;&#10;* #1 Signup, Signin Controller&#10;&#10;* #1 application.yaml config h2 database&#10;&#10;* #1 fix CustomUserdetails&#10;&#10;* #3 Change project folder name&#10;&#10;* #3 Config CORS mapping&#10;&#10;* #3 Create react app&#10;&#10;* fix files to commit&#10;&#10;* delete error folder&#10;&#10;* #3 Set SigninResponse return with username&#10;&#10;* #3 frontend layouts&#10;&#10;* #3 frontend signup, signin design and link to backend&#10;&#10;* #3 회원명 중복 검사 로직&#10;&#10;* #3 주석 수정 및 약간의 오류 수정&#10;&#10;* #3 회원명 중복 검사 api 연동&#10;&#10;* #3 내비게이션 로고 크기 및 클릭 범위 수정&#10;&#10;---------&#10;&#10;Co-authored-by: ParkJihoo &lt;jihoosyudy1@gmail.com&gt;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;backend/src/main/java/com/example/backend/entity/Role.java&#10;#&#9;backend/src/main/java/com/example/backend/entity/utilities/Role.java&#10;#&#9;backend/src/main/java/com/example/backend/security/CustomUserDetails.java&#10;#&#9;backend/src/main/java/com/example/backend/service/UserService.java&#10;#&#9;demo/src/main/java/com/example/demo/entity/Role.java&#10;#&#9;frontend/package-lock.json&#10;#&#9;frontend/package.json&#10;#&#9;frontend/public/index.html&#10;#&#9;frontend/src/App.js&#10;#&#9;frontend/src/api/Api-Service.js&#10;#&#9;frontend/src/components/auth/AuthContext.js&#10;#&#9;frontend/src/components/auth/Signin.js&#10;#&#9;frontend/src/components/templates/Footer.js&#10;#&#9;frontend/src/components/templates/Navigation.js&#10;#&#9;frontend/src/index.css&#10;#&#9;frontend/src/index.js">
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/entity/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/entity/Role.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,12 +26,7 @@
       <state>
         <projects_view>
           <tree_state>
-            <expand>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="backend" type="f1a62948:ProjectNode" />
-              </path>
-            </expand>
+            <expand />
             <select />
           </tree_state>
         </projects_view>
@@ -58,8 +36,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Enum" />
         <option value="Interface" />
+        <option value="Enum" />
         <option value="Class" />
       </list>
     </option>
@@ -95,21 +73,21 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.backend [:com.example.backend.DemoApplication.main()].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;프로젝트&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.import&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.backend [:com.example.backend.DemoApplication.main()].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "dev 리베이스 중",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "프로젝트",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "editor.preferences.import"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -243,19 +221,7 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="FILTERS">
-                <map>
-                  <entry key="branch">
-                    <value>
-                      <list>
-                        <option value="dev" />
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
       </map>

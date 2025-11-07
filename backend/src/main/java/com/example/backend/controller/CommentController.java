@@ -1,0 +1,99 @@
+package com.example.backend.controller;
+
+import com.example.backend.controller.utilities.ResponseController;
+import com.example.backend.dto.comment.create.CommentCreateRequest;
+import com.example.backend.dto.comment.create.CommentCreateResponse;
+import com.example.backend.dto.comment.delete.CommentDeleteResponse;
+import com.example.backend.dto.comment.update.CommentUpdateRequest;
+import com.example.backend.dto.comment.update.CommentUpdateResponse;
+import com.example.backend.dto.likes.LikesResponse;
+import com.example.backend.entity.User;
+import com.example.backend.security.CustomUserDetails;
+import com.example.backend.service.CommentService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.sql.Update;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+@Slf4j
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/comment")
+public class CommentController {
+
+    private final CommentService service;
+
+    // 댓글 생성
+    @PostMapping("/{postsId}")
+    public ResponseEntity<?> create(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                    @PathVariable Long postsId,
+                                    @Valid @RequestBody CommentCreateRequest dto,
+                                    BindingResult bindingResult) {
+        try {
+            log.info("CustomUserDetails: {}", userDetails);
+            log.info("postsId: {}", postsId);
+            log.info("CommentCreateRequest: {}", dto);
+
+            if(bindingResult.hasErrors()) throw new IllegalArgumentException("형식이 올바르지 않습니다.");
+
+            User user = userDetails.getUser();
+
+            CommentCreateResponse responseDto = service.create(dto, user, postsId);
+
+            return ResponseController.success(responseDto);
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
+    // 좋아요 증감
+    @GetMapping("/{commentId}/handle-likes")
+    public ResponseEntity<?> handleLikes(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long commentId) {
+        try {
+            log.info("CustomUserDetails: {}", userDetails);
+            log.info("commentId: {}", commentId);
+
+            User user = userDetails.getUser();
+            LikesResponse responseDto = service.handleLikes(user, commentId);
+            return ResponseController.success(responseDto);
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
+    // 수정
+    @PatchMapping("/{commentId}")
+    public ResponseEntity<?> update(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long commentId, @RequestBody CommentUpdateRequest dto, BindingResult bindingResult) {
+        try {
+            log.info("CustomUserDetails: {}", userDetails);
+            log.info("commentId: {}", commentId);
+            log.info("CommentUpdateRequest: {}", dto);
+            if(bindingResult.hasErrors()) throw new IllegalArgumentException("유효하지 않은 형식입니다");
+
+            User user = userDetails.getUser();
+            CommentUpdateResponse responseDto = service.update(user, commentId, dto);
+            return ResponseController.success(responseDto);
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
+    // 삭제
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<?> delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long commentId) {
+        try {
+            log.info("CustomUserDetails: {}", userDetails);
+            log.info("commentId: {}", commentId);
+
+            User user = userDetails.getUser();
+            CommentDeleteResponse responseDto = service.delete(user, commentId);
+            return ResponseController.success(responseDto);
+        } catch (Exception e) {
+                return ResponseController.fail(e.getMessage());
+        }
+    }
+}

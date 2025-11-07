@@ -225,15 +225,13 @@ const PostsCreate = () => {
         };
         
         apiClient.post("/posts", dataToSubmit).then(response => {
-            if(response.data.result) {
                 alert("게시글을 등록했습니다.")
                 navigate('/');
-            }
         })
         .catch(error => {
             console.log('error.response.data.result.message', error)
-            if(error.response.data.result.message) {
-                alert(error.resposne.data.result.message)
+            if(error.response.data.message) {
+                alert(error.resposne.data.message)
                 return;
             }
         })

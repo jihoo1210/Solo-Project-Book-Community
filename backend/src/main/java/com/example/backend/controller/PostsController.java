@@ -1,14 +1,14 @@
 package com.example.backend.controller;
 
 import com.example.backend.controller.utilities.ResponseController;
-import com.example.backend.dto.posts.LikesResponse;
+import com.example.backend.dto.likes.LikesResponse;
 import com.example.backend.dto.posts.create.PostsCreateRequest;
-import com.example.backend.dto.posts.create.PostsCreateResponse;
 import com.example.backend.dto.posts.delete.PostsDeleteResponse;
 import com.example.backend.dto.posts.index.PostsIndexResponse;
 import com.example.backend.dto.posts.show.PostsShowResponse;
 import com.example.backend.dto.posts.update.PostsUpdateRequest;
 import com.example.backend.dto.posts.update.PostsUpdateResponse;
+import com.example.backend.entity.User;
 import com.example.backend.security.CustomUserDetails;
 import com.example.backend.service.PostsService;
 import jakarta.validation.Valid;
@@ -44,20 +44,20 @@ public class PostsController {
         log.info("searchField: {}", searchField);
         log.info("searchTerm: {}", searchTerm);
 
-        String email = userDetails.getUsername();
-
         // Service에서 Page 객체를 받아 ResponseController로 감싸서 반환
-        Page<PostsIndexResponse> responsePage = service.index(email, pageable, searchField, searchTerm, tab);
+        Page<PostsIndexResponse> responsePage = service.index(userDetails.getUser(), pageable, searchField, searchTerm, tab);
         return ResponseController.success(responsePage);
     }
 
     // 특정 게시글 상세 조회 및 조회수 증가
     @GetMapping("/{postsId}")
-    public ResponseEntity<?> show(@PathVariable Long postsId) {
+    public ResponseEntity<?> show(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long postsId) {
         try {
             log.info("posts id: {}", postsId);
 
-            PostsShowResponse responseDto = service.show(postsId);
+            User user = userDetails.getUser();
+
+            PostsShowResponse responseDto = service.show(user, postsId);
             return ResponseController.success(responseDto);
         } catch (Exception e) {
             return ResponseController.fail(e.getMessage());
@@ -71,9 +71,7 @@ public class PostsController {
             log.info("CustomUserDetails: {}", userDetails);
             log.info("posts id: {}", postsId);
 
-            String email = userDetails.getUsername();
-
-            LikesResponse responseDto = service.handleLikes(postsId, email);
+            LikesResponse responseDto = service.handleLikes(postsId, userDetails.getUser());
             return ResponseController.success(responseDto);
         } catch (Exception e) {
             return ResponseController.fail(e.getMessage());
@@ -86,8 +84,11 @@ public class PostsController {
         try {
             log.info("PostsCreateRequest: {}", dto);
             if(bindingResult.hasErrors()) throw new IllegalArgumentException("유효하지 않은 형식입니다.");
-            PostsCreateResponse responseDto = service.create(dto, userDetails.getUser());
-            return ResponseController.success(responseDto);
+            String email = userDetails.getUsername();
+
+            // userDetails의 user는 DB에서 가져온 객체이기 때문에 따로 변환할 필요가 없다
+            service.create(dto, userDetails.getUser());
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseController.fail(e.getMessage());
         }
