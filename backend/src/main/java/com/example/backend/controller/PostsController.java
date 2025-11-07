@@ -7,7 +7,6 @@ import com.example.backend.dto.posts.delete.PostsDeleteResponse;
 import com.example.backend.dto.posts.index.PostsIndexResponse;
 import com.example.backend.dto.posts.show.PostsShowResponse;
 import com.example.backend.dto.posts.update.PostsUpdateRequest;
-import com.example.backend.dto.posts.update.PostsUpdateResponse;
 import com.example.backend.entity.User;
 import com.example.backend.security.CustomUserDetails;
 import com.example.backend.service.PostsService;
@@ -46,6 +45,23 @@ public class PostsController {
 
         // Service에서 Page 객체를 받아 ResponseController로 감싸서 반환
         Page<PostsIndexResponse> responsePage = service.index(userDetails.getUser(), pageable, searchField, searchTerm, tab);
+        return ResponseController.success(responsePage);
+    }
+
+    // 내 게시글만 조회
+    @GetMapping("/my")
+    public ResponseEntity<?> indexByUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                   @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                   @RequestParam(required = false, defaultValue = "") String searchField,
+                                   @RequestParam(required = false, defaultValue = "") String searchTerm,
+                                   @RequestParam(required = false, defaultValue = "0") Integer tab) {
+        log.info("CustomUserDetails: {}", userDetails);
+        log.info("Pageable: {}", pageable);
+        log.info("searchField: {}", searchField);
+        log.info("searchTerm: {}", searchTerm);
+
+        // Service에서 Page 객체를 받아 ResponseController로 감싸서 반환
+        Page<PostsIndexResponse> responsePage = service.indexByUser(userDetails.getUser(), pageable, searchField, searchTerm, tab);
         return ResponseController.success(responsePage);
     }
 
@@ -100,8 +116,8 @@ public class PostsController {
         try {
             log.info("PostsUpdateRequest: {}", dto);
             if(bindingResult.hasErrors()) throw new IllegalArgumentException("유효하지 않은 형식입니다.");
-            PostsUpdateResponse responseDto = service.update(postsId, dto, userDetails.getUser());
-            return ResponseController.success(responseDto);
+            service.update(postsId, dto, userDetails.getUser());
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseController.fail(e.getMessage());
         }

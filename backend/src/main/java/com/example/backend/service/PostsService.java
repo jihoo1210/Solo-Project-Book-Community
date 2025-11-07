@@ -7,15 +7,12 @@ import com.example.backend.dto.posts.delete.PostsDeleteResponse;
 import com.example.backend.dto.posts.index.PostsIndexResponse;
 import com.example.backend.dto.posts.show.PostsShowResponse;
 import com.example.backend.dto.posts.update.PostsUpdateRequest;
-import com.example.backend.dto.posts.update.PostsUpdateResponse;
 import com.example.backend.entity.Posts;
 import com.example.backend.entity.PostsLikes;
 import com.example.backend.entity.User;
+import com.example.backend.entity.UserViewed;
 import com.example.backend.entity.utilities.Subject;
-import com.example.backend.repository.CommentLikesRepository;
-import com.example.backend.repository.PostsLikesRepository;
-import com.example.backend.repository.PostsRepository;
-import com.example.backend.repository.UserRepository;
+import com.example.backend.repository.*;
 import com.example.backend.service.utilities.PostSearchSpec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.example.backend.entity.utilities.Subject.*;
@@ -35,24 +33,34 @@ import static com.example.backend.entity.utilities.Subject.*;
 public class PostsService {
 
     private final PostsRepository repository;
-    private final UserRepository userRepository;
+    private final UserRepository userRepository; // 현재 코드에서 사용되지 않지만, 의존성 관리를 위해 유지
     private final PostsLikesRepository postsLikesRepository;
     private final CommentLikesRepository commentLikesRepository;
+    private final UserViewedRepository userViewedRepository;
 
-    // 게시글 목록을 검색 조건과 페이징 조건에 따라 조회
+    /**
+     * 전체 게시글 목록을 검색 조건과 페이징 조건에 따라 조회합니다.
+     *
+     * @param user 현재 로그인된 사용자 정보 (좋아요 여부 확인용)
+     * @param pageable 페이징 정보 (페이지 번호, 크기, 정렬)
+     * @param searchField 검색 필드 (예: title, content, username)
+     * @param searchTerm 검색어
+     * @param tab 주제별 탭 필터
+     * @return 검색 및 페이징 처리된 게시글 목록 DTO
+     */
     public Page<PostsIndexResponse> index(User user,
                                           Pageable pageable,
                                           String searchField,
                                           String searchTerm,
                                           Integer tab) {
 
-        // 1. 검색 조건(Specification) 생성
-        Specification<Posts> spec = PostSearchSpec.search(searchField, searchTerm, tab);
+        // 1. 검색 조건(Specification) 생성 (모든 사용자 게시글 대상)
+        Specification<Posts> spec = PostSearchSpec.search(null, searchField, searchTerm, tab);
 
-        // 2. 검색 조건(spec)과 페이징 조건(pageable)을 함께 Repository에 전달
+        // 2. 검색 조건(spec)과 페이징 조건(pageable)을 함께 Repository에 전달하여 조회
         Page<Posts> postPage = repository.findAll(spec, pageable);
 
-        // 조회된 Page<Posts>를 Page<PostsIndexResponse>로 변환하여 반환
+        // 3. 조회된 Page<Posts>를 Page<PostsIndexResponse>로 변환
         return postPage.map(post -> PostsIndexResponse.builder()
                 .id(post.getId())
                 .subject(post.getSubject().getSubject())
@@ -62,18 +70,64 @@ public class PostsService {
                 .modifiedDate(post.getModifiedDate())
                 .likes(post.getLikes().size())
                 .commentNumber(post.getComments().size())
+                // 현재 사용자의 게시글 좋아요 여부를 확인하여 포함
                 .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, post))
                 .viewCount(post.getViewCount())
+                .savedInViews(userViewedRepository.existsByUserAndPosts(user, post))
                 .build());
     }
 
-    // 특정 게시글 상세 조회 및 조회수 증가 처리
+    /**
+     * 특정 사용자의 게시글 목록을 검색 조건과 페이징 조건에 따라 조회합니다.
+     *
+     * @param user 현재 로그인된 사용자 (좋아요 여부 확인 및 대상 사용자 지정)
+     * @param pageable 페이징 정보
+     * @param searchField 검색 필드
+     * @param searchTerm 검색어
+     * @param tab 주제별 탭 필터
+     * @return 검색 및 페이징 처리된 해당 사용자의 게시글 목록 DTO
+     */
+    public Page<PostsIndexResponse> indexByUser(User user, Pageable pageable, String searchField, String searchTerm, Integer tab) {
+
+        // 1. 검색 조건(Specification) 생성 (특정 사용자 게시글 대상)
+        Specification<Posts> spec = PostSearchSpec.search(user, searchField, searchTerm, tab);
+
+        // 2. 검색 조건(spec)과 페이징 조건(pageable)을 함께 Repository에 전달하여 조회
+        Page<Posts> postPage = repository.findAll(spec, pageable);
+
+        // 3. 조회된 Page<Posts>를 Page<PostsIndexResponse>로 변환
+        return postPage.map(post -> PostsIndexResponse.builder()
+                .id(post.getId())
+                .subject(post.getSubject().getSubject())
+                .title(post.getTitle())
+                .username(post.getUser().getUsername())
+                .createdDate(post.getCreatedDate())
+                .modifiedDate(post.getModifiedDate())
+                .likes(post.getLikes().size())
+                .commentNumber(post.getComments().size())
+                // 현재 사용자의 게시글 좋아요 여부를 확인하여 포함
+                .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, post))
+                .viewCount(post.getViewCount())
+                .savedInViews(userViewedRepository.existsByUserAndPosts(user, post))
+                .build());
+    }
+
+    /**
+     * 특정 게시글을 상세 조회하고, 조회수를 1 증가시킵니다.
+     *
+     * @param user 현재 로그인된 사용자 정보 (좋아요 여부 확인용)
+     * @param postsId 조회할 게시글 ID
+     * @return 게시글 상세 정보 및 댓글 목록이 포함된 DTO
+     * @throws IllegalArgumentException 해당 게시글이 존재하지 않을 경우
+     */
     @Transactional
     public PostsShowResponse show(User user, Long postsId) {
         Posts target = repository.findById(postsId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
+        // 조회수 증가
         target.setViewCount(target.getViewCount() + 1);
 
+        // 댓글 목록을 DTO로 변환하고, 각 댓글의 좋아요 여부를 확인
         List<CommentResponse> comments = target.getComments().stream().map(comment -> CommentResponse.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
@@ -84,6 +138,15 @@ public class PostsService {
                 .modifiedDate(comment.getModifiedDate())
                 .build()).toList();
 
+        if(!userViewedRepository.existsByUserAndPosts(user, target)) {
+            UserViewed userViewed = UserViewed.builder()
+                    .user(user)
+                    .posts(target)
+                    .build();
+            userViewedRepository.save(userViewed);
+        }
+
+        // 게시글 상세 정보를 DTO로 빌드
         return PostsShowResponse.builder()
                 .id(target.getId())
                 .subject(target.getSubject().getSubject())
@@ -91,11 +154,13 @@ public class PostsService {
                 .content(target.getContent())
                 .username(target.getUser().getUsername())
                 .modifiedDate(target.getModifiedDate())
-
+                .createdDate(target.getCreatedDate())
                 .likes(target.getLikes().size())
+                // 현재 사용자의 게시글 좋아요 여부
                 .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, target))
                 .viewCount(target.getViewCount())
                 .comments(comments)
+                // 주제별 추가 정보 (모집, 질문)
                 .region(target.getRegion())
                 .meetingInfo(target.getMeetingInfo())
                 .bookTitle(target.getBookTitle())
@@ -103,49 +168,64 @@ public class PostsService {
                 .build();
     }
 
-    // 게시글 좋아요 수 증감
+    /**
+     * 게시글에 대한 좋아요 등록 및 취소 처리를 수행합니다.
+     * 이미 좋아요 상태면 취소하고, 아니면 등록합니다.
+     *
+     * @param postsId 좋아요 처리할 게시글 ID
+     * @param user 좋아요를 요청한 사용자
+     * @return 좋아요 처리 결과 DTO (좋아요 등록/취소 여부 포함)
+     * @throws IllegalArgumentException 해당 게시글이 존재하지 않을 경우
+     */
     @Transactional
     public LikesResponse handleLikes(Long postsId, User user) {
         Posts target = repository.findById(postsId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
-        // 이미 좋아요가 되어 있을 때
+        // 좋아요 상태 확인: 이미 좋아요가 되어 있을 때 (좋아요 취소)
         if(postsLikesRepository.existsByUserAndPosts(user, target)) {
-            log.warn("User {} already liked post {}", user, postsId);
-            PostsLikes removedTarget = postsLikesRepository.findByUserAndPosts(user, target).orElseThrow(() -> new IllegalArgumentException("해당 게시글 또는 사용자가 존재하지 않습니다."));
+            log.warn("User {} already liked post {}", user.getId(), postsId);
+            PostsLikes removedTarget = postsLikesRepository.findByUserAndPosts(user, target)
+                    .orElseThrow(() -> new IllegalArgumentException("좋아요 정보가 존재하지 않습니다."));
             postsLikesRepository.delete(removedTarget);
 
-            // 좋아요를 취소 했으니 '좋아요에 등록되어 있음'을 거짓으로
+            // 좋아요를 취소했으므로 'savedInLikes'는 false
             return LikesResponse.builder()
                     .savedInLikes(false)
                     .build();
         }
 
-        // 좋아요가 되어있지 않았을 때
+        // 좋아요 상태 확인: 좋아요가 되어있지 않았을 때 (좋아요 등록)
         PostsLikes likes = PostsLikes.builder()
                 .user(user)
                 .posts(target)
                 .build();
         postsLikesRepository.save(likes);
 
-        log.info("User {} successfully liked post {}", user, postsId);
-        // 좋아요를 등록 했으니 '좋아요에 등록되어 있음'을 참으로
+        log.info("User {} successfully liked post {}", user.getId(), postsId);
+        // 좋아요를 등록했으므로 'savedInLikes'는 true
         return LikesResponse.builder()
                 .savedInLikes(true)
                 .build();
     }
 
-    // 새로운 게시글 생성
+    /**
+     * 새로운 게시글을 생성하고 저장합니다.
+     *
+     * @param dto 게시글 생성 요청 DTO
+     * @param user 현재 로그인된 사용자 (작성자)
+     */
     @Transactional
-    public void create(PostsCreateRequest dto, User user) throws IllegalAccessException {
-        log.info("PostsCreateRequest: {}", dto);
-        log.info("User: {}", user);
+    public void create(PostsCreateRequest dto, User user) {
+        log.info("게시글 생성 요청: {}", dto);
 
+        // 요청 DTO의 subject 문자열을 Subject Enum으로 변환
         Subject dtoSubjectToEnum = switch (dto.getSubject()) {
             case "질문" -> QUESTION;
             case "모집" -> RECRUIT;
-            default -> SHARE;
+            default -> SHARE; // 기본값은 '공유'
         };
 
+        // Posts 엔티티 생성 및 사용자 정보, 주제별 정보 설정
         Posts target = Posts.builder()
                 .subject(dtoSubjectToEnum)
                 .title(dto.getTitle())
@@ -160,22 +240,33 @@ public class PostsService {
         repository.save(target);
     }
 
-    // 게시글 수정 (작성자 검증 포함)
+    /**
+     * 기존 게시글을 수정합니다. (작성자 권한 검증 포함)
+     *
+     * @param postsId 수정할 게시글 ID
+     * @param dto 게시글 수정 요청 DTO
+     * @param user 현재 로그인된 사용자
+     * @return 수정된 게시글 정보 DTO
+     * @throws IllegalArgumentException 해당 게시글이 존재하지 않을 경우
+     * @throws IllegalAccessException 현재 사용자가 게시글 작성자가 아닐 경우
+     */
     @Transactional
-    public PostsUpdateResponse update(Long postsId, PostsUpdateRequest dto, User user) throws IllegalAccessException {
-        log.info("posts id: {}", postsId);
-        log.info("PostsUpdateRequest: {}", dto);
-        log.info("User: {}", user);
+    public void update(Long postsId, PostsUpdateRequest dto, User user) throws IllegalAccessException {
+        log.info("게시글 ID: {}, 수정 요청 DTO: {}", postsId, dto);
+
         Posts target = repository.findById(postsId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
+        // 작성자 권한 검증
         if(!target.getUser().equals(user)) throw new IllegalAccessException("다른 사용자의 글을 수정할 수 없습니다.");
 
+        // 요청 DTO의 subject 문자열을 Subject Enum으로 변환
         Subject dtoSubjectToEnum = switch (dto.getSubject()) {
             case "질문" -> QUESTION;
             case "모집" -> RECRUIT;
-            default -> SHARE;
+            default -> SHARE; // 기본값은 '공유'
         };
 
+        // 엔티티 필드 업데이트
         target.setSubject(dtoSubjectToEnum);
         target.setTitle(dto.getTitle());
         target.setContent(dto.getContent());
@@ -183,37 +274,31 @@ public class PostsService {
         target.setMeetingInfo(dto.getMeetingInfo());
         target.setBookTitle(dto.getBookTitle());
         target.setPageNumber(dto.getPageNumber());
-
-        return PostsUpdateResponse.builder()
-                .id(target.getId())
-                .subject(target.getSubject())
-                .title(target.getTitle())
-                .content(target.getContent())
-                .username(target.getUser().getUsername())
-                .modifiedDate(target.getModifiedDate())
-                .likes(target.getLikes().size())
-                .viewCount(target.getViewCount())
-                .region(target.getRegion())
-                .meetingInfo(target.getMeetingInfo())
-                .bookTitle(target.getBookTitle())
-                .pageNumber(target.getPageNumber())
-                .build();
+        target.setModifiedDate(LocalDateTime.now());
     }
 
-    // 게시글 삭제 (작성자 검증 포함)
+    /**
+     * 게시글을 삭제합니다. (작성자 권한 검증 포함)
+     *
+     * @param postsId 삭제할 게시글 ID
+     * @param user 현재 로그인된 사용자
+     * @return 삭제된 게시글 ID가 포함된 DTO
+     * @throws IllegalAccessException 해당 게시글이 존재하지 않거나, 현재 사용자가 작성자가 아닐 경우
+     */
     @Transactional
     public PostsDeleteResponse delete(Long postsId, User user) throws IllegalAccessException {
-        log.info("posts id: {}", postsId);
-        log.info("User: {}", user);
+        log.info("게시글 ID: {} 삭제 요청", postsId);
 
         Posts target = repository.findById(postsId).orElseThrow(() -> new IllegalAccessException("해당 게시글이 존재하지 않습니다."));
+
+        // 작성자 권한 검증
         if(!user.equals(target.getUser())) throw new IllegalAccessException("다른 사용자의 글을 삭제할 수 없습니다.");
 
         repository.delete(target);
 
+        // 삭제된 게시글 ID 반환
         return PostsDeleteResponse.builder()
                 .id(target.getId())
                 .build();
     }
-
 }

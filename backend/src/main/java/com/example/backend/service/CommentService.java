@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -81,6 +83,8 @@ public class CommentService {
         if(!user.equals(target.getUser())) throw new IllegalAccessException("다른 사용자의 댓글을 수정할 수 없습니다");
 
         if(StringUtils.hasText(dto.getContent())) target.setContent(dto.getContent());
+
+        target.setModifiedDate(LocalDateTime.now());
 
         return CommentUpdateResponse.builder()
                 .content(target.getContent())

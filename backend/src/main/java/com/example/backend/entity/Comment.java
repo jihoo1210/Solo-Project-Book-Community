@@ -4,6 +4,7 @@ import com.example.backend.entity.utilities.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,4 +31,8 @@ public class Comment extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentLikes> likes = new ArrayList<>();
+
+    @Setter
+    @Column
+    private LocalDateTime modifiedDate;
 }
