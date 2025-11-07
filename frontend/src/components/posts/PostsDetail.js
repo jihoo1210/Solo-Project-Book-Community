@@ -23,9 +23,10 @@ const TEXT_COLOR = '#000000';
 const LIGHT_TEXT_COLOR = '#555555';
 const HEADER_HEIGHT = '64px';
 const RED_COLOR = '#f44336';
-// 보라색 상수 추가 (자연스러운 보라색 - MUI Purple 계열)
 const PURPLE_COLOR = '#9c27b0';
 const DARK_PURPLE_COLOR = '#6a1b9a'; // 보라색 호버/어두운 버전
+// 💡 추가됨: 수정됨 표시 색상 (골든 옐로우)
+const MODIFIED_COLOR = '#FFC107'; 
 
 // 스타일 컴포넌트 정의 
 const DetailWrapper = styled(Box)(({ theme }) => ({
@@ -46,21 +47,21 @@ const DetailCard = styled(Paper)(({ theme }) => ({
     },
 }));
 
-// transient prop으로 colorName을 $colorName으로 변경
-const ActionButton = styled(Button)(({ theme, $colorName }) => ({
+// transient prop으로 colorName을 colorName으로 변경
+const ActionButton = styled(Button, {shouldForwardProp: prop => prop !== 'colorName'})(({ theme, colorName }) => ({
     // 'delete' 일 때 배경색을 RED_COLOR로 변경
-    backgroundColor: $colorName === 'delete' ? RED_COLOR : BG_COLOR,
+    backgroundColor: colorName === 'delete' ? RED_COLOR : BG_COLOR,
     // 'delete' 일 때 글자색을 대비가 좋은 흰색 계열로 변경 (TEXT_COLOR가 어두운 색일 경우)
-    color: $colorName === 'delete' ? '#fff' : TEXT_COLOR,
+    color: colorName === 'delete' ? '#fff' : TEXT_COLOR,
     // border 색상도 통일
-    border: `1px solid ${$colorName === 'delete' ? RED_COLOR : TEXT_COLOR}`,
+    border: `1px solid ${colorName === 'delete' ? RED_COLOR : TEXT_COLOR}`,
     fontWeight: 600,
     padding: theme.spacing(1, 2),
     minWidth: '100px',
     '&:hover': {
         // 자연스러운 효과를 위해 alpha 함수 사용 예시 (RED_COLOR가 HEX 코드일 경우)
-        backgroundColor: $colorName === 'delete' ? alpha(RED_COLOR, 0.9) : alpha(TEXT_COLOR, 0.05),
-        borderColor: $colorName === 'delete' ? alpha(RED_COLOR, 0.9) : LIGHT_TEXT_COLOR,
+        backgroundColor: colorName === 'delete' ? alpha(RED_COLOR, 0.9) : alpha(TEXT_COLOR, 0.05),
+        borderColor: colorName === 'delete' ? alpha(RED_COLOR, 0.9) : LIGHT_TEXT_COLOR,
     },
 }));
 
@@ -159,9 +160,9 @@ const SubjectSpecificDetails = ({ post }) => {
 
 
 /**
- * 작성일 형식: PostsList.js와 동일한 조건부 로직 적용
+ * 작성일 형식: MM/DD HH:MM 포맷으로 반환
  */
-const formatDate = (dateString) => {
+const formatFullDate = (dateString) => {
     if (!dateString) return '';
     const postDate = new Date(dateString);
     const month = String(postDate.getMonth() + 1).padStart(2, '0');
@@ -169,6 +170,31 @@ const formatDate = (dateString) => {
     const hours = String(postDate.getHours()).padStart(2, '0');
     const minutes = String(postDate.getMinutes()).padStart(2, '0');
     return `${month}/${day} ${hours}:${minutes}`;
+};
+
+
+/**
+ * 💡 추가됨: modifiedDate 비교 로직 함수
+ * createdDate와 modifiedDate를 비교하여 표시할 날짜 문자열과 수정 여부를 반환합니다.
+ * @param {string} modifiedDateString 수정 날짜 문자열
+ * @param {string} createdDateString 생성 날짜 문자열
+ * @returns {{ dateDisplay: string, isModified: boolean }} 표시할 날짜 정보와 수정 여부
+ */
+const getPostDateInfo = (modifiedDateString, createdDateString) => {
+    const createdDate = new Date(createdDateString);
+    const modifiedDate = new Date(modifiedDateString);
+
+    // modifiedDate가 createdDate보다 확실히 이후인 경우에만 수정된 것으로 간주
+    // API에서 반환되는 문자열이 정확한 밀리초 단위까지 다르다면, 날짜가 같더라도 수정된 것으로 간주될 수 있습니다.
+    const isModified = modifiedDateString && createdDateString && modifiedDate.getTime() > createdDate.getTime();
+    
+    // 수정된 경우 modifiedDate를 사용하고, 아닌 경우 createdDate를 사용
+    const dateToDisplay = isModified ? modifiedDateString : createdDateString;
+
+    return {
+        dateDisplay: formatFullDate(dateToDisplay),
+        isModified: isModified,
+    };
 };
 
 
@@ -318,7 +344,7 @@ const PostsDetail = () => {
         }
     };
 
-    // 댓글 수정 저장 (UI만 업데이트)
+    // 댓글 수정 저장 (API 연동)
     const handleCommentEditSave = async (commentId) => {
         if (!editingCommentContent.trim()) {
             alert("댓글 내용을 입력해주세요.");
@@ -433,8 +459,8 @@ const PostsDetail = () => {
             </ActionButton>
             <ActionButton
                 variant="contained"
-                // $colorName 사용 (Transient Prop)
-                $colorName="delete"
+                // colorName 사용 (Transient Prop)
+                colorName="delete"
                 startIcon={<DeleteIcon />}
                 onClick={handleDelete}
             >
@@ -485,6 +511,9 @@ const PostsDetail = () => {
             </DetailWrapper>
         );
     }
+
+    // 💡 추가됨: 날짜 정보 가져오기 (post가 로드된 후에 실행)
+    const { dateDisplay, isModified } = getPostDateInfo(post.modifiedDate, post.createdDate);
 
     // post 객체가 있을 때만 렌더링
     return (
@@ -553,8 +582,27 @@ const PostsDetail = () => {
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
                                 작성자: {post.username}
                             </Typography>
+                            {/* 💡 수정됨: 날짜 표시 로직에 수정됨 표시 추가 */}
                             <Typography variant="body2">
-                                작성일: {formatDate(post.modifiedDate)}
+                                작성일:
+                                <Box component="span" sx={{ ml: 0.5, whiteSpace: 'nowrap' }}>
+                                    {dateDisplay}
+                                    {isModified && (
+                                        <Typography
+                                            component="span"
+                                            sx={{
+                                                ml: 0.5,
+                                                fontWeight: 600,
+                                                color: MODIFIED_COLOR,
+                                                fontSize: '0.8rem', // 작은 글씨
+                                                flexShrink: 0,
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                        >
+                                            [수정됨]
+                                        </Typography>
+                                    )}
+                                </Box>
                             </Typography>
                         </Box>
                     </Box>
@@ -714,7 +762,7 @@ const PostsDetail = () => {
                                         primary={
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5, width: '100%' }}>
                                                 <Typography variant="subtitle2" sx={{ fontWeight: 600, color: TEXT_COLOR }}>{comment.username}</Typography>
-                                                <Typography variant="caption" color={LIGHT_TEXT_COLOR}>{formatDate(comment.modifiedDate)}</Typography>
+                                                <Typography variant="caption" color={LIGHT_TEXT_COLOR}>{formatFullDate(comment.createdDate)}</Typography>
                                             </Box>
                                         }
                                         secondary={
@@ -759,7 +807,7 @@ const PostsDetail = () => {
                                                             sx={{
                                                                 color: BG_COLOR,
                                                                 '&.Mui-disabled': {
-                                                                    color: `${LIGHT_TEXT_COLOR} !important`
+                                                                    color: comment.savedInLikes ? '#ecc8f3 !important' : `${LIGHT_TEXT_COLOR} !important`
                                                                 },
                                                                 backgroundColor: comment.savedInLikes ? PURPLE_COLOR : TEXT_COLOR,
                                                                 '&:hover': {

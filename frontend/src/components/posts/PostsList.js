@@ -9,7 +9,7 @@ import {
     CircularProgress
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import SortIcon from '@mui/icons-material/Sort';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -23,9 +23,12 @@ const BG_COLOR = '#FFFFFF';
 const TEXT_COLOR = '#000000';
 const LIGHT_TEXT_COLOR = '#555555';
 const HEADER_HEIGHT = '64px';
-// 🛠️ 좋아요 버튼과 동일한 보라색 상수 추가
 const PURPLE_COLOR = '#9c27b0';
-const RED_COLOR = '#F44336'; // 기존 좋아요 아이콘 색상을 명확히 정의
+const RED_COLOR = '#F44336';
+// 💡 수정됨: 사용자의 최종 요청에 따라 골든 옐로우 (#FFC107)로 설정
+const MODIFIED_COLOR = '#FFC107'; 
+// 💡 추가됨: savedInView가 true일 때 적용할 자연스러운 갈색
+const VIEW_SAVED_COLOR = '#8B4513'; 
 
 // 스타일 컴포넌트 정의
 const PostsListWrapper = styled(Box)(({ theme }) => ({
@@ -33,8 +36,6 @@ const PostsListWrapper = styled(Box)(({ theme }) => ({
     backgroundColor: BG_COLOR,
     padding: theme.spacing(4, 0),
 }));
-
-// (중략: PostsCard, ActionButton, CustomSearchField, FilterButton, CustomTableCell, StyledChip 스타일은 변경 없음)
 
 const PostsCard = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(4),
@@ -54,7 +55,6 @@ const CustomTab = styled(Tab)(({ theme }) => ({
     flexShrink: 1,
     minWidth: '80px',
     padding: '12px 16px',
-    // sm 이하: 25% 너비, md 이상: 80px 최소 너비 유지
     [theme.breakpoints.down('sm')]: {
         minWidth: '25%',
         padding: 0,
@@ -103,7 +103,7 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
     borderBottom: `1px solid ${TEXT_COLOR}`,
     fontSize: '1rem',
     [theme.breakpoints.down('sm')]: {
-        display: 'none', // 모바일에서 테이블 헤더 숨김
+        display: 'none',
     },
 }));
 
@@ -125,9 +125,11 @@ const StyledChip = styled(Chip)(({ theme, subject }) => {
 });
 
 /**
- * 🛠️ 작성일 형식 복원: 날짜를 조건부로 포매팅하는 함수 (오늘: HH:MM, 그 외: MM/DD)
+ * 게시글 날짜를 조건부로 포매팅하는 함수 (오늘: HH:MM, 그 외: MM/DD)
+ * @param {string} dateString 포매팅할 날짜 문자열
+ * @returns {string} 포매팅된 시간 또는 날짜 문자열
  */
-const formatDate = (dateString) => {
+const formatTimeOrDate = (dateString) => {
     const postDate = new Date(dateString);
     const today = new Date();
 
@@ -149,63 +151,91 @@ const formatDate = (dateString) => {
     }
 };
 
+/**
+ * 💡 수정됨: modifiedDate 비교 로직 함수 재추가
+ * createdDate와 modifiedDate를 비교하여 표시할 날짜 문자열과 수정 여부를 반환합니다.
+ * @param {string} modifiedDateString 수정 날짜 문자열
+ * @param {string} createdDateString 생성 날짜 문자열
+ * @returns {{ dateDisplay: string, isModified: boolean }} 표시할 날짜 정보와 수정 여부
+ */
+const getPostDateInfo = (modifiedDateString, createdDateString) => {
+    const createdDate = new Date(createdDateString);
+    const modifiedDate = new Date(modifiedDateString);
+
+    // modifiedDate가 createdDate보다 확실히 이후인 경우에만 수정된 것으로 간주
+    // 주의: API에서 반환되는 문자열이 정확한 밀리초 단위까지 다르다면, 날짜가 같더라도 수정된 것으로 간주될 수 있음.
+    // 여기서는 밀리초 단위 비교를 포함한 전체 타임스탬프 비교를 수행합니다.
+    const isModified = modifiedDateString && createdDateString && modifiedDate.getTime() > createdDate.getTime();
+    
+    // 수정된 경우 modifiedDate를 사용하고, 아닌 경우 createdDate를 사용
+    const dateToDisplay = isModified ? modifiedDateString : createdDateString;
+
+    return {
+        dateDisplay: formatTimeOrDate(dateToDisplay),
+        isModified: isModified,
+    };
+};
 
 const PostsList = () => {
-    // useNavigate 훅 선언
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // 내가 쓴 글 보기 모드인지 확인
+    const isMyPostsMode = location.pathname === '/my-posts';
 
     // API 연동 및 데이터 관련 상태
     const [posts, setPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [totalPosts, setTotalPosts] = useState(0); // 페이지네이션에 사용될 전체 게시글 수
+    const [totalPosts, setTotalPosts] = useState(0);
 
     // 필터링, 정렬, 페이지네이션 상태
-    const [selectedTab, setSelectedTab] = useState(0); // 0: 전체, 1: 질문, 2: 공유, 3: 모집
+    const [selectedTab, setSelectedTab] = useState(0);
     const [page, setPage] = useState(1);
-    const [searchTerm, setSearchTerm] = useState(''); // 💡 API 호출에 사용되는 실제 검색어 상태 (유지)
-    const [pendingSearchTerm, setPendingSearchTerm] = useState(''); // 💡 입력 필드에 바인딩되는 임시 검색어 상태 (유지)
-    const [sortOrder, setSortOrder] = useState('desc'); // 정렬 순서 ('desc' 또는 'asc')
-    const [searchField, setSearchField] = useState('제목'); // 검색 필드 ('제목', '작성자', '내용')
-    const [rowsPerPage, setRowsPerPage] = useState(10); // 🌟 rowsPerPage를 상태로 변경 (기본값 10)
+    const [searchTerm, setSearchTerm] = useState('');
+    const [pendingSearchTerm, setPendingSearchTerm] = useState('');
+    const [sortOrder, setSortOrder] = useState('desc');
+    const [searchField, setSearchField] = useState('제목');
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     // 메뉴 Anchor 상태
     const [sortAnchorEl, setSortAnchorEl] = useState(null);
     const openSortMenu = Boolean(sortAnchorEl);
     const [filterAnchorEl, setFilterAnchorEl] = useState(null);
     const openFilterMenu = Boolean(filterAnchorEl);
-    const [perPageAnchorEl, setPerPageAnchorEl] = useState(null); // 🌟 페이지당 항목 수 메뉴 상태 추가
-    const openPerPageMenu = Boolean(perPageAnchorEl); // 🌟 페이지당 항목 수 메뉴 열림 상태
+    const [perPageAnchorEl, setPerPageAnchorEl] = useState(null);
+    const openPerPageMenu = Boolean(perPageAnchorEl);
 
-    // 게시글 목록 API 호출 로직
+    /**
+     * 게시글 목록 API 호출 로직
+     */
     useEffect(() => {
-        const fetchPosts = async (currentPage, currentTab, currentSortOrder, currentRowsPerPage, currentSearchField, currentSearchTerm) => {
+        const fetchPosts = async (currentPage, currentTab, currentSortOrder, currentRowsPerPage, currentSearchField, currentSearchTerm, isMyMode) => {
             setIsLoading(true);
             setError(null);
 
-            const pageNumberForBackend = currentPage - 1; // 백엔드는 보통 0부터 시작
+            const pageNumberForBackend = currentPage - 1;
             const sortParam = `id,${currentSortOrder}`;
             const searchFieldParam = `searchField=${currentSearchField}`;
             const searchTermParam = `searchTerm=${currentSearchTerm}`;
             // 탭 필터링 (0은 '전체'이므로 필터링하지 않음)
             const tabParam = currentTab > 0 ? `&tab=${currentTab}` : '';
 
-            // 🌟 API URL에 currentRowsPerPage (변경된 rowsPerPage 상태) 반영
-            const url = `/posts?page=${pageNumberForBackend}&size=${currentRowsPerPage}&sort=${sortParam}&${searchFieldParam}&${searchTermParam}${tabParam}`;
+            // API 엔드포인트 동적 설정: /my-posts 경로면 /posts/my 사용
+            const baseUrl = isMyMode ? '/posts/my' : '/posts';
+
+            // API URL에 currentRowsPerPage (페이지당 항목 수) 반영
+            const url = `${baseUrl}?page=${pageNumberForBackend}&size=${currentRowsPerPage}&sort=${sortParam}&${searchFieldParam}&${searchTermParam}${tabParam}`;
 
             try {
                 const response = await apiClient.get(url);
                 const result = response.data.result;
 
                 if (result && result.content && Array.isArray(result.content)) {
-                    // Spring Page 객체 구조인 경우 처리
-                    const newPosts = result.content;
-                    const newTotalPosts = result.totalElements || 0; // totalElements를 통해 전체 게시글 수 확보
-
-                    setPosts(newPosts);
-                    setTotalPosts(newTotalPosts);
+                    // Spring Page 객체 구조 처리
+                    setPosts(result.content);
+                    setTotalPosts(result.totalElements || 0);
                 } else {
-                    // 응답은 왔으나 내용이 없거나 예상치 못한 구조인 경우
                     setPosts([]);
                     setTotalPosts(0);
                 }
@@ -221,19 +251,17 @@ const PostsList = () => {
             }
         };
 
-        // 종속성 배열의 상태가 변경될 때마다 API 호출
-        // 🌟 rowsPerPage 상태를 fetchPosts 함수 호출 인자로 전달
-        fetchPosts(page, selectedTab, sortOrder, rowsPerPage, searchField, searchTerm);
+        // 상태가 변경될 때마다 API 호출
+        fetchPosts(page, selectedTab, sortOrder, rowsPerPage, searchField, searchTerm, isMyPostsMode);
 
-        // 🌟 rowsPerPage를 종속성 배열에 추가하여 변경 시 API 재요청
-    }, [page, selectedTab, sortOrder, searchField, searchTerm, rowsPerPage]);
+    }, [page, selectedTab, sortOrder, searchField, searchTerm, rowsPerPage, isMyPostsMode]);
 
     // 이벤트 핸들러
     const handleSortClick = (event) => { setSortAnchorEl(event.currentTarget); };
     const handleSortClose = () => { setSortAnchorEl(null); };
     const handleSortOptionSelect = (order) => {
         setSortOrder(order);
-        setPage(1); // 정렬 변경 시 1페이지로 초기화
+        setPage(1);
         setSortAnchorEl(null);
     };
 
@@ -241,41 +269,35 @@ const PostsList = () => {
     const handleFilterClose = () => { setFilterAnchorEl(null); };
     const handleFilterOptionSelect = (field) => {
         setSearchField(field);
-        setPage(1); // 검색 필드 변경 시 1페이지로 초기화
+        setPage(1);
         setFilterAnchorEl(null);
     };
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
-        setPage(1); // 탭 변경 시 1페이지로 초기화
+        setPage(1);
     };
 
     const handlePageChange = (event, value) => {
         setPage(value);
     };
 
-    /**
-     * 🌟 페이지당 항목 수 메뉴 핸들러 추가
-     */
+    // 페이지당 항목 수 메뉴 핸들러
     const handlePerPageClick = (event) => { setPerPageAnchorEl(event.currentTarget); };
     const handlePerPageClose = () => { setPerPageAnchorEl(null); };
     const handlePerPageSelect = (value) => {
         setRowsPerPage(value);
-        setPage(1); // 항목 수 변경 시 1페이지로 초기화
+        setPage(1);
         setPerPageAnchorEl(null);
     };
 
-    /**
-     * 💡 검색 버튼/아이콘 클릭 시 검색 실행 핸들러 (유지)
-     */
+    // 검색 실행 핸들러
     const handleSearchSubmit = () => {
-        setSearchTerm(pendingSearchTerm); // 임시 검색어를 실제 검색어 상태에 반영
-        setPage(1); // 검색 실행 시 1페이지로 초기화
+        setSearchTerm(pendingSearchTerm);
+        setPage(1);
     };
 
-    /**
-     * TableRow 클릭 핸들러 (유지)
-     */
+    // TableRow 클릭 핸들러
     const handleRowClick = (postId) => {
         navigate(`/post/${postId}`);
     };
@@ -283,7 +305,7 @@ const PostsList = () => {
     // 전체 게시글 수와 페이지당 행 수를 기반으로 페이지 수 계산
     const pageCount = Math.ceil(totalPosts / rowsPerPage);
 
-    // 모바일 뷰에서 사용할 레이블 및 스타일 (좋아요, 조회수 추가)
+    // 모바일 뷰에서 사용할 레이블 및 스타일
     const mobileLabels = ['ID', '주제', '제목', '작성자', '좋아요', '조회수', '작성일'];
     const labelStyles = { fontWeight: 'bold', color: TEXT_COLOR, minWidth: '60px', marginRight: '8px' };
 
@@ -296,7 +318,7 @@ const PostsList = () => {
                     gutterBottom
                     sx={{ fontWeight: 700, mb: 4, color: TEXT_COLOR, fontSize: { xs: '2rem', md: '2.5rem' }, display: { xs: 'none', sm: 'block' } }}
                 >
-                    게시판
+                    {isMyPostsMode ? '내 게시판' : '게시판'}
                 </Typography>
                 <PostsCard elevation={0}>
                     <Box
@@ -314,32 +336,26 @@ const PostsList = () => {
                         <Box sx={{
                             display: 'flex',
                             justifyContent: { xs: 'flex-start', md: 'flex-start' },
-                            // 🛠️ xs에서 스크롤 방지를 위해 overflowX를 hidden으로 설정
                             overflowX: { xs: 'hidden', md: 'visible' },
                         }}>
                             <Tabs
                                 value={selectedTab}
                                 onChange={handleTabChange}
                                 aria-label="게시글 주제 탭"
-                                // variant와 scrollButtons은 유지
                                 variant="scrollable"
                                 scrollButtons="auto"
                                 sx={{
-                                    // 🛠️ Tabs 컴포넌트 자체를 모바일에서 100% 너비로 확장
                                     width: { xs: '100%', md: 'auto' },
                                     '& .MuiTabs-indicator': { backgroundColor: TEXT_COLOR },
-                                    // 🛠️ flexContainer가 100% 너비를 차지하도록 설정 (25%씩 나눌 공간 확보)
                                     '& .MuiTabs-flexContainer': {
                                         minWidth: { xs: '100%', md: 'fit-content' },
                                     },
-                                    // 🛠️ Tabs 내부 스크롤바 숨김 스타일 (기존 Box에서 옮겨옴)
                                     overflowX: 'hidden',
                                     '&::-webkit-scrollbar': { display: 'none' },
                                     msOverflowStyle: 'none',
                                     scrollbarWidth: 'none',
                                 }}
                             >
-                                {/* 🛠️ CustomTab 컴포넌트 적용 */}
                                 <CustomTab label="전체" value={0} />
                                 <CustomTab label="질문" value={1} />
                                 <CustomTab label="공유" value={2} />
@@ -439,34 +455,31 @@ const PostsList = () => {
                                     label={`검색 (${searchField})`}
                                     variant="outlined"
                                     size="small"
-                                    value={pendingSearchTerm} // 💡 임시 상태에 바인딩 (유지)
+                                    value={pendingSearchTerm}
                                     onChange={(e) => {
-                                        setPendingSearchTerm(e.target.value); // 💡 임시 상태만 업데이트 (유지)
+                                        setPendingSearchTerm(e.target.value);
                                     }}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
-                                            handleSearchSubmit(); // Enter 키 입력 시 검색 실행 (유지)
+                                            handleSearchSubmit();
                                         }
                                     }}
                                     sx={{ minWidth: { xs: '100%', md: '200px' }, flexGrow: 1, mt: { xs: 1, md: 0 }, color: { xs: LIGHT_TEXT_COLOR } }}
-                                    slotProps={{
-                                        input: {
-                                            endAdornment: (
-                                                <InputAdornment position="end">
-                                                    <IconButton
-                                                        sx={{ color: TEXT_COLOR }}
-                                                        edge="end"
-                                                        onClick={handleSearchSubmit} // 💡 검색 아이콘 클릭 시 검색 실행 (유지)
-                                                    >
-                                                        <SearchIcon />
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            ),
-                                        }
-                                    }
-                                    }
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    sx={{ color: TEXT_COLOR }}
+                                                    edge="end"
+                                                    onClick={handleSearchSubmit}
+                                                >
+                                                    <SearchIcon />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
                                 />
-                                {/* 🌟 몇 개씩 보여줄지 선택 메뉴 (Rows Per Page) 추가 */}
+                                {/* 몇 개씩 보여줄지 선택 메뉴 (Rows Per Page) */}
                                 <FilterButton
                                     variant="outlined"
                                     onClick={handlePerPageClick}
@@ -502,7 +515,6 @@ const PostsList = () => {
                                         </MenuItem>
                                     ))}
                                 </Menu>
-                                {/* 🌟 추가 끝 */}
                             </Box>
 
                             {/* 글쓰기 버튼 */}
@@ -530,7 +542,6 @@ const PostsList = () => {
                         <Table aria-label="게시글 목록">
                             <TableHead>
                                 <TableRow>
-                                    {/* TableCell들을 한 줄에 붙여서 작성하여 whitespace text node 제거 */}
                                     <CustomTableCell sx={{ width: '5%' }}>ID</CustomTableCell><CustomTableCell sx={{ width: '8%' }}>주제</CustomTableCell><CustomTableCell sx={{ width: '35%' }}>제목</CustomTableCell><CustomTableCell sx={{ width: '15%' }}>작성자</CustomTableCell><CustomTableCell sx={{ width: '10%' }}>좋아요</CustomTableCell><CustomTableCell sx={{ width: '10%' }}>조회수</CustomTableCell><CustomTableCell sx={{ width: '17%' }}>작성일</CustomTableCell>
                                 </TableRow>
                             </TableHead>
@@ -561,175 +572,206 @@ const PostsList = () => {
                                     </TableRow>
                                 ) : (
                                     // 게시글 목록 렌더링
-                                    posts.map((post) => (
-                                        <TableRow
-                                            key={post.id}
-                                            onClick={() => handleRowClick(post.id)} // 클릭 핸들러 유지
-                                            sx={(theme) => ({
-                                                textDecoration: 'none',
-                                                '& > .MuiTableCell-root': { borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` },
-                                                '&:last-child > .MuiTableCell-root': { borderBottom: 'none' },
-                                                '&:hover': {
-                                                    backgroundColor: alpha(TEXT_COLOR, 0.05),
-                                                    cursor: 'pointer' // 클릭 가능함을 표시
-                                                },
-                                                [theme.breakpoints.down('sm')]: {
-                                                    display: 'block',
-                                                    borderBottom: `1px solid ${TEXT_COLOR} !important`,
-                                                    padding: theme.spacing(1, 0),
-                                                    '& > .MuiTableCell-root': { borderBottom: 'none !important' },
-                                                }
-                                            })}
-                                        >
-                                            {/* TableCell들 사이의 줄 바꿈을 제거하여 whitespace text node 제거 */}
-                                            {/* ID */}
-                                            <TableCell component="th" scope="row"
+                                    posts.map((post) => {
+                                        // 💡 수정됨: getPostDateInfo 함수를 사용하여 날짜 정보와 수정 여부를 가져옴
+                                        const { dateDisplay, isModified } = getPostDateInfo(post.modifiedDate, post.createdDate);
+                                        // savedInView 상태에 따른 조회수 색상 결정
+                                        const viewColor = post.savedInViews ? VIEW_SAVED_COLOR : LIGHT_TEXT_COLOR;
+                                        const viewFontWeight = post.savedInViews ? 700 : 400;
+
+                                        return (
+                                            <TableRow
+                                                key={post.id}
+                                                onClick={() => handleRowClick(post.id)}
                                                 sx={(theme) => ({
+                                                    textDecoration: 'none',
+                                                    '& > .MuiTableCell-root': { borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` },
+                                                    '&:last-child > .MuiTableCell-root': { borderBottom: 'none' },
+                                                    '&:hover': {
+                                                        backgroundColor: alpha(TEXT_COLOR, 0.05),
+                                                        cursor: 'pointer'
+                                                    },
                                                     [theme.breakpoints.down('sm')]: {
-                                                        display: 'flex',
-                                                        justifyContent: 'space-between',
-                                                        fontSize: '0.8rem',
-                                                        color: LIGHT_TEXT_COLOR,
-                                                        padding: theme.spacing(0, 2, 0.5, 2),
-                                                        order: 7,
-                                                        '&::before': { content: `'${mobileLabels[0]}: '`, ...labelStyles }
-                                                    }
-                                                })}
-                                            >{post.id}</TableCell>
-                                            {/* 주제 */}
-                                            <TableCell
-                                                sx={(theme) => ({
-                                                    [theme.breakpoints.down('sm')]: {
-                                                        display: 'flex',
-                                                        justifyContent: 'flex-start',
-                                                        padding: theme.spacing(0.5, 2, 0, 2),
-                                                        order: 2,
+                                                        display: 'block',
+                                                        borderBottom: `1px solid ${TEXT_COLOR} !important`,
+                                                        padding: theme.spacing(1, 0),
+                                                        '& > .MuiTableCell-root': { borderBottom: 'none !important' },
                                                     }
                                                 })}
                                             >
-                                                <StyledChip label={post.subject} subject={post.subject} size="small" />
-                                            </TableCell>
-                                            {/* 제목 */}
-                                            <TableCell sx={(theme) => ({
-                                                fontWeight: 600, color: TEXT_COLOR,
-                                                [theme.breakpoints.down('sm')]: {
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'flex-start',
-                                                    fontSize: '1rem',
-                                                    padding: theme.spacing(1, 2, 0.5, 2),
-                                                    order: 1,
-                                                    whiteSpace: 'normal',
-                                                    wordBreak: 'break-word',
-                                                }
-                                            })}>
-                                                <Box component="span" sx={{ flexGrow: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>
-                                                    {post.title}
-                                                    {/* 🛠️ 수정: 댓글 수 표시 조건부 렌더링 (2, 3번 조건) */}
-                                                    {post.commentNumber > 0 && (
-                                                        <Typography
-                                                            component="span" // span으로 설정하여 제목 옆에 인라인으로 표시
-                                                            sx={{
-                                                                ml: 1,
-                                                                fontWeight: 600,
-                                                                color: RED_COLOR, // 붉은 글씨
-                                                                fontSize: '0.8rem', // 제목보다 약간 작게
-                                                                flexShrink: 0, // 공간 부족 시 축소되지 않도록
-                                                            }}
-                                                        >
-                                                            [{post.commentNumber}]
-                                                        </Typography>
-                                                    )}
-                                                </Box>
-                                            </TableCell>
-                                            {/* 작성자 */}
-                                            <TableCell sx={(theme) => ({
-                                                color: LIGHT_TEXT_COLOR,
-                                                [theme.breakpoints.down('sm')]: {
-                                                    display: 'flex',
-                                                    justifyContent: 'flex-start',
-                                                    fontSize: '0.85rem',
-                                                    padding: theme.spacing(0.5, 2, 0.5, 2),
-                                                    order: 3,
-                                                    '&::before': { content: `'${mobileLabels[3]}: '`, ...labelStyles }
-                                                }
-                                            })}>{post.username}</TableCell>
-                                            {/* 좋아요 수 (추가) */}
-                                            <TableCell sx={(theme) => ({
-                                                // 🛠️ savedInLikes 값에 따라 색상을 동적으로 변경 (데스크탑 뷰)
-                                                color: post.savedInLikes ? PURPLE_COLOR : RED_COLOR,
-                                                fontWeight: 600,
-                                                [theme.breakpoints.down('sm')]: {
-                                                    display: 'flex',
-                                                    justifyContent: 'flex-start',
-                                                    alignItems: 'center', // 🛠️ 아이콘/텍스트 세로 정렬 문제 해결
-                                                    fontSize: '0.85rem',
-                                                    padding: theme.spacing(0.5, 2, 0.5, 2),
-                                                    order: 5,
-                                                    color: LIGHT_TEXT_COLOR,
-                                                    fontWeight: 400,
-                                                    '&::before': { content: `'${mobileLabels[4]}: '`, ...labelStyles }
-                                                }
-                                            })}>
-                                                {/* 🛠️ 아이콘 색상도 savedInLikes 값에 따라 동적으로 변경 */}
-                                                <Box 
-                                                    component="span" 
-                                                    sx={{ 
-                                                        display: 'inline', 
-                                                        mr: 0.5, 
-                                                        mt: { xs: 0, md: 0.2 } // 🛠️ 모바일에서 mt: 0 제거하여 수직 정렬 문제 해결
-                                                    }}
+                                                {/* ID */}
+                                                <TableCell component="th" scope="row"
+                                                    sx={(theme) => ({
+                                                        [theme.breakpoints.down('sm')]: {
+                                                            display: 'flex',
+                                                            justifyContent: 'space-between',
+                                                            fontSize: '0.8rem',
+                                                            color: LIGHT_TEXT_COLOR,
+                                                            padding: theme.spacing(0, 2, 0.5, 2),
+                                                            order: 7,
+                                                            '&::before': { content: `'${mobileLabels[0]}: '`, ...labelStyles }
+                                                        }
+                                                    })}
+                                                >{post.id}</TableCell>
+                                                {/* 주제 */}
+                                                <TableCell
+                                                    sx={(theme) => ({
+                                                        [theme.breakpoints.down('sm')]: {
+                                                            display: 'flex',
+                                                            justifyContent: 'flex-start',
+                                                            padding: theme.spacing(0.5, 2, 0, 2),
+                                                            order: 2,
+                                                        }
+                                                    })}
                                                 >
-                                                    <FavoriteIcon
+                                                    <StyledChip label={post.subject} subject={post.subject} size="small" />
+                                                </TableCell>
+                                                {/* 제목 */}
+                                                <TableCell sx={(theme) => ({
+                                                    fontWeight: 600, color: TEXT_COLOR,
+                                                    [theme.breakpoints.down('sm')]: {
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'flex-start',
+                                                        fontSize: '1rem',
+                                                        padding: theme.spacing(1, 2, 0.5, 2),
+                                                        order: 1,
+                                                        whiteSpace: 'normal',
+                                                        wordBreak: 'break-word',
+                                                    }
+                                                })}>
+                                                    <Box component="span" sx={{ flexGrow: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>
+                                                        {post.title}
+                                                        {/* 댓글 수 표시 조건부 렌더링 */}
+                                                        {post.commentNumber > 0 && (
+                                                            <Typography
+                                                                component="span"
+                                                                sx={{
+                                                                    ml: 1,
+                                                                    fontWeight: 600,
+                                                                    color: RED_COLOR,
+                                                                    fontSize: '0.8rem',
+                                                                    flexShrink: 0,
+                                                                }}
+                                                            >
+                                                                [{post.commentNumber}]
+                                                            </Typography>
+                                                        )}
+                                                    </Box>
+                                                </TableCell>
+                                                {/* 작성자 */}
+                                                <TableCell sx={(theme) => ({
+                                                    color: LIGHT_TEXT_COLOR,
+                                                    [theme.breakpoints.down('sm')]: {
+                                                        display: 'flex',
+                                                        justifyContent: 'flex-start',
+                                                        fontSize: '0.85rem',
+                                                        padding: theme.spacing(0.5, 2, 0.5, 2),
+                                                        order: 3,
+                                                        '&::before': { content: `'${mobileLabels[3]}: '`, ...labelStyles }
+                                                    }
+                                                })}>{post.username}</TableCell>
+                                                {/* 좋아요 수 */}
+                                                <TableCell sx={(theme) => ({
+                                                    color: post.savedInLikes ? PURPLE_COLOR : RED_COLOR,
+                                                    fontWeight: 600,
+                                                    [theme.breakpoints.down('sm')]: {
+                                                        display: 'flex',
+                                                        justifyContent: 'flex-start',
+                                                        alignItems: 'center',
+                                                        fontSize: '0.85rem',
+                                                        padding: theme.spacing(0.5, 2, 0.5, 2),
+                                                        order: 5,
+                                                        color: LIGHT_TEXT_COLOR,
+                                                        fontWeight: 400,
+                                                        '&::before': { content: `'${mobileLabels[4]}: '`, ...labelStyles }
+                                                    }
+                                                })}>
+                                                    <Box
+                                                        component="span"
                                                         sx={{
+                                                            display: 'inline',
+                                                            mr: 0.5,
+                                                            mt: { xs: 0, md: 0.2 }
+                                                        }}
+                                                    >
+                                                        <FavoriteIcon
+                                                            sx={{
+                                                                fontSize: '1rem',
+                                                                verticalAlign: 'middle',
+                                                                color: post.savedInLikes ? PURPLE_COLOR : RED_COLOR
+                                                            }}
+                                                        />
+                                                    </Box>
+                                                    {post.likes || 0}
+                                                </TableCell>
+                                                {/* 조회수 */}
+                                                <TableCell sx={(theme) => ({
+                                                    color: viewColor,
+                                                    fontWeight: viewFontWeight,
+                                                    [theme.breakpoints.down('sm')]: {
+                                                        display: 'flex',
+                                                        justifyContent: 'flex-start',
+                                                        alignItems: 'center',
+                                                        fontSize: '0.85rem',
+                                                        padding: theme.spacing(0.5, 2, 0.5, 2),
+                                                        order: 6,
+                                                        '&::before': { content: `'${mobileLabels[5]}: '`, ...labelStyles }
+                                                    }
+                                                })}>
+                                                    <Box
+                                                        component="span"
+                                                        sx={{
+                                                            display: 'inline',
+                                                            mr: 0.5,
+                                                            mt: { xs: 0, md: 0.2 },
+                                                            color: viewColor,
+                                                        }}
+                                                    >
+                                                        <VisibilityIcon sx={{
                                                             fontSize: '1rem',
                                                             verticalAlign: 'middle',
-                                                            // 🛠️ savedInLikes가 true이면 PURPLE_COLOR, 아니면 RED_COLOR
-                                                            color: post.savedInLikes ? PURPLE_COLOR : RED_COLOR
-                                                        }}
-                                                    />
-                                                </Box>
-                                                {post.likes || 0}
-                                            </TableCell>
-                                            {/* 조회수 (추가) */}
-                                            <TableCell sx={(theme) => ({
-                                                color: LIGHT_TEXT_COLOR,
-                                                [theme.breakpoints.down('sm')]: {
-                                                    display: 'flex',
-                                                    justifyContent: 'flex-start',
-                                                    alignItems: 'center', // 🛠️ 아이콘/텍스트 세로 정렬 문제 해결
-                                                    fontSize: '0.85rem',
-                                                    padding: theme.spacing(0.5, 2, 0.5, 2),
-                                                    order: 6,
-                                                    '&::before': { content: `'${mobileLabels[5]}: '`, ...labelStyles }
-                                                }
-                                            })}>
-                                                <Box 
-                                                    component="span" 
-                                                    sx={{ 
-                                                        display: 'inline', 
-                                                        mr: 0.5, 
-                                                        mt: { xs: 0, md: 0.2 } // 🛠️ 모바일에서 mt: 0 제거하여 수직 정렬 문제 해결
-                                                    }}
-                                                >
-                                                    <VisibilityIcon sx={{ fontSize: '1rem', verticalAlign: 'middle' }} />
-                                                </Box>
-                                                {post.viewCount || 0}
-                                            </TableCell>
-                                            {/* 작성일 🛠️ (formatDate 조건부 로직 복원 적용) */}
-                                            <TableCell sx={(theme) => ({
-                                                color: LIGHT_TEXT_COLOR,
-                                                [theme.breakpoints.down('sm')]: {
-                                                    display: 'flex',
-                                                    justifyContent: 'flex-start',
-                                                    fontSize: '0.85rem',
-                                                    padding: theme.spacing(0.5, 2, 0.5, 2),
-                                                    order: 4,
-                                                    '&::before': { content: `'${mobileLabels[6]}: '`, ...labelStyles }
-                                                }
-                                            })}>{formatDate(post.modifiedDate)}</TableCell>
-                                        </TableRow>
-                                    ))
+                                                            color: viewColor
+                                                        }} />
+                                                    </Box>
+                                                    {post.viewCount || 0}
+                                                </TableCell>
+                                                {/* 작성일 */}
+                                                <TableCell sx={(theme) => ({
+                                                    color: LIGHT_TEXT_COLOR,
+                                                    [theme.breakpoints.down('sm')]: {
+                                                        display: 'flex',
+                                                        justifyContent: 'flex-start',
+                                                        fontSize: '0.85rem',
+                                                        padding: theme.spacing(0.5, 2, 0.5, 2),
+                                                        order: 4,
+                                                        '&::before': { content: `'${mobileLabels[6]}: '`, ...labelStyles }
+                                                    }
+                                                })}>
+                                                    {/* 날짜 표시 (modifiedDate 또는 createdDate 기준) */}
+                                                    <Box component="span" sx={{ whiteSpace: 'nowrap' }}>
+                                                        {dateDisplay}
+                                                        {/* 💡 수정됨: [수정됨] 표시 로직 추가 */}
+                                                        {isModified && (
+                                                            <Typography
+                                                                component="span"
+                                                                sx={{
+                                                                    ml: 0.5,
+                                                                    fontWeight: 600,
+                                                                    color: MODIFIED_COLOR,
+                                                                    fontSize: '0.7rem', // 작은 글씨
+                                                                    flexShrink: 0,
+                                                                    whiteSpace: 'nowrap',
+                                                                }}
+                                                            >
+                                                                [수정됨]
+                                                            </Typography>
+                                                        )}
+                                                    </Box>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })
                                 )}
                             </TableBody>
                         </Table>

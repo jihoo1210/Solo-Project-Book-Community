@@ -136,6 +136,7 @@ const PostEdit = () => {
                 if(postData) {
 
                     setPost(postData);
+                    console.log(postData)
                     // 🌺 Froala Editor 상태 초기화
                     setContentHtml(postData.content || ''); // API에서 받은 content로 에디터 초기화
                 }
@@ -258,7 +259,7 @@ const PostEdit = () => {
                 errors.bookTitle = '책 제목을 입력해야 합니다.';
                 hasError = true;
             }
-            if (post.pageNumber.trim() === '') {
+            if (post.pageNumber === '') {
                 errors.pageNumber = '페이지 번호를 입력해야 합니다.';
                 hasError = true;
             }

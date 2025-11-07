@@ -10,6 +10,7 @@ import PostsList from './components/posts/PostsList';
 import PostsDetail from './components/posts/PostsDetail';
 import PostsCreate from './components/posts/PostsCreate';
 import PostsEdit from './components/posts/PostsEdit';
+import MyPage from './components/user/MyPage';
 
 function App() {
 
@@ -21,7 +22,6 @@ function App() {
 
     <Box sx={{ flexGrow: 1 }} flex justifyContent={'center'} alignContent={'center'} flexDirection={'column'} >
           <Routes>
-            <Route path='/' element={<PostsList />} />
             <Route path='/auth'>
               <Route path='signup' element={<Signup />} />
               <Route path='signin' element={<Signin />} />
@@ -31,6 +31,11 @@ function App() {
              <Route path='create' element={<PostsCreate />} />
              <Route path='edit/:id' element={<PostsEdit />} />
             </Route>
+            <Route path='/my'>
+              <Route path='page' element={<MyPage />} />
+              <Route path='post' element={'my posts'} />
+            </Route>
+            <Route path='*' element={<PostsList />} />
           </Routes>
     </Box>
       <Footer />

@@ -92,7 +92,11 @@ const Signup = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value.trim() }));
+
+    const newValue = value.replace(/\s/g, '');
+    if(name === 'email') console.log('newValue :>> ', newValue);
+    
+    setFormData((prev) => ({ ...prev, [name]: newValue }));
     if (name === 'username') setIsUsernameAvailable(null); // 회원명 변경 시 중복 상태 초기화
   };
 
@@ -172,8 +176,8 @@ const Signup = () => {
                   fullWidth
                   label="이메일"
                   name="email"
-                  type="email"
-                  value={formData.email}
+                  type="text"
+                  value={formData.email.trim()}
                   onChange={handleChange}
                   required
                 />
