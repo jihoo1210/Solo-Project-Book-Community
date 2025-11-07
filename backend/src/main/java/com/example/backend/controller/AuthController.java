@@ -127,6 +127,24 @@ public class AuthController {
         }
     }
 
+    /**
+     * POST /auth/logout
+     * HttpOnly 쿠키 삭제 (세션 만료)
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        // 1. 기존 JWT 쿠키를 덮어쓰고 만료 시간을 0으로 설정하여 삭제
+        Cookie cookie = new Cookie("ACCESS_TOKEN", null);
+        cookie.setHttpOnly(true);
+        // cookie.setSecure(true); // 운영 환경에서는 주석 해제 필수
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // 만료 시간을 0으로 설정하여 즉시 삭제
+
+        response.addCookie(cookie);
+
+        return ResponseController.success("로그아웃 되었습니다.");
+    }
+
     @GetMapping("/check-username")
     public ResponseEntity<?> checkUsername(@RequestParam String username) {
         try {
@@ -148,24 +166,6 @@ public class AuthController {
             // 4. 실패 응답 반환
             return ResponseController.fail(e.getMessage());
         }
-    }
-
-    /**
-     * POST /auth/logout
-     * HttpOnly 쿠키 삭제 (세션 만료)
-     */
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
-        // 1. 기존 JWT 쿠키를 덮어쓰고 만료 시간을 0으로 설정하여 삭제
-        Cookie cookie = new Cookie("ACCESS_TOKEN", null);
-        cookie.setHttpOnly(true);
-        // cookie.setSecure(true); // 운영 환경에서는 주석 해제 필수
-        cookie.setPath("/");
-        cookie.setMaxAge(0); // 만료 시간을 0으로 설정하여 즉시 삭제
-
-        response.addCookie(cookie);
-
-        return ResponseController.success("로그아웃 되었습니다.");
     }
 
     /**

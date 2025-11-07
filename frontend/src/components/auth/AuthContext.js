@@ -21,6 +21,8 @@ export const AuthProvider = ({ children }) => {
             
             // 응답 본문에서 사용자 이름을 가져옵니다.
             const username = response.data.result.username; 
+
+            console.log('username: ', username)
             
             setIsLoggedIn(true);
             setUser({ username });
@@ -38,7 +40,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         // 서버에 인증 상태를 요청하여 초기 상태를 설정합니다.
         fetchCurrentUser();
-        
+        console.log('fetchCurrentUser 실행됨')        
     }, [fetchCurrentUser]); // useCallback으로 인해 fetchCurrentUser가 변경되지 않으므로 무한 루프 위험 없음
 
     // 로그인 처리 함수: 서버 로그인 API 호출 후 응답 본문에서 사용자 이름만 저장

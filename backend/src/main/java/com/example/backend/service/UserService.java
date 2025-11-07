@@ -7,6 +7,7 @@ package com.example.backend.service;
 import com.example.backend.dto.auth.CheckUsernameResponse;
 import com.example.backend.dto.auth.signup.SignupRequest;
 import com.example.backend.dto.auth.signup.SignupResponse;
+import com.example.backend.dto.user.ChangeUserInfoRequest;
 import com.example.backend.entity.User;
 import com.example.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import static com.example.backend.entity.utilities.Role.ROLE_USER;
 
@@ -63,11 +66,6 @@ public class UserService {
                 .build();
     }
 
-    public String findUsernameByEmail(String email) {
-        User user = repository.findByEmail(email).orElse(null);
-        return user.getUsername();
-    }
-
     public CheckUsernameResponse isUsernameAvailable(String username) {
         if(repository.existsByUsername(username)) {
             return CheckUsernameResponse.builder()
@@ -78,5 +76,26 @@ public class UserService {
                     .isAvailable(true)
                     .build();
         }
+    }
+
+    /**
+     * 회원 정보 수정
+     */
+    @Transactional
+    public void changeUserInfo(User user, ChangeUserInfoRequest dto) {
+        if(StringUtils.hasText(dto.getUsername())) user.setUsername(dto.getUsername());
+        if(StringUtils.hasText(dto.getPassword()))user.setPassword(encoder.encode(dto.getPassword()));
+        log.info("new password: {}", user.getPassword());
+
+        repository.save(user);
+    }
+
+    /**
+     * 회원 탈퇴
+     * @param user: 탈퇴할 회원
+     */
+    @Transactional
+    public void deleteUser(User user) {
+        repository.delete(user);
     }
 }
