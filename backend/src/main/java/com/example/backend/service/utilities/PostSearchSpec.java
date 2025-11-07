@@ -1,6 +1,7 @@
 package com.example.backend.service.utilities;
 
 import com.example.backend.entity.Posts;
+import com.example.backend.entity.User;
 import com.example.backend.entity.utilities.Subject;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
@@ -17,7 +18,7 @@ import static com.example.backend.entity.utilities.Subject.*;
 public class PostSearchSpec {
 
     // 검색 필드, 검색어, 탭(주제)을 기반으로 JPA Specification을 생성하여 동적 쿼리 조건 제공
-    public static Specification<Posts> search(String searchField, String searchTerm, Integer tab) {
+    public static Specification<Posts> search(User user, String searchField, String searchTerm, Integer tab) {
         log.info("searchField: {}", searchField);
         log.info("searchTerm: {}", searchTerm);
         log.info("tab: {}", tab);
@@ -27,6 +28,10 @@ public class PostSearchSpec {
             List<Predicate> predicates = new ArrayList<>();
             String cleanSearchTerm = searchTerm.replaceAll("\\s", "").toLowerCase(); // 공백 제거
             String pattern = "%" + cleanSearchTerm.toLowerCase() + "%"; // Like 검색 패턴
+
+            if (user != null) {
+                predicates.add(builder.equal(root.get("user"), user));
+            }
 
             // 검색 필드에 따른 조건 추가 (OR 조건으로 검색 가능)
             // 공백 제거
