@@ -3,7 +3,7 @@ import axios from 'axios'
 const apiClient = axios.create({
     baseURL: 'http://localhost:8080',
     timeout: 3600,
-    withCredentials: true
+    withCredentials: true // 쿠키를 같이 보냄
 })
 
 apiClient.interceptors.response.use(response => {
@@ -13,7 +13,6 @@ apiClient.interceptors.response.use(response => {
 error => {
     const { response } = error
     if(response && (response.status === 401 || response.status === 403)) {
-        alert(error)
         console.log('error :>> ', error);
         window.location.href = "/auth/signin";
 
