@@ -9,7 +9,7 @@ import {
     CircularProgress
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // useLocation이 필요 없어 제거됨
 import SearchIcon from '@mui/icons-material/Search';
 import SortIcon from '@mui/icons-material/Sort';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -25,9 +25,7 @@ const LIGHT_TEXT_COLOR = '#555555';
 const HEADER_HEIGHT = '64px';
 const PURPLE_COLOR = '#9c27b0';
 const RED_COLOR = '#F44336';
-// 💡 수정됨: 사용자의 최종 요청에 따라 골든 옐로우 (#FFC107)로 설정
 const MODIFIED_COLOR = '#FFC107'; 
-// 💡 추가됨: savedInView가 true일 때 적용할 자연스러운 갈색
 const VIEW_SAVED_COLOR = '#8B4513'; 
 
 // 스타일 컴포넌트 정의
@@ -152,7 +150,6 @@ const formatTimeOrDate = (dateString) => {
 };
 
 /**
- * 💡 수정됨: modifiedDate 비교 로직 함수 재추가
  * createdDate와 modifiedDate를 비교하여 표시할 날짜 문자열과 수정 여부를 반환합니다.
  * @param {string} modifiedDateString 수정 날짜 문자열
  * @param {string} createdDateString 생성 날짜 문자열
@@ -162,9 +159,7 @@ const getPostDateInfo = (modifiedDateString, createdDateString) => {
     const createdDate = new Date(createdDateString);
     const modifiedDate = new Date(modifiedDateString);
 
-    // modifiedDate가 createdDate보다 확실히 이후인 경우에만 수정된 것으로 간주
-    // 주의: API에서 반환되는 문자열이 정확한 밀리초 단위까지 다르다면, 날짜가 같더라도 수정된 것으로 간주될 수 있음.
-    // 여기서는 밀리초 단위 비교를 포함한 전체 타임스탬프 비교를 수행합니다.
+    // modifiedDate가 createdDate보다 이후인 경우에만 수정된 것으로 간주
     const isModified = modifiedDateString && createdDateString && modifiedDate.getTime() > createdDate.getTime();
     
     // 수정된 경우 modifiedDate를 사용하고, 아닌 경우 createdDate를 사용
@@ -178,10 +173,7 @@ const getPostDateInfo = (modifiedDateString, createdDateString) => {
 
 const PostsList = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-
-    // 내가 쓴 글 보기 모드인지 확인
-    const isMyPostsMode = location.pathname === '/my-posts';
+    // const location = useLocation(); // 제거
 
     // API 연동 및 데이터 관련 상태
     const [posts, setPosts] = useState([]);
@@ -210,7 +202,7 @@ const PostsList = () => {
      * 게시글 목록 API 호출 로직
      */
     useEffect(() => {
-        const fetchPosts = async (currentPage, currentTab, currentSortOrder, currentRowsPerPage, currentSearchField, currentSearchTerm, isMyMode) => {
+        const fetchPosts = async (currentPage, currentTab, currentSortOrder, currentRowsPerPage, currentSearchField, currentSearchTerm) => {
             setIsLoading(true);
             setError(null);
 
@@ -221,8 +213,8 @@ const PostsList = () => {
             // 탭 필터링 (0은 '전체'이므로 필터링하지 않음)
             const tabParam = currentTab > 0 ? `&tab=${currentTab}` : '';
 
-            // API 엔드포인트 동적 설정: /my-posts 경로면 /posts/my 사용
-            const baseUrl = isMyMode ? '/posts/my' : '/posts';
+            // API 엔드포인트는 항상 일반 게시판 경로인 '/posts' 사용
+            const baseUrl = '/posts'; 
 
             // API URL에 currentRowsPerPage (페이지당 항목 수) 반영
             const url = `${baseUrl}?page=${pageNumberForBackend}&size=${currentRowsPerPage}&sort=${sortParam}&${searchFieldParam}&${searchTermParam}${tabParam}`;
@@ -251,10 +243,10 @@ const PostsList = () => {
             }
         };
 
-        // 상태가 변경될 때마다 API 호출
-        fetchPosts(page, selectedTab, sortOrder, rowsPerPage, searchField, searchTerm, isMyPostsMode);
+        // 상태가 변경될 때마다 API 호출 (isMyPostsMode 의존성 제거)
+        fetchPosts(page, selectedTab, sortOrder, rowsPerPage, searchField, searchTerm);
 
-    }, [page, selectedTab, sortOrder, searchField, searchTerm, rowsPerPage, isMyPostsMode]);
+    }, [page, selectedTab, sortOrder, searchField, searchTerm, rowsPerPage]); // isMyPostsMode 의존성 제거
 
     // 이벤트 핸들러
     const handleSortClick = (event) => { setSortAnchorEl(event.currentTarget); };
@@ -299,7 +291,7 @@ const PostsList = () => {
 
     // TableRow 클릭 핸들러
     const handleRowClick = (postId) => {
-        navigate(`/post/${postId}`);
+        navigate(`/post/${postId}?from=default`);
     };
 
     // 전체 게시글 수와 페이지당 행 수를 기반으로 페이지 수 계산
@@ -316,9 +308,9 @@ const PostsList = () => {
                     variant="h4"
                     align="left"
                     gutterBottom
-                    sx={{ fontWeight: 700, mb: 4, color: TEXT_COLOR, fontSize: { xs: '2rem', md: '2.5rem' }, display: { xs: 'none', sm: 'block' } }}
+                    sx={{ fontWeight: 700, mb: 4, color: TEXT_COLOR, fontSize: { xs: '2rem', md: '2.5rem' }, textAlign: {xs: 'center', md: 'left'} }}
                 >
-                    {isMyPostsMode ? '내 게시판' : '게시판'}
+                    게시판 {/* '내 게시판' 로직 제거 */}
                 </Typography>
                 <PostsCard elevation={0}>
                     <Box
@@ -573,7 +565,7 @@ const PostsList = () => {
                                 ) : (
                                     // 게시글 목록 렌더링
                                     posts.map((post) => {
-                                        // 💡 수정됨: getPostDateInfo 함수를 사용하여 날짜 정보와 수정 여부를 가져옴
+                                        // getPostDateInfo 함수를 사용하여 날짜 정보와 수정 여부를 가져옴
                                         const { dateDisplay, isModified } = getPostDateInfo(post.modifiedDate, post.createdDate);
                                         // savedInView 상태에 따른 조회수 색상 결정
                                         const viewColor = post.savedInViews ? VIEW_SAVED_COLOR : LIGHT_TEXT_COLOR;
@@ -751,7 +743,7 @@ const PostsList = () => {
                                                     {/* 날짜 표시 (modifiedDate 또는 createdDate 기준) */}
                                                     <Box component="span" sx={{ whiteSpace: 'nowrap' }}>
                                                         {dateDisplay}
-                                                        {/* 💡 수정됨: [수정됨] 표시 로직 추가 */}
+                                                        {/* [수정됨] 표시 로직 */}
                                                         {isModified && (
                                                             <Typography
                                                                 component="span"

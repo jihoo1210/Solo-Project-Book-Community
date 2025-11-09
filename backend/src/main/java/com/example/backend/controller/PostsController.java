@@ -65,6 +65,22 @@ public class PostsController {
         return ResponseController.success(responsePage);
     }
 
+    // 내가 좋아요한 게시글 조회
+    @GetMapping("/my/favorite")
+    public ResponseEntity<?> indexFavoriteByUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                 @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                                 @RequestParam(required = false, defaultValue = "") String searchField,
+                                                 @RequestParam(required = false, defaultValue = "") String searchTerm,
+                                                 @RequestParam(required = false, defaultValue = "") Integer tab) {
+        log.info("CustomUserDetails: {}", userDetails);
+        log.info("Pageable: {}", pageable);
+        log.info("searchField: {}", searchField);
+        log.info("searchTerm: {}", searchTerm);
+
+        Page<PostsIndexResponse> responsePage = service.indexFavoriteByUser(userDetails.getUser(), pageable, searchField, searchTerm, tab);
+        return ResponseController.success(responsePage);
+    }
+
     // 특정 게시글 상세 조회 및 조회수 증가
     @GetMapping("/{postsId}")
     public ResponseEntity<?> show(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long postsId) {

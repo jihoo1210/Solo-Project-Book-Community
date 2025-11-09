@@ -3,6 +3,7 @@ package com.example.backend.service;
 import com.example.backend.dto.comment.create.CommentCreateRequest;
 import com.example.backend.dto.comment.create.CommentCreateResponse;
 import com.example.backend.dto.comment.delete.CommentDeleteResponse;
+import com.example.backend.dto.comment.index.CommentIndexResponse;
 import com.example.backend.dto.comment.update.CommentUpdateRequest;
 import com.example.backend.dto.comment.update.CommentUpdateResponse;
 import com.example.backend.dto.likes.LikesResponse;
@@ -13,8 +14,12 @@ import com.example.backend.entity.User;
 import com.example.backend.repository.CommentLikesRepository;
 import com.example.backend.repository.CommentRepository;
 import com.example.backend.repository.PostsRepository;
+import com.example.backend.service.utilities.CommentSearchSpec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -91,6 +96,21 @@ public class CommentService {
                 .build();
     }
 
+    public Page<CommentIndexResponse> indexByUser(User user, Pageable pageable, String searchField, String searchTerm, Integer tab) {
+        Specification<Comment> spec = CommentSearchSpec.search(user, searchField, searchTerm, tab);
+
+        Page<Comment> commentPage = commentRepository.findAll(spec, pageable);
+
+        return commentPage.map(item -> CommentIndexResponse.builder()
+                .id(item.getId())
+                .postId(item.getPosts().getId())
+                .postTitle(item.getPosts().getTitle())
+                .content(item.getContent())
+                .modifiedDate(item.getModifiedDate())
+                .createdDate(item.getCreatedDate())
+                .build());
+    }
+
     @Transactional
     public CommentDeleteResponse delete(User user, Long commentId) throws IllegalAccessException {
         Comment target = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
@@ -102,4 +122,5 @@ public class CommentService {
                 .id(commentId)
                 .build();
     }
+
 }

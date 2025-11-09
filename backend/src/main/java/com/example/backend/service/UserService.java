@@ -84,7 +84,7 @@ public class UserService {
     @Transactional
     public void changeUserInfo(User user, ChangeUserInfoRequest dto) {
         if(StringUtils.hasText(dto.getUsername())) user.setUsername(dto.getUsername());
-        if(StringUtils.hasText(dto.getPassword()))user.setPassword(encoder.encode(dto.getPassword()));
+        if(StringUtils.hasText(dto.getPassword())) user.setPassword(encoder.encode(dto.getPassword()));
         log.info("new password: {}", user.getPassword());
 
         repository.save(user);

@@ -7,7 +7,10 @@ import {
     CircularProgress
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { 
+    Link, useNavigate, useParams, 
+    useLocation // 💡 추가됨: URL의 쿼리 파라미터를 사용하기 위해 useLocation 추가
+} from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -15,7 +18,6 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import FlagIcon from '@mui/icons-material/Flag';
 import { useAuth } from '../auth/AuthContext';
 import apiClient from '../../api/Api-Service'; // API 서비스 추가
-import { common } from '@mui/material/colors';
 
 // 상수 정의
 const BG_COLOR = '#FFFFFF';
@@ -25,7 +27,7 @@ const HEADER_HEIGHT = '64px';
 const RED_COLOR = '#f44336';
 const PURPLE_COLOR = '#9c27b0';
 const DARK_PURPLE_COLOR = '#6a1b9a'; // 보라색 호버/어두운 버전
-// 💡 추가됨: 수정됨 표시 색상 (골든 옐로우)
+// 💡 수정됨: 수정됨 표시 색상 (골든 옐로우)
 const MODIFIED_COLOR = '#FFC107'; 
 
 // 스타일 컴포넌트 정의 
@@ -174,19 +176,24 @@ const formatFullDate = (dateString) => {
 
 
 /**
- * 💡 추가됨: modifiedDate 비교 로직 함수
+ * 수정됨: modifiedDate 비교 로직 함수 (게시글/댓글 모두 사용)
  * createdDate와 modifiedDate를 비교하여 표시할 날짜 문자열과 수정 여부를 반환합니다.
  * @param {string} modifiedDateString 수정 날짜 문자열
  * @param {string} createdDateString 생성 날짜 문자열
  * @returns {{ dateDisplay: string, isModified: boolean }} 표시할 날짜 정보와 수정 여부
  */
 const getPostDateInfo = (modifiedDateString, createdDateString) => {
-    const createdDate = new Date(createdDateString);
-    const modifiedDate = new Date(modifiedDateString);
+    // 날짜 문자열이 유효하지 않으면 빈 문자열과 false 반환
+    if (!createdDateString) {
+        return { dateDisplay: '', isModified: false };
+    }
 
-    // modifiedDate가 createdDate보다 확실히 이후인 경우에만 수정된 것으로 간주
-    // API에서 반환되는 문자열이 정확한 밀리초 단위까지 다르다면, 날짜가 같더라도 수정된 것으로 간주될 수 있습니다.
-    const isModified = modifiedDateString && createdDateString && modifiedDate.getTime() > createdDate.getTime();
+    const createdDate = new Date(createdDateString);
+    const modifiedDate = modifiedDateString ? new Date(modifiedDateString) : createdDate; // modifiedDate가 없으면 createdDate 사용
+
+    // modifiedDate가 createdDate보다 확실히 이후인 경우에만 수정된 것으로 간주 (1초 이상 차이)
+    // API 응답 시간차를 고려하여 1000ms(1초) 이상 차이로 판단하는 것이 안전할 수 있습니다.
+    const isModified = modifiedDateString && modifiedDate.getTime() > createdDate.getTime() + 1000;
     
     // 수정된 경우 modifiedDate를 사용하고, 아닌 경우 createdDate를 사용
     const dateToDisplay = isModified ? modifiedDateString : createdDateString;
@@ -200,8 +207,16 @@ const getPostDateInfo = (modifiedDateString, createdDateString) => {
 
 const PostsDetail = () => {
     const { id } = useParams();
+    const location = useLocation(); // 💡 추가됨: location 객체 가져오기
     const { user } = useAuth();
     const navigate = useNavigate();
+
+    // 💡 추가됨: 쿼리 파라미터에서 'from' 값 추출
+    const queryParams = new URLSearchParams(location.search);
+    const fromParam = queryParams.get('from');
+    // fromParam 값이 'my-actives'면 /my/actives, 아니면 /로 이동
+    const backToPath = fromParam === 'my-actives' ? '/my/actives' : '/';
+    
 
     // 댓글 리스트의 Ref 추가 (외부 클릭 감지용)
     const commentsListRef = useRef(null);
@@ -353,12 +368,16 @@ const PostsDetail = () => {
 
         try {
             const response = await apiClient.patch(`/comment/${commentId}`, {content: editingCommentContent})
-            const newContent = response.data.result.content
-            console.log(response)
+            const { content: newContent, modifiedDate: newModifiedDate } = response.data.result; // 💡 수정: modifiedDate를 응답에서 가져옴
+            
             if (newContent) {
-                // UI 업데이트
+                // UI 업데이트: content와 modifiedDate를 업데이트
                 setComments(prevComments => prevComments.map(comment =>
-                    comment.id === commentId ? { ...comment, content: newContent } : comment
+                    comment.id === commentId ? { 
+                        ...comment, 
+                        content: newContent, 
+                        modifiedDate: newModifiedDate // 💡 수정: modifiedDate 업데이트
+                    } : comment
                 ));
             }
         } catch(err) {
@@ -388,8 +407,12 @@ const PostsDetail = () => {
                     id: commentData.id,
                     content: commentData.content,
                     username: commentData.username,
+                    // 💡 수정: API 응답에서 createdDate도 가져온다고 가정
+                    createdDate: commentData.createdDate, 
                     modifiedDate: commentData.modifiedDate,
-                    likes: commentData.likes
+                    likes: commentData.likes,
+                    // 새로 등록된 댓글은 기본적으로 savedInLikes는 false로 가정
+                    savedInLikes: false 
                 }
                 setComments(prev => [newComment, ...prev]) // 새 댓글을 목록 맨 앞에 추가
                 setNewCommentText('');
@@ -424,7 +447,8 @@ const PostsDetail = () => {
                 } else {
                     setError(`${id}번 게시글을 삭제하는데 실패했습니다.`)
                 }
-                navigate('/')
+                // 💡 수정됨: backToPath로 이동
+                navigate(backToPath) 
             } catch (err) {
                 alert('에러 발생:' + err.response.data.message || '예상하지 못한 에러.')
             }
@@ -504,7 +528,8 @@ const PostsDetail = () => {
                             {error || "게시글을 찾을 수 없습니다."}
                         </Typography>
                         <Box sx={{ mt: 3, textAlign: 'center' }}>
-                            <Button component={Link} to="/" startIcon={<ArrowBackIcon />}>목록으로</Button>
+                            {/* 💡 수정됨: backToPath 변수를 사용하여 이동 경로 설정 */}
+                            <Button component={Link} to={backToPath} startIcon={<ArrowBackIcon />}>목록으로</Button>
                         </Box>
                     </Box>
                 </Container>
@@ -512,8 +537,8 @@ const PostsDetail = () => {
         );
     }
 
-    // 💡 추가됨: 날짜 정보 가져오기 (post가 로드된 후에 실행)
-    const { dateDisplay, isModified } = getPostDateInfo(post.modifiedDate, post.createdDate);
+    // 💡 추가됨: 게시글 날짜 정보 가져오기 (post가 로드된 후에 실행)
+    const postDateInfo = getPostDateInfo(post.modifiedDate, post.createdDate);
 
     // post 객체가 있을 때만 렌더링
     return (
@@ -534,7 +559,8 @@ const PostsDetail = () => {
                     {/* 목록으로 버튼 */}
                     <Button
                         component={Link}
-                        to="/"
+                        // 💡 수정됨: backToPath 변수를 사용하여 이동 경로 설정
+                        to={backToPath} 
                         startIcon={<ArrowBackIcon />}
                         sx={{ color: TEXT_COLOR, '&:hover': { backgroundColor: alpha(TEXT_COLOR, 0.05) } }}
                     >
@@ -582,12 +608,12 @@ const PostsDetail = () => {
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
                                 작성자: {post.username}
                             </Typography>
-                            {/* 💡 수정됨: 날짜 표시 로직에 수정됨 표시 추가 */}
+                            {/* 💡 수정됨: 게시글 날짜 표시 로직 */}
                             <Typography variant="body2">
                                 작성일:
                                 <Box component="span" sx={{ ml: 0.5, whiteSpace: 'nowrap' }}>
-                                    {dateDisplay}
-                                    {isModified && (
+                                    {postDateInfo.dateDisplay}
+                                    {postDateInfo.isModified && (
                                         <Typography
                                             component="span"
                                             sx={{
@@ -746,7 +772,10 @@ const PostsDetail = () => {
                         })}>
                         {comments
                             .filter(comment => comment) // null/undefined 항목을 필터링하여 'id' 접근 오류 방지
-                            .map((comment, index, arr) => (
+                            .map((comment, index, arr) => {
+                                // 💡 추가: 댓글 날짜 정보 가져오기
+                                const commentDateInfo = getPostDateInfo(comment.modifiedDate, comment.createdDate);
+                                return (
                                 <ListItem
                                     key={comment.id}
                                     disableGutters
@@ -762,7 +791,28 @@ const PostsDetail = () => {
                                         primary={
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5, width: '100%' }}>
                                                 <Typography variant="subtitle2" sx={{ fontWeight: 600, color: TEXT_COLOR }}>{comment.username}</Typography>
-                                                <Typography variant="caption" color={LIGHT_TEXT_COLOR}>{formatFullDate(comment.createdDate)}</Typography>
+                                                {/* 💡 수정됨: 댓글 날짜 표시 로직에 수정됨 표시 추가 */}
+                                                <Typography variant="caption" color={LIGHT_TEXT_COLOR}>
+                                                    작성일:
+                                                    <Box component="span" sx={{ ml: 0.5, whiteSpace: 'nowrap' }}>
+                                                        {commentDateInfo.dateDisplay}
+                                                        {commentDateInfo.isModified && (
+                                                            <Typography
+                                                                component="span"
+                                                                sx={{
+                                                                    ml: 0.5,
+                                                                    fontWeight: 600,
+                                                                    color: MODIFIED_COLOR,
+                                                                    fontSize: '0.8rem',
+                                                                    flexShrink: 0,
+                                                                    whiteSpace: 'nowrap',
+                                                                }}
+                                                            >
+                                                                [수정됨]
+                                                            </Typography>
+                                                        )}
+                                                    </Box>
+                                                </Typography>
                                             </Box>
                                         }
                                         secondary={
@@ -784,7 +834,7 @@ const PostsDetail = () => {
                                                     <Typography
                                                         variant="body2"
                                                         color={TEXT_COLOR}
-                                                        sx={{ mb: 1 }}
+                                                        sx={{ mb: 1, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
                                                     >
                                                         {comment.content}
                                                     </Typography>
@@ -926,7 +976,7 @@ const PostsDetail = () => {
                                         sx={{ width: '100%', m: 0 }}
                                     />
                                 </ListItem>
-                            ))}
+                            )})}
                     </List>
 
                 </DetailCard>

@@ -12,7 +12,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 // 🌺 Froala Wysiwyg Editor (react-froala-wysiwyg) Import 추가
 import WysiwygEditor from 'react-froala-wysiwyg';
 
-import { useAuth } from '../auth/AuthContext';
 import apiClient from '../../api/Api-Service';
 
 // 색상 정의 (기존 파일들과 일관성 유지)
@@ -99,7 +98,6 @@ const ActionButton = styled(Button)(({ theme }) => ({
 const PostEdit = () => {
     const navigate = useNavigate();
     const { id } = useParams(); // URL에서 게시글 ID를 가져옴
-    const { user } = useAuth();
 
     // API 응답에서 로드될 게시글 정보
     const [post, setPost] = useState(null);
@@ -110,10 +108,6 @@ const PostEdit = () => {
 
     // 유효성 검사 에러 상태 추가
     const [fieldErrors, setFieldErrors] = useState({});
-
-    // 🌟 수정: 게시판 Select 클릭 시 경고 메시지 표시 상태 -> **초기값을 true로 변경**
-    const [showSubjectWarning, setShowSubjectWarning] = useState(true);
-
 
     const getCurrentDateTime = () => {
         const now = new Date();
@@ -160,12 +154,6 @@ const PostEdit = () => {
             setFieldErrors(prev => ({ ...prev, content: undefined }));
         }
     };
-
-    // 🌟 삭제: Subject Select 클릭 시 경고 메시지 표시 로직은 제거됨
-    // const handleSubjectOpen = () => {
-    //     setShowSubjectWarning(true);
-    // };
-
 
     // API 응답 기반 변수 준비 (post가 로드되지 않았을 경우를 대비)
     const author = post ? post.username : '불러오는 중...'; // API 응답의 writer 필드 사용
@@ -347,9 +335,6 @@ const PostEdit = () => {
                         <MenuItem value={'모집'}>모집</MenuItem>
                     </Select>
                 </FormControl>
-
-                {/* 🌟 유지: 경고 메시지 표시 (showSubjectWarning 상태는 이제 항상 true) */}
-                {showSubjectWarning && (
                     <Typography
                         color="error" // 붉은색 인라인 글씨
                         variant="caption"
@@ -358,7 +343,6 @@ const PostEdit = () => {
                     >
                         주의! 게시글의 종류를 바꾸면 이전의 내용과 제목을 제외한 모든 정보가 초기화 됩니다.
                     </Typography>
-                )}
             </Grid>
 
             <Grid size={{xs:6, sm:3}}>
