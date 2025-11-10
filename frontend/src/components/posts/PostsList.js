@@ -9,7 +9,7 @@ import {
     CircularProgress
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
-import { Link, useNavigate } from 'react-router-dom'; // useLocation이 필요 없어 제거됨
+import { Link, useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import SortIcon from '@mui/icons-material/Sort';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -27,6 +27,9 @@ const PURPLE_COLOR = '#9c27b0';
 const RED_COLOR = '#F44336';
 const MODIFIED_COLOR = '#FFC107'; 
 const VIEW_SAVED_COLOR = '#8B4513'; 
+
+// [추가] MyAlert.js에서 가져온 새 알림(읽지 않음) 색상
+const NEW_COLOR = '#4CAF50'; 
 
 // 스타일 컴포넌트 정의
 const PostsListWrapper = styled(Box)(({ theme }) => ({
@@ -133,7 +136,7 @@ const formatTimeOrDate = (dateString) => {
 
     // 날짜 비교를 위해 시, 분, 초를 0으로 설정
     const postDay = new Date(postDate.getFullYear(), postDate.getMonth(), postDate.getDate());
-    const todayDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const todayDay = new Date(today.getFullYear(), today.toDateString());
 
     // 1. 날짜가 오늘과 같을 경우: "시간:분" (예: 10:05)
     if (postDay.getTime() === todayDay.getTime()) {
@@ -173,7 +176,6 @@ const getPostDateInfo = (modifiedDateString, createdDateString) => {
 
 const PostsList = () => {
     const navigate = useNavigate();
-    // const location = useLocation(); // 제거
 
     // API 연동 및 데이터 관련 상태
     const [posts, setPosts] = useState([]);
@@ -243,10 +245,10 @@ const PostsList = () => {
             }
         };
 
-        // 상태가 변경될 때마다 API 호출 (isMyPostsMode 의존성 제거)
+        // 상태가 변경될 때마다 API 호출
         fetchPosts(page, selectedTab, sortOrder, rowsPerPage, searchField, searchTerm);
 
-    }, [page, selectedTab, sortOrder, searchField, searchTerm, rowsPerPage]); // isMyPostsMode 의존성 제거
+    }, [page, selectedTab, sortOrder, searchField, searchTerm, rowsPerPage]);
 
     // 이벤트 핸들러
     const handleSortClick = (event) => { setSortAnchorEl(event.currentTarget); };
@@ -310,7 +312,7 @@ const PostsList = () => {
                     gutterBottom
                     sx={{ fontWeight: 700, mb: 4, color: TEXT_COLOR, fontSize: { xs: '2rem', md: '2.5rem' }, textAlign: {xs: 'center', md: 'left'} }}
                 >
-                    게시판 {/* '내 게시판' 로직 제거 */}
+                    게시판
                 </Typography>
                 <PostsCard elevation={0}>
                     <Box
@@ -579,6 +581,8 @@ const PostsList = () => {
                                                     textDecoration: 'none',
                                                     '& > .MuiTableCell-root': { borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` },
                                                     '&:last-child > .MuiTableCell-root': { borderBottom: 'none' },
+                                                    // [수정] savedInViews가 false이면 NEW_COLOR의 투명도를 적용하여 배경색 설정
+                                                    backgroundColor: post.savedInViews ? BG_COLOR : alpha(NEW_COLOR, 0.1),
                                                     '&:hover': {
                                                         backgroundColor: alpha(TEXT_COLOR, 0.05),
                                                         cursor: 'pointer'

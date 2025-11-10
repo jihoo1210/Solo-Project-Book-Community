@@ -136,7 +136,6 @@ const Signup = () => {
       console.log('성공 응답 데이터:', response.data);
 
       if (response.data && response.data.result && response.data.result.email) {
-          alert(`회원가입 성공! 이메일: ${response.data.result.email}`);
           navigate("/auth/signin?email=" + response.data.result.email);
       } else {
           alert('회원가입은 성공했으나, 서버 응답에서 이메일 정보를 받지 못했습니다. 로그인 페이지로 이동합니다.');

@@ -13,6 +13,7 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { Inventory2Outlined } from '@mui/icons-material';
 
 // 색상 정의
 const BG_COLOR = '#FFFFFF';
@@ -178,11 +179,32 @@ const Navigation = () => {
                         </Button>
                     </Grid>
 
-                    {/* 💡 수정: 알림 버튼 (Grid xs=6으로 크기 조정) */}
                     <Grid size={{xs:6}} sx={{ p: '0 !important' }}>
                         <Button
                             component={Link}
-                            to="/my/notifications"
+                            to="/my/actives"
+                            onClick={handleDrawerToggle}
+                            color="inherit"
+                            aria-label="내 활동"
+                            sx={{
+                                width: '100%',
+                                p: '12px 0',
+                                color: TEXT_COLOR,
+                                border: `1px solid ${TEXT_COLOR}`,
+                                // border: 'none', // 테두리 제거 (요청에 따라)
+                                '& .MuiButton-startIcon': { m: 0 } // 아이콘만 남기기 위해 텍스트 제거
+                            }}
+                            startIcon={<Inventory2Outlined sx={{ fontSize: '1.5rem' }} />}
+                        >
+                            {/* 텍스트를 제거하고 아이콘만 남깁니다. */}
+                        </Button>
+                    </Grid>
+
+                    {/* 💡 수정: 알림 버튼 (Grid xs=6으로 크기 조정) */}
+                    <Grid size={{xs:12}} sx={{ p: '0 !important' }}>
+                        <Button
+                            component={Link}
+                            to="/my/alerts"
                             onClick={handleDrawerToggle}
                             color="inherit"
                             aria-label="알림"
@@ -212,7 +234,7 @@ const Navigation = () => {
                             textDecoration: 'none',
                             color: 'inherit',
                             // 버튼 목록에 대한 margin 설정
-                            margin: '0 16px 16px',
+                            margin: '16px 16px',
                             width: 'calc(100% - 32px)',
                             // 로그아웃 버튼의 크기를 xs=12로 조정 (List/ListItem은 이미 Block 요소이므로 width: '100%'로 충분합니다.)
                         }}
@@ -312,11 +334,21 @@ const Navigation = () => {
                                         <FavoriteBorderOutlinedIcon sx={{ fontSize: '1.7rem' }} />
                                     </IconButton>
 
+                                    {/* 💡 수정: 보관함 아이콘 (테두리 제거 -> IconButton) */}
+                                    <IconButton
+                                        color="inherit"
+                                        component={Link}
+                                        to="/my/actives"
+                                        aria-label="내 활동"
+                                    >
+                                        <Inventory2Outlined sx={{ fontSize: '1.7rem' }} />
+                                    </IconButton>
+
                                     {/* 💡 수정: 알림 아이콘 (테두리 제거 -> IconButton) */}
                                     <IconButton
                                         color="inherit"
                                         component={Link}
-                                        to="/my/notifications"
+                                        to="/my/alerts"
                                         aria-label="알림"
                                     >
                                         <NotificationsNoneIcon sx={{ fontSize: '1.7rem' }} />

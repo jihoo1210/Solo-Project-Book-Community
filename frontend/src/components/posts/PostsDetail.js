@@ -18,6 +18,7 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import FlagIcon from '@mui/icons-material/Flag';
 import { useAuth } from '../auth/AuthContext';
 import apiClient from '../../api/Api-Service'; // API 서비스 추가
+import { Favorite, FavoriteBorder, FavoriteBorderSharp } from '@mui/icons-material';
 
 // 상수 정의
 const BG_COLOR = '#FFFFFF';
@@ -211,11 +212,15 @@ const PostsDetail = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
 
-    // 💡 추가됨: 쿼리 파라미터에서 'from' 값 추출
+    // 💡 수정됨: 쿼리 파라미터에서 'from' 값 추출 및 경로 설정 로직 수정
     const queryParams = new URLSearchParams(location.search);
     const fromParam = queryParams.get('from');
-    // fromParam 값이 'my-actives'면 /my/actives, 아니면 /로 이동
-    const backToPath = fromParam === 'my-actives' ? '/my/actives' : '/';
+    
+    // fromParam 값에 따라 경로 설정: 'my-actives'면 /my/actives, 'my-favorite'면 /my/favorite, 아니면 /로 이동
+    const backToPath = fromParam === 'my-actives' 
+        ? '/my/actives' 
+        : fromParam === 'my-favorite' ? '/my/favorite'
+        : fromParam === 'my-alerts' ? '/my/alerts' : '/'
     
 
     // 댓글 리스트의 Ref 추가 (외부 클릭 감지용)
@@ -443,7 +448,6 @@ const PostsDetail = () => {
             try {
                 const postResponse = await apiClient.delete(`/posts/${id}`)
                 if (postResponse.data.result.id) {
-                    alert(`${postResponse.data.result.id}번 게시글이 성공적으로 삭제되었습니다.`)
                 } else {
                     setError(`${id}번 게시글을 삭제하는데 실패했습니다.`)
                 }
@@ -645,7 +649,7 @@ const PostsDetail = () => {
                         borderRadius: 1,
                         mb: 4,
                         '& p': { margin: '0 0 1em 0' },
-                        '& strong': { fontWeight: 700, color: TEXT_COLOR },
+                        '& strong': { fontWeight: 700 },
                         [theme.breakpoints.down('sm')]: {
                             paddingX: theme.spacing(2),
                             marginX: theme.spacing(2),
@@ -671,7 +675,7 @@ const PostsDetail = () => {
                     })}>
                         <ActionButton
                             variant="contained"
-                            startIcon={<ThumbUpIcon />}
+                            startIcon={<Favorite />}
                             onClick={handlePostLike}
                             // savedInPostLikes 값에 따라 버튼 스타일 동적 변경
                             sx={{
@@ -853,7 +857,7 @@ const PostsDetail = () => {
                                                             size="small"
                                                             onClick={() => handleCommentLike(comment.id)}
                                                             disabled={editingCommentId === comment.id} // 수정 중에는 비활성화
-                                                            startIcon={<ThumbUpIcon fontSize="small" />}
+                                                            startIcon={<Favorite fontSize="small" />}
                                                             sx={{
                                                                 color: BG_COLOR,
                                                                 '&.Mui-disabled': {
