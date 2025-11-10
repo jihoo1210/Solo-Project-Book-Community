@@ -1,6 +1,7 @@
 // src/components/PostsDetail.js
 
-import React, { useState, useEffect, useRef } from 'react'; // useRef 추가
+// 💡 수정: useCallback을 import 목록에 추가했습니다.
+import React, { useState, useEffect, useRef, useCallback } from 'react'; 
 import {
     Box, Container, Typography, Paper, Chip, Button, Divider,
     List, ListItem, ListItemText, TextField, IconButton,
@@ -14,11 +15,11 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import FlagIcon from '@mui/icons-material/Flag';
 import { useAuth } from '../auth/AuthContext';
 import apiClient from '../../api/Api-Service'; // API 서비스 추가
-import { Favorite, FavoriteBorder, FavoriteBorderSharp } from '@mui/icons-material';
+// 💡 수정: CheckCircle 아이콘을 import 목록에 추가
+import { Favorite, CheckCircle } from '@mui/icons-material';
 
 // 상수 정의
 const BG_COLOR = '#FFFFFF';
@@ -28,8 +29,10 @@ const HEADER_HEIGHT = '64px';
 const RED_COLOR = '#f44336';
 const PURPLE_COLOR = '#9c27b0';
 const DARK_PURPLE_COLOR = '#6a1b9a'; // 보라색 호버/어두운 버전
-// 💡 수정됨: 수정됨 표시 색상 (골든 옐로우)
 const MODIFIED_COLOR = '#FFC107'; 
+// 💡 추가: 아쿠아 블루 색상 정의
+const AQUA_BLUE = '#00BCD4'; // 시안 계열
+const DARK_AQUA_BLUE = '#0097A7'; // 시안 계열 호버 색상
 
 // 스타일 컴포넌트 정의 
 const DetailWrapper = styled(Box)(({ theme }) => ({
@@ -243,23 +246,27 @@ const PostsDetail = () => {
 
 
     // 댓글 수정 취소 핸들러
-    const handleCommentEditCancel = () => {
+    // 💡 수정: useCallback으로 감싸 안정화
+    const handleCommentEditCancel = useCallback(() => {
         setEditingCommentId(null);
         setEditingCommentContent('');
-    };
+    }, []); // 💡 상태 설정 함수만 사용하므로 빈 종속성 배열로 안정화
 
     // 댓글 목록 외부 클릭 감지 핸들러
-    const handleOutsideClick = (event) => {
+    // 💡 수정: useCallback으로 감싸 안정화
+    const handleOutsideClick = useCallback((event) => {
         // 댓글 목록(List) 내부의 요소가 아닌 곳을 클릭했을 때 수정 취소
         if (editingCommentId && commentsListRef.current && !commentsListRef.current.contains(event.target)) {
             handleCommentEditCancel();
         }
-    };
+    // 💡 종속성 명시: 함수 내부에서 사용되는 모든 외부 값(state, ref, stable function)을 포함합니다.
+    }, [editingCommentId, commentsListRef, handleCommentEditCancel]); 
 
     // 댓글 수정 모드일 때 Esc 키 및 외부 클릭 이벤트 리스너 등록
     useEffect(() => {
         const handleEscapeKey = (event) => {
             if (event.key === 'Escape' && editingCommentId) {
+                // handleCommentEditCancel은 이제 안정화되었습니다.
                 handleCommentEditCancel();
             }
         };
@@ -273,7 +280,8 @@ const PostsDetail = () => {
             document.removeEventListener('keydown', handleEscapeKey);
             document.removeEventListener('mousedown', handleOutsideClick);
         };
-    }, [editingCommentId]); // editingCommentId가 변경될 때마다 재등록
+    // 💡 수정: handleCommentEditCancel을 종속성 배열에 추가하여 모든 종속성을 명시합니다.
+    }, [editingCommentId, handleOutsideClick, handleCommentEditCancel]); 
 
     // API 호출 로직 (게시글 상세 정보 및 댓글 가져오기)
     useEffect(() => {
@@ -357,7 +365,7 @@ const PostsDetail = () => {
     // 댓글 수정 모드 토글
     const handleCommentEditToggle = (commentId, content) => {
         if (editingCommentId === commentId) {
-            handleCommentEditCancel(); // 이미 수정 모드였다면 취소
+            handleCommentEditCancel(); // 이미 수정 모드였다면 취소 (안정화된 함수 사용)
         } else {
             setEditingCommentId(commentId);
             setEditingCommentContent(content);
@@ -389,7 +397,7 @@ const PostsDetail = () => {
             console.error("댓글 수정 오류:", err.response?.data?.message || err.message);
             setError("댓글 수정 중 오류가 발생했습니다.");
         } finally {
-            handleCommentEditCancel(); // 수정 모드 종료
+            handleCommentEditCancel(); // 수정 모드 종료 (안정화된 함수 사용)
         }
     };
 
@@ -474,6 +482,41 @@ const PostsDetail = () => {
             }
         }
     }
+
+    // 💡 추가: 댓글 채택 처리 (API 연동)
+    const handleCommentAdopt = async (commentId) => {
+        // 1. 게시글이 '질문' 타입이고 작성자 본인인지 확인 (UI에서 이미 필터링되지만 안전장치)
+        if (post.subject !== '질문' || user?.username !== post.username) {
+            alert('질문 게시글의 작성자만 댓글을 채택할 수 있습니다.');
+            return;
+        }
+
+        // 2. 이미 채택된 댓글이 있는지 확인 (post 객체에 adoptedCommentId 필드가 있다고 가정)
+        if (post.adoptedCommentId) {
+             alert('이미 댓글이 채택되었습니다.');
+             return;
+        }
+
+        if (window.confirm('이 댓글을 채택하시겠습니까? 채택된 댓글은 취소가 불가능할 수 있습니다.')) {
+            try {
+                // 가정: 채택 API는 /comment/{commentId}/adopt
+                // 실제로는 POST 또는 PATCH 요청이 적절
+                await apiClient.post(`/comment/${commentId}/adopt`);
+                
+                // UI 업데이트: post 상태에 adoptedCommentId를 업데이트
+                setPost(prevPost => ({
+                    ...prevPost,
+                    adoptedCommentId: commentId, // 채택된 댓글 ID 저장
+                }));
+                
+                alert('댓글이 성공적으로 채택되었습니다.');
+            } catch (err) {
+                console.error("댓글 채택 오류:", err.response?.data?.message || err.message);
+                alert("댓글 채택 중 오류가 발생했습니다: " + (err.response?.data?.message || '알 수 없는 오류'));
+            }
+        }
+    }
+
 
     // 재사용 가능한 수정/삭제 버튼 그룹 정의
     const EditDeleteButtons = (
@@ -779,6 +822,12 @@ const PostsDetail = () => {
                             .map((comment, index, arr) => {
                                 // 💡 추가: 댓글 날짜 정보 가져오기
                                 const commentDateInfo = getPostDateInfo(comment.modifiedDate, comment.createdDate);
+                                // 💡 추가: 채택 버튼 표시 조건 확인
+                                const isQuestionPostAuthor = post.subject === '질문' && user?.username === post.username;
+                                const isAdopted = post.adoptedCommentId === comment.id;
+                                // 이미 채택된 댓글이 있는 경우 (adoptedCommentId가 null/undefined/0이 아닌 경우)
+                                const isSolved = !!post.adoptedCommentId;
+
                                 return (
                                 <ListItem
                                     key={comment.id}
@@ -788,7 +837,11 @@ const PostsDetail = () => {
                                         py: 1.5,
                                         px: 2,
                                         flexDirection: 'column',
-                                        alignItems: 'flex-start'
+                                        alignItems: 'flex-start',
+                                        // 💡 수정: 채택된 댓글의 상단 border 스타일 적용
+                                        borderTop: isAdopted ? `3px solid ${AQUA_BLUE}` : 'none',
+                                        // 상단 border가 생기면 목록 border와 겹치므로 ListItem의 상단 마진/패딩 조정이 필요할 수 있으나, 일단 기본 디자인 유지
+                                        
                                     }}
                                 >
                                     <ListItemText
@@ -970,6 +1023,42 @@ const PostsDetail = () => {
                                                                     </Button>
                                                                 </>
                                                             )}
+                                                        </Box>
+                                                    )}
+
+                                                    {/* 💡 수정: 채택 버튼 스타일 변경 및 위치 조정 */}
+                                                    {isQuestionPostAuthor && (
+                                                        <Box
+                                                            sx={{ display: 'flex', gap: 1, alignItems: 'center', ml: 2, pl: 2, borderLeft: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` }}
+                                                        >
+                                                            <Button
+                                                                variant="contained" // isAdopted와 관계없이 contained로 통일하여 배경색으로 구분
+                                                                size="small"
+                                                                onClick={() => handleCommentAdopt(comment.id)}
+                                                                // 이미 채택되었거나 수정 중이거나 이미 해결된 경우(다른 댓글이 채택된 경우) 비활성화
+                                                                disabled={isAdopted || editingCommentId === comment.id || isSolved}
+                                                                startIcon={isAdopted ? <CheckCircle fontSize="small" /> : null}
+                                                                sx={{
+                                                                    fontWeight: 600,
+                                                                    // 💡 수정: 채택 여부에 따른 색상 변경
+                                                                    color: BG_COLOR, // 채택 여부와 관계없이 흰색 텍스트
+                                                                    backgroundColor: isAdopted ? PURPLE_COLOR : AQUA_BLUE, // 채택됨: PURPLE_COLOR, 채택 전: AQUA_BLUE
+                                                                    
+                                                                    // 💡 수정: 테두리 제거 및 호버 색상 변경
+                                                                    border: '1px solid transparent',
+                                                                    '&:hover': {
+                                                                        backgroundColor: isAdopted ? DARK_PURPLE_COLOR : DARK_AQUA_BLUE, 
+                                                                    },
+
+                                                                    minWidth: 'auto',
+                                                                    padding: '4px 8px',
+                                                                    height: '32px',
+                                                                    fontSize: '0.8rem',
+                                                                    flexShrink: 0,
+                                                                }}
+                                                            >
+                                                                {isAdopted ? '채택됨' : '채택'}
+                                                            </Button>
                                                         </Box>
                                                     )}
                                                 </Box>
