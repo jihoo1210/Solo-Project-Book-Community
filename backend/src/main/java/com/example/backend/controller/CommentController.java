@@ -4,6 +4,7 @@ import com.example.backend.controller.utilities.ResponseController;
 import com.example.backend.dto.comment.create.CommentCreateRequest;
 import com.example.backend.dto.comment.create.CommentCreateResponse;
 import com.example.backend.dto.comment.delete.CommentDeleteResponse;
+import com.example.backend.dto.comment.index.CommentIndexResponse;
 import com.example.backend.dto.comment.update.CommentUpdateRequest;
 import com.example.backend.dto.comment.update.CommentUpdateResponse;
 import com.example.backend.dto.likes.LikesResponse;
@@ -13,7 +14,10 @@ import com.example.backend.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.sql.Update;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -44,6 +48,25 @@ public class CommentController {
 
             CommentCreateResponse responseDto = service.create(dto, user, postsId);
 
+            return ResponseController.success(responseDto);
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<?> indexByUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                         @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                         @RequestParam(required = false, defaultValue = "") String searchField,
+                                         @RequestParam(required = false, defaultValue = "") String searchTerm,
+                                         @RequestParam(required = false, defaultValue = "0") Integer tab) {
+        try {
+            log.info("CustomUserDetails: {}", userDetails);
+            log.info("Pageable: {}", pageable);
+            log.info("searchField: {}", searchField);
+            log.info("searchTerm: {}", searchTerm);
+
+            Page<CommentIndexResponse> responseDto = service.indexByUser(userDetails.getUser(), pageable, searchField, searchTerm, tab);
             return ResponseController.success(responseDto);
         } catch (Exception e) {
             return ResponseController.fail(e.getMessage());

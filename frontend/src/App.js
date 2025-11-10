@@ -11,6 +11,8 @@ import PostsDetail from './components/posts/PostsDetail';
 import PostsCreate from './components/posts/PostsCreate';
 import PostsEdit from './components/posts/PostsEdit';
 import MyPage from './components/user/MyPage';
+import MyActivities from './components/user/MyActives';
+import MyFavorite from './components/user/MyFavorite';
 
 function App() {
 
@@ -33,7 +35,8 @@ function App() {
             </Route>
             <Route path='/my'>
               <Route path='page' element={<MyPage />} />
-              <Route path='post' element={'my posts'} />
+              <Route path='actives' element={<MyActivities />} />
+              <Route path='favorite' element={<MyFavorite />} />
             </Route>
             <Route path='*' element={<PostsList />} />
           </Routes>
