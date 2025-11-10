@@ -11,7 +11,7 @@ import com.example.backend.entity.Posts;
 import com.example.backend.entity.PostsLikes;
 import com.example.backend.entity.User;
 import com.example.backend.entity.UserViewed;
-import com.example.backend.entity.utilities.Subject;
+import com.example.backend.entity.utilities.PostsSubject;
 import com.example.backend.repository.*;
 import com.example.backend.service.utilities.PostLikesSpec;
 import com.example.backend.service.utilities.PostSearchSpec;
@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.example.backend.entity.utilities.Subject.*;
+import static com.example.backend.entity.utilities.PostsSubject.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -240,8 +240,8 @@ public class PostsService {
     public void create(PostsCreateRequest dto, User user) {
         log.info("게시글 생성 요청: {}", dto);
 
-        // 요청 DTO의 subject 문자열을 Subject Enum으로 변환
-        Subject dtoSubjectToEnum = switch (dto.getSubject()) {
+        // 요청 DTO의 subject 문자열을 PostsSubject Enum으로 변환
+        PostsSubject dtoSubjectToEnum = switch (dto.getSubject()) {
             case "질문" -> QUESTION;
             case "모집" -> RECRUIT;
             default -> SHARE; // 기본값은 '공유'
@@ -281,8 +281,8 @@ public class PostsService {
         // 작성자 권한 검증
         if(!target.getUser().equals(user)) throw new IllegalAccessException("다른 사용자의 글을 수정할 수 없습니다.");
 
-        // 요청 DTO의 subject 문자열을 Subject Enum으로 변환
-        Subject dtoSubjectToEnum = switch (dto.getSubject()) {
+        // 요청 DTO의 subject 문자열을 PostsSubject Enum으로 변환
+        PostsSubject dtoSubjectToEnum = switch (dto.getSubject()) {
             case "질문" -> QUESTION;
             case "모집" -> RECRUIT;
             default -> SHARE; // 기본값은 '공유'

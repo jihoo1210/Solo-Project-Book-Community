@@ -2,7 +2,7 @@ package com.example.backend.service.utilities;
 
 import com.example.backend.entity.Posts;
 import com.example.backend.entity.User;
-import com.example.backend.entity.utilities.Subject;
+import com.example.backend.entity.utilities.PostsSubject;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.backend.entity.utilities.Subject.*;
+import static com.example.backend.entity.utilities.PostsSubject.*;
 
 @Slf4j
 public class PostSearchSpec {
@@ -72,7 +72,7 @@ public class PostSearchSpec {
             }
 
             if (tab != null && tab > 0) {
-                Subject subjectValue;
+                PostsSubject subjectValue;
                 switch (tab) {
                     case 1: subjectValue = QUESTION; break;
                     case 2: subjectValue = SHARE; break;

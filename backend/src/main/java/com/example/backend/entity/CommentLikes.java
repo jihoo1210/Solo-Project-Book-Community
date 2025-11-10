@@ -21,4 +21,7 @@ public class CommentLikes {
 
     @ManyToOne
     private User user;
+
+    @ManyToOne
+    private Posts posts;
 }

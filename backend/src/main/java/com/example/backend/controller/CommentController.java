@@ -73,6 +73,21 @@ public class CommentController {
         }
     }
 
+    @GetMapping("/my/favorite")
+    public ResponseEntity<?> indexFavoriteByUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                 @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                                 @RequestParam(required = false, defaultValue = "") String searchField,
+                                                 @RequestParam(required = false, defaultValue = "") String searchTerm,
+                                                 @RequestParam(required = false, defaultValue = "0") Integer tab) {
+        log.info("CustomUserDetails: {}", userDetails);
+        log.info("Pageable: {}", pageable);
+        log.info("searchField: {}", searchField);
+        log.info("searchTerm: {}", searchTerm);
+
+        Page<CommentIndexResponse> responsePage = service.indexFavoriteByUser(userDetails.getUser(), pageable, searchField, searchTerm, tab);
+        return ResponseController.success(responsePage);
+    }
+
     // 좋아요 증감
     @GetMapping("/{commentId}/handle-likes")
     public ResponseEntity<?> handleLikes(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long commentId) {

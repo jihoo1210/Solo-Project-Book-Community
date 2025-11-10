@@ -17,7 +17,7 @@ spring:
   # jpa config
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: update # validate
     show-sql: true
     properties:
       hibernate:

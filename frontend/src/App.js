@@ -13,6 +13,7 @@ import PostsEdit from './components/posts/PostsEdit';
 import MyPage from './components/user/MyPage';
 import MyActivities from './components/user/MyActives';
 import MyFavorite from './components/user/MyFavorite';
+import MyAlert from './components/user/MyAlert';
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
               <Route path='page' element={<MyPage />} />
               <Route path='actives' element={<MyActivities />} />
               <Route path='favorite' element={<MyFavorite />} />
+              <Route path='alerts' element={<MyAlert />} />
             </Route>
             <Route path='*' element={<PostsList />} />
           </Routes>

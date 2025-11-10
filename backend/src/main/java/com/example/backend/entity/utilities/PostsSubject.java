@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum Subject {
+public enum PostsSubject {
     RECRUIT("모집"),
     QUESTION("질문"),
     SHARE("공유");

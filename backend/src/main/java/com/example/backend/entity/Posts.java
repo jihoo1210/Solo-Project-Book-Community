@@ -1,7 +1,7 @@
 package com.example.backend.entity;
 
 import com.example.backend.entity.utilities.BaseEntity;
-import com.example.backend.entity.utilities.Subject;
+import com.example.backend.entity.utilities.PostsSubject;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,7 +23,7 @@ public class Posts extends BaseEntity {
     private Long id;
 
     @Column
-    private Subject subject;
+    private PostsSubject subject;
 
     @Column
     private String title;
