@@ -187,6 +187,7 @@ public class PostsService {
                 .meetingInfo(target.getMeetingInfo())
                 .bookTitle(target.getBookTitle())
                 .pageNumber(target.getPageNumber())
+                .adoptedCommentId(target.getAdoptedComment() != null ? target.getAdoptedComment().getId() : null)
                 .build();
     }
 

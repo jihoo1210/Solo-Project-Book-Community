@@ -162,4 +162,16 @@ public class CommentService {
                 .savedInLikes(true)
                 .build());
     }
+
+    @Transactional
+    public void adopt(Long commentId) throws IllegalAccessException {
+        Comment target = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다"));
+        Posts targetPosts = target.getPosts();
+
+        if(targetPosts.getAdoptedComment() == null) {
+            targetPosts.setAdoptedComment(target);
+        } else {
+            throw new IllegalAccessException("이미 채택된 게시글이 존재합니다");
+        }
+    }
 }

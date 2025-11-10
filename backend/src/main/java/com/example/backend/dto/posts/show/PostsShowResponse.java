@@ -29,4 +29,5 @@ public class PostsShowResponse {
     private String meetingInfo;
     private String bookTitle;
     private Integer pageNumber;
+    private Long adoptedCommentId;
 }

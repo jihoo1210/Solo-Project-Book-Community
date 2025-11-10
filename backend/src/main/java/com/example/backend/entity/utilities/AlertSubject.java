@@ -1,0 +1,15 @@
+package com.example.backend.entity.utilities;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+public enum AlertSubject {
+    COMMENT("댓글"),
+    ADOPTED("채택"),
+    APPROVAL("승인"),
+    REJECTED("거절");
+
+    @Getter
+    private final String subject;
+}

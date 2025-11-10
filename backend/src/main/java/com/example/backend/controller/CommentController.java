@@ -103,6 +103,18 @@ public class CommentController {
         }
     }
 
+    @PostMapping("/{commentId}/adopt")
+    public ResponseEntity<?> adoptComment(@PathVariable Long commentId) {
+        try {
+            log.info("commentId: {}", commentId);
+
+            service.adopt(commentId);
+            return ResponseEntity.ok().build();
+        } catch (IllegalAccessException e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
     // 수정
     @PatchMapping("/{commentId}")
     public ResponseEntity<?> update(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long commentId, @RequestBody CommentUpdateRequest dto, BindingResult bindingResult) {

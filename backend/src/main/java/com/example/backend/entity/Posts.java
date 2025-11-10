@@ -60,13 +60,21 @@ public class Posts extends BaseEntity {
     @Column
     private String meetingInfo;
 
+    // 모집 게시글 댓글
+
     // 질문 게시글
     @Column
     private String bookTitle;
 
     @Column
     private Integer pageNumber;
-    
+
+    // 질문 게시글 댓글
+    // 한 게시글에 하나의 채택 댓글, 채택 댓글당 하나의 게시글
+    @Setter
+    @OneToOne
+    private Comment adoptedComment;
+
     public void increaseViewCount() {
         this.viewCount = getViewCount() + 1;
     }

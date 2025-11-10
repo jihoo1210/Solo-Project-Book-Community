@@ -4,45 +4,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="병합용 커밋">
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#19 Create Favorite and My Actives Pages and delete alert">
       <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AlertController.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/alert/AlertIndexResponse.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Alert.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/AlertViewed.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/utilities/AlertSubject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/utilities/AlertViewed.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/AlertRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/AlertViewedRepository.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/AlertService.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/AlertSearchSpec.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/CommentLikesSearchSpec.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/CommentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/CommentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/comment/index/CommentIndexResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/comment/index/CommentIndexResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/update/PostsUpdateResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/update/PostsUpdateResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/CommentLikes.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/CommentLikes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/show/PostsShowResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/posts/show/PostsShowResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Role.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/utilities/Subject.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/utilities/PostsSubject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/CommentLikesRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/CommentLikesRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/PostsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/PostsRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/JwtAuthorizationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/JwtAuthorizationFilter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/CommentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/CommentService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/CommentSearchSpec.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/CommentSearchSpec.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/PostLikesSpec.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/PostLikesSpec.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/PostSearchSpec.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/PostSearchSpec.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/AuthContext.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/AuthContext.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyFavorite.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyFavorite.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,8 +54,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Enum" />
-        <option value="Interface" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -256,7 +237,23 @@
       <option name="project" value="LOCAL" />
       <updated>1762488186919</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="#19 Create Favorite and My Actives Function">
+      <option name="closed" value="true" />
+      <created>1762758666086</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1762758666086</updated>
+    </task>
+    <task id="LOCAL-00016" summary="#19 Create Favorite and My Actives Pages and delete alert">
+      <option name="closed" value="true" />
+      <created>1762758713976</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1762758713976</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -285,14 +282,16 @@
     <MESSAGE value="#7 Update Posts Dto" />
     <MESSAGE value="#7 검색 및 페이지네이션 기능 구현" />
     <MESSAGE value="#14 Create myPage function + 내 게시판, 본 게시글 저장, 수정 내역 저장" />
-    <option name="LAST_COMMIT_MESSAGE" value="#14 Create myPage function + 내 게시판, 본 게시글 저장, 수정 내역 저장" />
+    <MESSAGE value="#19 Create Favorite and My Actives Function" />
+    <MESSAGE value="#19 Create Favorite and My Actives Pages and delete alert" />
+    <option name="LAST_COMMIT_MESSAGE" value="#19 Create Favorite and My Actives Pages and delete alert" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java</url>
-          <line>297</line>
+          <line>298</line>
           <properties class="com.example.backend.service.PostsService">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
