@@ -129,8 +129,14 @@ const PostEdit = () => {
                 const postData = response.data.result
 
                 if(postData) {
-
-                    setPost(postData);
+                    
+                    // ❌ 모집 인원수 필드 초기화 로직 추가
+                    setPost({
+                        ...postData,
+                        maxUserNumber: postData.maxUserNumber?.toString() || '', // API 데이터 사용 또는 기본값 설정
+                        meetingInfo: postData.meetingInfo || '',
+                    });
+                    
                     console.log(postData)
                     // 🚀 Tiptap Editor 상태 초기화
                     setContentHtml(postData.content || ''); // API에서 받은 content로 에디터 초기화
@@ -151,7 +157,7 @@ const PostEdit = () => {
     const onContentChange = (newHtml) => {
         setContentHtml(newHtml);
         // 내용이 입력되면 에러를 바로 해제 (HTML 태그 제거 후 빈 문자열인지 확인)
-        const strippedContent = newHtml.replace(/(<([^>]+)>)/gi, "");
+        const strippedContent = newHtml.replace(/(<([^>]+)>)/gi, "").trim();
         if (strippedContent !== '') {
             setFieldErrors(prev => ({ ...prev, content: undefined }));
         }
@@ -181,8 +187,8 @@ const PostEdit = () => {
         // posts 상태를 임시로 저장
         const prevPost = post;
 
-        // PostsCreate.js와 동일하게 pageNumber에 숫자만 허용
-        if(name === 'pageNumber') {
+        // ❌ pageNumber와 maxUserNumber에 숫자만 허용하도록 수정
+        if(name === 'pageNumber' || name === 'maxUserNumber') {
             value = value.replace(/[^0-9]/g, '')
         }
 
@@ -206,6 +212,7 @@ const PostEdit = () => {
                 pageNumber: '',
                 region: '',
                 meetingInfo: '',
+                maxUserNumber: '', // <<<<<<< 모집 인원수 초기화 추가
             });
 
         } else {
@@ -264,6 +271,11 @@ const PostEdit = () => {
                 errors.meetingInfo = '모임 일정을 입력해야 합니다.';
                 hasError = true;
             }
+            // ❌ 모집 인원수 유효성 검사 추가
+            if (post.maxUserNumber === '' || parseInt(post.maxUserNumber) <= 0) {
+                errors.maxUserNumber = '모집 인원수를 1명 이상 입력해야 합니다.';
+                hasError = true;
+            }
         }
 
         // 에러 상태 업데이트
@@ -289,6 +301,7 @@ const PostEdit = () => {
                 ...(showRecruitmentFields && {
                     region: post.region,
                     meetingInfo: post.meetingInfo, // dayInput을 meetingInfo로 매핑
+                    maxUserNumber: post.maxUserNumber, // <<<<<<< 모집 인원수 데이터 추가
                 }),
             };
 
@@ -297,16 +310,16 @@ const PostEdit = () => {
                 await apiClient.patch(`/posts/${id}`, dataToUpdate);
                 navigate(`/post/${id}`); // 수정 완료 후 상세 페이지로 이동
             } catch (error) {
+                console.log(error)
                 console.error("게시글 수정 실패:", error);
-                const message = error.response?.data?.result?.message || "게시글 수정에 실패했습니다. 다시 시도해 주세요.";
+                const message = error.response?.data?.message || "게시글 수정에 실패했습니다. 다시 시도해 주세요.";
                 alert(message);
             }
         }
     };
 
     // UI 구조는 PostCreate.js와 동일하게 유지
-    // (AuthorAndSubjectGrid, TitleGrid, QuestionFields, RecruitmentFields 컴포넌트는 동일하게 유지)
-    // ... (기존 컴포넌트 코드)
+    // (AuthorAndSubjectGrid, TitleGrid, QuestionFields 컴포넌트는 동일하게 유지)
     
     const AuthorAndSubjectGrid = (
         <>
@@ -428,7 +441,8 @@ const PostEdit = () => {
                     />
                 </Grid>
 
-                <Grid size={{xs: 12}}>
+                {/* ❌ 모임 일정 Grid size 수정 */}
+                <Grid size={{xs: 12, sm: 9}}>
                     <CustomTextField
                         fullWidth
                         label="모임 일정 (예: 매주 토요일 오후 2시)"
@@ -439,6 +453,21 @@ const PostEdit = () => {
                         // ❌ required 제거
                         error={!!fieldErrors.meetingInfo} // 에러 상태 바인딩
                         helperText={fieldErrors.meetingInfo} // 에러 메시지 바인딩
+                    />
+                </Grid>
+
+                {/* ❌ 모집 인원수 필드 추가 */}
+                <Grid size={{xs: 12, sm: 3}}>
+                    <CustomTextField
+                        fullWidth
+                        label="모집 인원수 (숫자만)"
+                        name="maxUserNumber"
+                        value={post.maxUserNumber}
+                        onChange={handleChange}
+                        variant="outlined"
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // 숫자만 입력되도록 힌트 추가
+                        error={!!fieldErrors.maxUserNumber} // 에러 상태 바인딩
+                        helperText={fieldErrors.maxUserNumber} // 에러 메시지 바인딩
                     />
                 </Grid>
             </Grid>
