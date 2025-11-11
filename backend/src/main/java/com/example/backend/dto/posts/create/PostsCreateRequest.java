@@ -29,4 +29,6 @@ public class PostsCreateRequest {
     private String bookTitle;
 
     private Integer pageNumber;
+
+    private Integer maxUserNumber;
 }

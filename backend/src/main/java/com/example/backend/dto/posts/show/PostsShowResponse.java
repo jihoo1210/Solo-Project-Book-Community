@@ -27,6 +27,9 @@ public class PostsShowResponse {
     private List<CommentResponse> comments;
     private String region;
     private String meetingInfo;
+    private Integer maxUserNumber;
+    private Integer currentUserNumber;
+    private boolean savedInRecruitment;
     private String bookTitle;
     private Integer pageNumber;
     private Long adoptedCommentId;
