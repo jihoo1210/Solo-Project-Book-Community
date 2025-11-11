@@ -9,7 +9,7 @@ import {
     CircularProgress
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import SortIcon from '@mui/icons-material/Sort';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -176,6 +176,10 @@ const getPostDateInfo = (modifiedDateString, createdDateString) => {
 
 const PostsList = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // 내가 쓴 글 보기 모드인지 확인
+    const isMyPostsMode = location.pathname === '/my-posts';
 
     // API 연동 및 데이터 관련 상태
     const [posts, setPosts] = useState([]);
@@ -204,7 +208,7 @@ const PostsList = () => {
      * 게시글 목록 API 호출 로직
      */
     useEffect(() => {
-        const fetchPosts = async (currentPage, currentTab, currentSortOrder, currentRowsPerPage, currentSearchField, currentSearchTerm) => {
+        const fetchPosts = async (currentPage, currentTab, currentSortOrder, currentRowsPerPage, currentSearchField, currentSearchTerm, isMyMode) => {
             setIsLoading(true);
             setError(null);
 
@@ -312,7 +316,7 @@ const PostsList = () => {
                     gutterBottom
                     sx={{ fontWeight: 700, mb: 4, color: TEXT_COLOR, fontSize: { xs: '2rem', md: '2.5rem' }, textAlign: {xs: 'center', md: 'left'} }}
                 >
-                    게시판
+                    {isMyPostsMode ? '내 게시판' : '게시판'}
                 </Typography>
                 <PostsCard elevation={0}>
                     <Box
