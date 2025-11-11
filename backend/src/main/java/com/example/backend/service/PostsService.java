@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.example.backend.entity.utilities.AlertSubject.*;
 import static com.example.backend.entity.utilities.PostsSubject.*;
 
 @Slf4j
@@ -38,6 +39,7 @@ public class PostsService {
     private final PostsLikesRepository postsLikesRepository;
     private final CommentLikesRepository commentLikesRepository;
     private final UserViewedRepository userViewedRepository;
+    private final AlertRepository alertRepository;
 
     /**
      * 전체 게시글 목록을 검색 조건과 페이징 조건에 따라 조회합니다.
@@ -168,6 +170,10 @@ public class PostsService {
             userViewedRepository.save(userViewed);
         }
 
+        boolean isSavedInRecruitment = alertRepository.existsByPostsAndSenderAndSubject(target, user, APPLICATION)
+                || alertRepository.existsByPostsAndSenderAndSubject(target, user, APPROVAL)
+                || alertRepository.existsByPostsAndSenderAndSubject(target, user, REJECTED);
+
         // 게시글 상세 정보를 DTO로 빌드
         return PostsShowResponse.builder()
                 .id(target.getId())
@@ -185,6 +191,10 @@ public class PostsService {
                 // 주제별 추가 정보 (모집, 질문)
                 .region(target.getRegion())
                 .meetingInfo(target.getMeetingInfo())
+                .maxUserNumber(target.getMaxUserNumber())
+                .currentUserNumber(target.getCurrentUserNumber() != null ? target.getCurrentUserNumber() : 0)
+                // 모임 신청했는지 여부
+                .savedInRecruitment(isSavedInRecruitment)
                 .bookTitle(target.getBookTitle())
                 .pageNumber(target.getPageNumber())
                 .adoptedCommentId(target.getAdoptedComment() != null ? target.getAdoptedComment().getId() : null)
@@ -257,6 +267,7 @@ public class PostsService {
                 .pageNumber(dto.getPageNumber())
                 .region(dto.getRegion())
                 .meetingInfo(dto.getMeetingInfo())
+                .maxUserNumber(dto.getMaxUserNumber())
                 .user(user)
                 .build();
 
@@ -298,6 +309,14 @@ public class PostsService {
         target.setBookTitle(dto.getBookTitle());
         target.setPageNumber(dto.getPageNumber());
         target.setModifiedDate(LocalDateTime.now());
+        if (dto.getMaxUserNumber() != null) {
+            if (dto.getMaxUserNumber() >= target.getCurrentUserNumber()) {
+                target.setMaxUserNumber(dto.getMaxUserNumber());
+            }
+            else {
+                throw new IllegalArgumentException("현재 모집된 인원수보다 최대 인원수가 더 적을 수 없습니다.");
+            }
+        }
     }
 
     /**
