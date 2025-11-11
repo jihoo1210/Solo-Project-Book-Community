@@ -8,10 +8,7 @@ import com.example.backend.dto.comment.update.CommentUpdateRequest;
 import com.example.backend.dto.comment.update.CommentUpdateResponse;
 import com.example.backend.dto.likes.LikesResponse;
 import com.example.backend.entity.*;
-import com.example.backend.repository.AlertRepository;
-import com.example.backend.repository.CommentLikesRepository;
-import com.example.backend.repository.CommentRepository;
-import com.example.backend.repository.PostsRepository;
+import com.example.backend.repository.*;
 import com.example.backend.service.utilities.CommentLikesSearchSpec;
 import com.example.backend.service.utilities.CommentSearchSpec;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +22,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 
-import static com.example.backend.entity.utilities.AlertSubject.COMMENT;
+import static com.example.backend.entity.utilities.AlertSubject.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,6 +33,7 @@ public class CommentService {
     private final PostsRepository postsRepository;
     private final CommentLikesRepository commentLikesRepository;
     private final AlertRepository alertRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public CommentCreateResponse create(CommentCreateRequest dto, User user, Long postsId) {
@@ -52,7 +50,10 @@ public class CommentService {
         // 알림 생성 및 작성자에게 전달
         Alert alert = Alert.builder()
                 .subject(COMMENT)
+                // 게시글 작성자
                 .user(posts.getUser())
+                // 댓글 작성자(나)
+                .sender(user)
                 .posts(posts)
                 .content(target.getContent())
                 .build();
@@ -164,14 +165,43 @@ public class CommentService {
     }
 
     @Transactional
-    public void adopt(Long commentId) throws IllegalAccessException {
+    public void adopt(User user, Long commentId) throws IllegalAccessException {
         Comment target = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다"));
         Posts targetPosts = target.getPosts();
 
         if(targetPosts.getAdoptedComment() == null) {
             targetPosts.setAdoptedComment(target);
+
+            Alert newAlert = Alert.builder()
+                    // 채택된 댓글 작성자
+                    .user(target.getUser())
+                    // 댓글을 채택한 사람(나)
+                    .sender(user)
+                    .posts(targetPosts)
+                    .content(target.getContent())
+                    .subject(ADOPTED)
+                    .build();
+            alertRepository.save(newAlert);
         } else {
             throw new IllegalAccessException("이미 채택된 게시글이 존재합니다");
         }
+    }
+
+    // 신청만 하는 것이기 때문에 ALERT에만 저장한 후 게시글 작성자가 수락하면 DB에 저장
+    @Transactional
+    public void applyRecruitment(CommentCreateRequest dto, User user, Long postsId) {
+        Posts posts = postsRepository.findById(postsId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+        User postsUser = posts.getUser();
+
+        Alert alert = Alert.builder()
+                // 게시글 작성자
+                .user(postsUser)
+                // 신청 요청을 보냄(나)
+                .sender(user)
+                .posts(posts)
+                .content(dto.getContent())
+                .subject(APPLICATION)
+                .build();
+        alertRepository.save(alert);
     }
 }
