@@ -18,8 +18,13 @@ public class Alert extends BaseEntity {
     @Column
     private AlertSubject subject;
 
+    // 게시글 작성자
     @ManyToOne
     private User user;
+
+    // 답변 작성자
+    @ManyToOne
+    private User sender;
 
     @ManyToOne
     private Posts posts;

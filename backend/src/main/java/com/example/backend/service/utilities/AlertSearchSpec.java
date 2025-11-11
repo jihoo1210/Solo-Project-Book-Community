@@ -57,7 +57,7 @@ public class AlertSearchSpec {
                 } else if ("작성자".equals(searchField)) {
                     Expression<String> nonSpacedLowerTitle = builder.function(
                             "REPLACE", String.class,
-                            builder.lower(root.get("user").get("username")),
+                            builder.lower(root.get("sender").get("username")),
                             builder.literal(" "),
                             builder.literal("")
                     );
@@ -65,19 +65,34 @@ public class AlertSearchSpec {
                 }
             }
                 if (tab != null && tab > 0) {
-                    AlertSubject subjectValue;
-                    switch (tab) {
-                        case 1: subjectValue = COMMENT; break;
-                        case 2: subjectValue = ADOPTED; break;
-                        case 3: subjectValue = APPROVAL; break;
-                        case 4: subjectValue = REJECTED; break;
-                        default: return builder.and(predicates.toArray(new Predicate[0])); // 유효하지 않은 탭은 무시
-                    }
 
-                    log.info("tab: {}, subjectValue: {}", tab, subjectValue);
-                    log.info("entity subject: {}, subjectValue: {}", root.get("subject").toString(), subjectValue);
-                    // Enum 값을 사용하여 Posts 엔티티의 subject 필드와 일치하는 조건 추가
-                    predicates.add(builder.equal(root.get("subject"), subjectValue));
+                    if(tab == 4) { // 💡 수정: 새로운 '신청' 탭 (tab = 5) 처리
+                        log.info("tab: 4, Processing APPLICATION filter (APPROVAL OR REJECTED)");
+
+                        // APPROVAL 또는 REJECTED 조건 중 하나를 만족하는 OR Predicate 생성
+                        Predicate approvalPredicate = builder.equal(root.get("subject"), APPROVAL);
+                        Predicate rejectedPredicate = builder.equal(root.get("subject"), REJECTED);
+                        predicates.add(builder.or(approvalPredicate, rejectedPredicate)); // ⬅️ OR 조건 추가
+                    } else {
+                        AlertSubject subjectValue;
+                        switch (tab) {
+                            case 1:
+                                subjectValue = COMMENT;
+                                break;
+                            case 2:
+                                subjectValue = ADOPTED;
+                                break;
+                            case 3:
+                                subjectValue = APPLICATION;
+                                break;
+                            default:
+                                return builder.and(predicates.toArray(new Predicate[0])); // 유효하지 않은 탭은 무시
+                        }
+                        log.info("tab: {}, subjectValue: {}", tab, subjectValue);
+                        log.info("entity subject: {}, subjectValue: {}", root.get("subject").toString(), subjectValue);
+                        // Enum 값을 사용하여 Posts 엔티티의 subject 필드와 일치하는 조건 추가
+                        predicates.add(builder.equal(root.get("subject"), subjectValue));
+                    }
                 }
                 return builder.and(predicates.toArray(new Predicate[0]));
         });
