@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 public enum AlertSubject {
     COMMENT("댓글"),
     ADOPTED("채택"),
+    APPLICATION("신청"),
     APPROVAL("승인"),
     REJECTED("거절");
 

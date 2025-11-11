@@ -34,7 +34,7 @@ public class AlertService {
                 .subject(item.getSubject().getSubject())
                 .postsId(item.getPosts().getId())
                 .postsTitle(item.getPosts().getTitle())
-                .username(item.getUser().getUsername())
+                .username(item.getSender().getUsername())
                 .commentNumber(item.getPosts().getComments().size())
                 .content(item.getContent())
                 .createdDate(item.getCreatedDate())
