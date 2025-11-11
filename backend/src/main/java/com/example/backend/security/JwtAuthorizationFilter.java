@@ -43,7 +43,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             log.info("token: {}", token);
             // 2. 토큰이 존재하고 내용이 있는 경우에만 검증을 진행합니다.
             if(StringUtils.hasText(token)) {
-                // 3. TokenProvider를 사용하여 토큰을 검증하고 사용자 이름(Subject)을 추출합니다.
+                // 3. TokenProvider를 사용하여 토큰을 검증하고 사용자 이름(PostsSubject)을 추출합니다.
                 String username = tokenProvider.validateAndGetUsername(token);
 
                 // 4. 추출된 사용자 이름으로 DB에서 UserDetails 객체를 로드합니다.

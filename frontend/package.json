@@ -12,6 +12,14 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "@tiptap/extension-color": "^3.10.4",
+    "@tiptap/extension-highlight": "^3.10.4",
+    "@tiptap/extension-image": "^3.10.4",
+    "@tiptap/extension-strike": "^3.10.4",
+    "@tiptap/extension-text-align": "^3.10.4",
+    "@tiptap/extension-text-style": "^3.10.4",
+    "@tiptap/react": "^3.10.4",
+    "@tiptap/starter-kit": "^3.10.4",
     "axios": "^1.13.1",
     "font-awesome": "^4.7.0",
     "react": "^19.2.0",
@@ -19,6 +27,7 @@
     "react-froala-wysiwyg": "^4.7.0",
     "react-router-dom": "^7.9.5",
     "react-scripts": "5.0.1",
+    "tiptap-extension-resizable-image": "^2.0.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

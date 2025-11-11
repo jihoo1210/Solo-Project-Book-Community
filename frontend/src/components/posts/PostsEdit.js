@@ -9,10 +9,9 @@ import { styled, alpha } from '@mui/material/styles';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-// 🌺 Froala Wysiwyg Editor (react-froala-wysiwyg) Import 추가
-import WysiwygEditor from 'react-froala-wysiwyg';
+// 🚀 Tiptap Editor Import로 교체
+import TiptapEditor from '../utilities/TiptabEditor'; // TiptapEditor 컴포넌트를 이 파일에 추가하거나 별도 파일에서 import
 
-import { useAuth } from '../auth/AuthContext';
 import apiClient from '../../api/Api-Service';
 
 // 색상 정의 (기존 파일들과 일관성 유지)
@@ -21,7 +20,9 @@ const TEXT_COLOR = '#000000';
 const LIGHT_TEXT_COLOR = '#555555';
 const HEADER_HEIGHT = '64px';
 
-// PostCreate.js와 동일한 스타일 재사용
+// (CreateWrapper, CreateCard, CustomTextField, DisabledTextField, ActionButton 스타일 정의는 동일하게 유지)
+// ... (기존 스타일 코드)
+
 const CreateWrapper = styled(Box)(({ theme }) => ({
     marginTop: HEADER_HEIGHT,
     minHeight: `calc(100vh - ${HEADER_HEIGHT} - 150px)`,
@@ -32,13 +33,12 @@ const CreateWrapper = styled(Box)(({ theme }) => ({
 }));
 
 const CreateCard = styled(Paper)(({ theme }) => ({
+    width: '100%',
     padding: theme.spacing(5),
     borderRadius: (theme.shape?.borderRadius || 4) * 2,
     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
     border: `1px solid ${TEXT_COLOR}`,
     backgroundColor: BG_COLOR,
-    width: '100%',
-    maxWidth: '800px', // PostsCreate.js와 동일하게 maxWidth 추가
 
     [theme.breakpoints.down('sm')]: {
         padding: theme.spacing(3),
@@ -99,21 +99,16 @@ const ActionButton = styled(Button)(({ theme }) => ({
 const PostEdit = () => {
     const navigate = useNavigate();
     const { id } = useParams(); // URL에서 게시글 ID를 가져옴
-    const { user } = useAuth();
 
     // API 응답에서 로드될 게시글 정보
     const [post, setPost] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // 🌺 Froala Editor 내용 상태
+    // 🚀 Tiptap Editor 내용 상태
     const [contentHtml, setContentHtml] = useState('');
 
     // 유효성 검사 에러 상태 추가
     const [fieldErrors, setFieldErrors] = useState({});
-
-    // 🌟 수정: 게시판 Select 클릭 시 경고 메시지 표시 상태 -> **초기값을 true로 변경**
-    const [showSubjectWarning, setShowSubjectWarning] = useState(true);
-
 
     const getCurrentDateTime = () => {
         const now = new Date();
@@ -137,7 +132,7 @@ const PostEdit = () => {
 
                     setPost(postData);
                     console.log(postData)
-                    // 🌺 Froala Editor 상태 초기화
+                    // 🚀 Tiptap Editor 상태 초기화
                     setContentHtml(postData.content || ''); // API에서 받은 content로 에디터 초기화
                 }
             } catch (error) {
@@ -155,17 +150,12 @@ const PostEdit = () => {
     // Editor 내용 변경 핸들러 (PostsCreate.js 참조)
     const onContentChange = (newHtml) => {
         setContentHtml(newHtml);
-        // 내용이 입력되면 에러를 바로 해제
-        if (newHtml.replace(/(<([^>]+)>)/gi, "").trim() !== '') {
+        // 내용이 입력되면 에러를 바로 해제 (HTML 태그 제거 후 빈 문자열인지 확인)
+        const strippedContent = newHtml.replace(/(<([^>]+)>)/gi, "");
+        if (strippedContent !== '') {
             setFieldErrors(prev => ({ ...prev, content: undefined }));
         }
     };
-
-    // 🌟 삭제: Subject Select 클릭 시 경고 메시지 표시 로직은 제거됨
-    // const handleSubjectOpen = () => {
-    //     setShowSubjectWarning(true);
-    // };
-
 
     // API 응답 기반 변수 준비 (post가 로드되지 않았을 경우를 대비)
     const author = post ? post.username : '불러오는 중...'; // API 응답의 writer 필드 사용
@@ -217,7 +207,6 @@ const PostEdit = () => {
                 region: '',
                 meetingInfo: '',
             });
-            // 🌟 삭제: Select 항목이 선택되면 경고 메시지 비활성화 로직 제거
 
         } else {
             setPost(prev => ({
@@ -246,7 +235,7 @@ const PostEdit = () => {
             hasError = true;
         }
 
-        // 2. 내용 (Content - Froala Editor)
+        // 2. 내용 (Content - Tiptap Editor)
         const strippedContent = contentHtml.replace(/(<([^>]+)>)/gi, "").trim();
         if (!strippedContent) {
             errors.content = '내용을 입력해야 합니다.';
@@ -291,7 +280,7 @@ const PostEdit = () => {
                 id: id,
                 subject: post.subject,
                 title: post.title,
-                content: contentHtml, // 🌺 contentHtml 사용
+                content: contentHtml, // 🚀 contentHtml 사용
                 // ... (조건별 필드 추가 로직)
                 ...(showQuestionFields && {
                     bookTitle: post.bookTitle,
@@ -306,7 +295,6 @@ const PostEdit = () => {
             try {
                 // 실제 API 호출 로직: updatePost(id, dataToUpdate)
                 await apiClient.patch(`/posts/${id}`, dataToUpdate);
-                alert("게시글을 성공적으로 수정했습니다.");
                 navigate(`/post/${id}`); // 수정 완료 후 상세 페이지로 이동
             } catch (error) {
                 console.error("게시글 수정 실패:", error);
@@ -317,9 +305,12 @@ const PostEdit = () => {
     };
 
     // UI 구조는 PostCreate.js와 동일하게 유지
+    // (AuthorAndSubjectGrid, TitleGrid, QuestionFields, RecruitmentFields 컴포넌트는 동일하게 유지)
+    // ... (기존 컴포넌트 코드)
+    
     const AuthorAndSubjectGrid = (
         <>
-            <Grid size={{xs:6, sm: 3}}>
+            <Grid size={{xs: 12, sm: 6}}>
                 <FormControl fullWidth variant="outlined"> {/* required 제거 (Custom Validation으로 대체) */}
                     <InputLabel
                         id="subject-label"
@@ -333,7 +324,6 @@ const PostEdit = () => {
                         name="subject"
                         value={post.subject} // post 상태 사용
                         onChange={handleChange}
-                        // onOpen={handleSubjectOpen} // 🌟 삭제: Select 메뉴 클릭 시 경고 표시 로직 제거
                         label="게시판"
                         sx={{
                             '& .MuiOutlinedInput-notchedOutline': { borderColor: TEXT_COLOR },
@@ -347,9 +337,6 @@ const PostEdit = () => {
                         <MenuItem value={'모집'}>모집</MenuItem>
                     </Select>
                 </FormControl>
-
-                {/* 🌟 유지: 경고 메시지 표시 (showSubjectWarning 상태는 이제 항상 true) */}
-                {showSubjectWarning && (
                     <Typography
                         color="error" // 붉은색 인라인 글씨
                         variant="caption"
@@ -358,10 +345,9 @@ const PostEdit = () => {
                     >
                         주의! 게시글의 종류를 바꾸면 이전의 내용과 제목을 제외한 모든 정보가 초기화 됩니다.
                     </Typography>
-                )}
             </Grid>
 
-            <Grid size={{xs:6, sm:3}}>
+            <Grid size={{xs: 12, sm: 6}}>
                 <DisabledTextField // PostsCreate.js의 스타일을 적용한 DisabledTextField 사용
                     fullWidth
                     label="작성자"
@@ -375,7 +361,7 @@ const PostEdit = () => {
     );
 
     const TitleGrid = (
-        <Grid size={{xs:12}}>
+        <Grid size={{xs: 12}}>
             <CustomTextField
                 fullWidth
                 label="게시글 제목"
@@ -392,9 +378,9 @@ const PostEdit = () => {
 
     // 질문 게시글용 추가 필드
     const QuestionFields = (
-        <Grid size={{xs:12}}>
+        <Grid size={{xs: 12}}>
             <Grid container spacing={3}>
-                <Grid size={{xs:12, sm:6}}>
+                <Grid size={{xs: 12, sm: 6}}>
                     <CustomTextField
                         fullWidth
                         label="책 제목"
@@ -407,7 +393,7 @@ const PostEdit = () => {
                         helperText={fieldErrors.bookTitle} // 에러 메시지 바인딩
                     />
                 </Grid>
-                <Grid size={{xs:12, sm:6}}>
+                <Grid size={{xs: 12, sm: 6}}>
                     <CustomTextField
                         fullWidth
                         label="페이지 번호"
@@ -426,9 +412,9 @@ const PostEdit = () => {
 
     // 모집 게시글용 추가 필드
     const RecruitmentFields = (
-        <Grid size={{xs:12}}>
+        <Grid size={{xs: 12}}>
             <Grid container spacing={3}>
-                <Grid size={{xs:12}}>
+                <Grid size={{xs: 12}}>
                     <CustomTextField
                         fullWidth
                         label="지역"
@@ -442,7 +428,7 @@ const PostEdit = () => {
                     />
                 </Grid>
 
-                <Grid size={{xs:12}}>
+                <Grid size={{xs: 12}}>
                     <CustomTextField
                         fullWidth
                         label="모임 일정 (예: 매주 토요일 오후 2시)"
@@ -486,7 +472,7 @@ const PostEdit = () => {
 
                             {showRecruitmentFields && RecruitmentFields}
 
-                            <Grid size={{xs:12}}>
+                            <Grid size={{xs: 12}}>
                                 <InputLabel
                                     sx={{
                                         // 에러 상태에 따라 텍스트 색상 변경 (PostsCreate.js 참조)
@@ -501,53 +487,13 @@ const PostEdit = () => {
                                     내용
                                 </InputLabel>
 
-                                {/* 🌺 Froala Wysiwyg Editor 컴포넌트 적용 및 MUI 디자인 맞춤 (PostsCreate.js 참조) */}
-                                <Box sx={{
-                                    border: `1px solid ${TEXT_COLOR}`, // MUI TextField처럼 Box에 테두리 적용
-                                    borderRadius: '4px',
-                                    // 에러 상태일 때 테두리 색상을 빨간색으로 변경
-                                    borderColor: fieldErrors.content ? 'error.main' : TEXT_COLOR,
-                                    '& .fr-box': {
-                                        border: 'none !important',
-                                        backgroundColor: BG_COLOR,
-                                    },
-                                    '& .fr-box.fr-basic .fr-wrapper': {
-                                        minHeight: '400px',
-                                    },
-                                    '& .fr-wrapper.show-placeholder': {
-                                        border: 'none !important',
-                                    },
-                                    '& .fr-second-toolbar': {
-                                        border: 'none !important',
-                                    },
-                                    '& .fr-toolbar': {
-                                        backgroundColor: BG_COLOR,
-                                        border: 'none !important',
-                                    },
-                                    '& .fr-wrapper': {
-                                        border: 'none !important'
-                                    }
-                                }}>
-                                    <WysiwygEditor
-                                        model={contentHtml}
-                                        onModelChange={onContentChange}
-                                        config={{
-                                            placeholderText: '내용을 입력하세요...',
-                                            attribution: false,
-                                            heightMin: 400,
-                                            theme: 'default',
-                                            // language: 'ko',
-                                            toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', '|',
-                                                'fontSize', '|',
-                                                'align',
-                                                'formatOL', 'formatUL', '|',
-                                                'insertLink', '|',
-                                                'textColor', 'backgroundColor', '|',
-                                                'undo', 'redo', '|'
-                                            ],
-                                        }}
-                                    />
-                                </Box>
+                                {/* 🚀 TiptapEditor 컴포넌트로 교체 */}
+                                <TiptapEditor
+                                    initialContent={contentHtml}
+                                    onContentChange={onContentChange}
+                                    placeholderText="내용을 입력하세요..."
+                                    error={!!fieldErrors.content} // 에러 상태 전달
+                                />
 
                                 {/* 에디터 에러 메시지 표시 (PostsCreate.js 참조) */}
                                 {fieldErrors.content && (
@@ -575,7 +521,7 @@ const PostEdit = () => {
                                 </Typography>
                             </Grid>
 
-                            <Grid size={{xs:12}}>
+                            <Grid size={{xs: 12}}>
                                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
                                     <Button
                                         variant="outlined"

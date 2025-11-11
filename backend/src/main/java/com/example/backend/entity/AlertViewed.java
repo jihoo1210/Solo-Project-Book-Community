@@ -12,16 +12,13 @@ import lombok.NoArgsConstructor;
 @Data
 
 @Entity
-public class CommentLikes {
+public class AlertViewed {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    private Comment comment;
 
     @ManyToOne
     private User user;
 
     @ManyToOne
-    private Posts posts;
+    private Alert alert;
 }

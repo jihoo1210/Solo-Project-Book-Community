@@ -11,8 +11,9 @@ import com.example.backend.entity.Posts;
 import com.example.backend.entity.PostsLikes;
 import com.example.backend.entity.User;
 import com.example.backend.entity.UserViewed;
-import com.example.backend.entity.utilities.Subject;
+import com.example.backend.entity.utilities.PostsSubject;
 import com.example.backend.repository.*;
+import com.example.backend.service.utilities.PostLikesSpec;
 import com.example.backend.service.utilities.PostSearchSpec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.example.backend.entity.utilities.Subject.*;
+import static com.example.backend.entity.utilities.PostsSubject.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -112,6 +113,27 @@ public class PostsService {
                 .build());
     }
 
+    public Page<PostsIndexResponse> indexFavoriteByUser(User user, Pageable pageable, String searchField, String searchTerm, Integer tab) {
+        Specification<PostsLikes> spec = PostLikesSpec.search(user, searchField, searchTerm, tab);
+
+        Page<PostsLikes> postsLikesPage = postsLikesRepository.findAll(spec, pageable);
+
+        return postsLikesPage.map(postsLikes -> PostsIndexResponse.builder()
+                .id(postsLikes.getPosts().getId())
+                .subject(postsLikes.getPosts().getSubject().getSubject())
+                .title(postsLikes.getPosts().getTitle())
+                .username(postsLikes.getPosts().getUser().getUsername())
+                .createdDate(postsLikes.getPosts().getCreatedDate())
+                .modifiedDate(postsLikes.getPosts().getModifiedDate())
+                .likes(postsLikes.getPosts().getLikes().size())
+                .commentNumber(postsLikes.getPosts().getComments().size())
+                // 현재 사용자의 게시글 좋아요 여부를 확인하여 포함
+                .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, postsLikes.getPosts()))
+                .viewCount(postsLikes.getPosts().getViewCount())
+                .savedInViews(userViewedRepository.existsByUserAndPosts(user, postsLikes.getPosts()))
+                .build());
+    }
+
     /**
      * 특정 게시글을 상세 조회하고, 조회수를 1 증가시킵니다.
      *
@@ -165,6 +187,7 @@ public class PostsService {
                 .meetingInfo(target.getMeetingInfo())
                 .bookTitle(target.getBookTitle())
                 .pageNumber(target.getPageNumber())
+                .adoptedCommentId(target.getAdoptedComment() != null ? target.getAdoptedComment().getId() : null)
                 .build();
     }
 
@@ -218,8 +241,8 @@ public class PostsService {
     public void create(PostsCreateRequest dto, User user) {
         log.info("게시글 생성 요청: {}", dto);
 
-        // 요청 DTO의 subject 문자열을 Subject Enum으로 변환
-        Subject dtoSubjectToEnum = switch (dto.getSubject()) {
+        // 요청 DTO의 subject 문자열을 PostsSubject Enum으로 변환
+        PostsSubject dtoSubjectToEnum = switch (dto.getSubject()) {
             case "질문" -> QUESTION;
             case "모집" -> RECRUIT;
             default -> SHARE; // 기본값은 '공유'
@@ -259,8 +282,8 @@ public class PostsService {
         // 작성자 권한 검증
         if(!target.getUser().equals(user)) throw new IllegalAccessException("다른 사용자의 글을 수정할 수 없습니다.");
 
-        // 요청 DTO의 subject 문자열을 Subject Enum으로 변환
-        Subject dtoSubjectToEnum = switch (dto.getSubject()) {
+        // 요청 DTO의 subject 문자열을 PostsSubject Enum으로 변환
+        PostsSubject dtoSubjectToEnum = switch (dto.getSubject()) {
             case "질문" -> QUESTION;
             case "모집" -> RECRUIT;
             default -> SHARE; // 기본값은 '공유'

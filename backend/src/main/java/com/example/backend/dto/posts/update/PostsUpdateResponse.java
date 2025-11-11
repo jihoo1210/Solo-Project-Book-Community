@@ -1,6 +1,6 @@
 package com.example.backend.dto.posts.update;
 
-import com.example.backend.entity.utilities.Subject;
+import com.example.backend.entity.utilities.PostsSubject;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Data
 public class PostsUpdateResponse {
     private Long id;
-    private Subject subject;
+    private PostsSubject subject;
     private String title;
     private String content;
     private String username;

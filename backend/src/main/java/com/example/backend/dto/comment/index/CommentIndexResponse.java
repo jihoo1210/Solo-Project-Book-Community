@@ -1,33 +1,26 @@
-package com.example.backend.dto.posts.show;
+package com.example.backend.dto.comment.index;
 
-import com.example.backend.dto.comment.CommentResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class PostsShowResponse {
+public class CommentIndexResponse {
     private Long id;
+    private Long postId;
+    private String postTitle;
     private String subject;
-    private String title;
     private String content;
     private String username;
     private LocalDateTime modifiedDate;
     private LocalDateTime createdDate;
-    private Long viewCount;
+    private Integer commentNumber;
     private Integer likes;
     private boolean savedInLikes;
-    private List<CommentResponse> comments;
-    private String region;
-    private String meetingInfo;
-    private String bookTitle;
-    private Integer pageNumber;
-    private Long adoptedCommentId;
 }

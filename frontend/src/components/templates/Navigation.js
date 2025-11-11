@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import {
     AppBar, Toolbar, Typography, Button, Box, Container, InputBase,
-    IconButton, Drawer, List, ListItem, ListItemText, Slide
+    IconButton, Drawer, List, ListItem, ListItemText, Slide, Grid,
+    // 💡 삭제: Badge 컴포넌트 import 제거
+    // Badge
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+// 💡 수정: 로그아웃 아이콘 임포트 추가
+import LogoutIcon from '@mui/icons-material/Logout';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { Inventory2Outlined } from '@mui/icons-material';
 
 // 색상 정의
 const BG_COLOR = '#FFFFFF';
@@ -90,7 +97,8 @@ const Navigation = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const { isLoggedIn, user, logout } = useAuth(); // 인증 상태 및 함수 가져오기
+    // 💡 수정: isExistsAlert 상태를 useAuth에서 가져오는 부분 제거
+    const { isLoggedIn, user, logout } = useAuth();
 
     const handleDrawerToggle = () => {
         setIsDrawerOpen(!isDrawerOpen);
@@ -124,8 +132,8 @@ const Navigation = () => {
     // 로그인 상태에 따른 네비게이션 아이템 정의
     const navItems = isLoggedIn ?
         [
-            { text: user.username, path: '/my/page', isUser: true }, // 사용자 정보 버튼
-            { text: '로그아웃', path: '#', onClick: logout, isLogout: true } // 로그아웃 버튼
+            { text: user.username, path: '/my/page', isUser: true }, // 사용자 정보 버튼 (테두리 유지)
+            { text: '로그아웃', path: '#', onClick: logout, isLogout: true } // 로그아웃 아이콘 버튼으로 변경
         ] :
         [
             { text: '회원가입', path: '/auth/signup' },
@@ -136,47 +144,162 @@ const Navigation = () => {
     // 사이드바 내용 컴포넌트
     const drawer = (
         <Box
-            onClick={handleDrawerToggle} // 메뉴 항목 클릭 시 사이드바 닫기
+            onClick={handleDrawerToggle}
             sx={{ width: 250, bgcolor: BG_COLOR, height: '100%' }}
         >
             <Toolbar />
             <List>
+                {/* 사이드바 상단: 보관함 및 알림 버튼 (요청에 따라 Grid로 크기 xs=6 설정) */}
+                <Grid
+                    container
+                    spacing={1} // 아이템 사이의 간격
+                    sx={{
+                        p: 2,
+                        borderBottom: `1px solid ${alpha(TEXT_COLOR, 0.1)}`,
+                        margin: 0, // Grid container의 기본 마진 제거
+                        width: '100%', // 너비 100%
+                    }}
+                >
+                    {/* 💡 수정: 보관함 버튼 (Grid xs=6으로 크기 조정) */}
+                    <Grid size={{xs:6}} sx={{ p: '0 !important' }}>
+                        <Button
+                            component={Link}
+                            to="/my/favorite"
+                            onClick={handleDrawerToggle}
+                            color="inherit"
+                            aria-label="좋아요"
+                            sx={{
+                                width: '100%',
+                                p: '12px 0',
+                                color: TEXT_COLOR,
+                                border: `1px solid ${TEXT_COLOR}`,
+                                // border: 'none', // 테두리 제거 (요청에 따라)
+                                '& .MuiButton-startIcon': { m: 0 } // 아이콘만 남기기 위해 텍스트 제거
+                            }}
+                            startIcon={<FavoriteBorderOutlinedIcon sx={{ fontSize: '1.5rem' }} />}
+                        >
+                            {/* 텍스트를 제거하고 아이콘만 남깁니다. */}
+                        </Button>
+                    </Grid>
+
+                    <Grid size={{xs:6}} sx={{ p: '0 !important' }}>
+                        <Button
+                            component={Link}
+                            to="/my/actives"
+                            onClick={handleDrawerToggle}
+                            color="inherit"
+                            aria-label="내 활동"
+                            sx={{
+                                width: '100%',
+                                p: '12px 0',
+                                color: TEXT_COLOR,
+                                border: `1px solid ${TEXT_COLOR}`,
+                                // border: 'none', // 테두리 제거 (요청에 따라)
+                                '& .MuiButton-startIcon': { m: 0 } // 아이콘만 남기기 위해 텍스트 제거
+                            }}
+                            startIcon={<Inventory2Outlined sx={{ fontSize: '1.5rem' }} />}
+                        >
+                            {/* 텍스트를 제거하고 아이콘만 남깁니다. */}
+                        </Button>
+                    </Grid>
+
+                    {/* 💡 수정: 알림 버튼 (Grid xs=12으로 크기 조정 및 Badge 제거) */}
+                    <Grid size={{xs:12}} sx={{ p: '0 !important' }}>
+                        {/* 💡 삭제: Badge 컴포넌트 제거 */}
+                        {/* <Badge 
+                            color="error"
+                            variant="dot"
+                            invisible={!isExistsAlert}
+                            sx={{ width: '100%', display: 'flex' }}
+                        > */}
+                            <Button
+                                component={Link}
+                                to="/my/alerts"
+                                onClick={handleDrawerToggle}
+                                color="inherit"
+                                aria-label="알림"
+                                sx={{
+                                    width: '100%',
+                                    p: '12px 0',
+                                    color: TEXT_COLOR,
+                                    border: `1px solid ${TEXT_COLOR}`,
+                                    // border: 'none', // 테두리 제거 (요청에 따라)
+                                    '& .MuiButton-startIcon': { m: 0 } // 아이콘만 남기기 위해 텍스트 제거
+                                }}
+                                startIcon={<NotificationsNoneIcon sx={{ fontSize: '1.5rem' }} />}
+                            >
+                                {/* 텍스트를 제거하고 아이콘만 남깁니다. */}
+                            </Button>
+                        {/* 💡 삭제: Badge 컴포넌트 제거 */}
+                        {/* </Badge> */}
+                    </Grid>
+                </Grid>
+                
+                {/* 기존 navItems 목록 */}
                 {navItems.map((item) => (
                     <ListItem
                         key={item.text}
                         disablePadding
-                        // path가 '#'이면 div로 렌더링하고 onClick 사용 (로그아웃 버튼)
                         component={item.path !== '#' ? Link : 'div'}
                         to={item.path !== '#' ? item.path : null}
                         sx={{
                             textDecoration: 'none',
                             color: 'inherit',
-                            // 로그인/로그아웃 버튼 스타일 조정
-                            ...((item.text === '로그인' || item.isLogout) && {
-                                margin: '0 16px 8px 16px',
-                                width: 'calc(100% - 32px)',
-                            })
+                            // 버튼 목록에 대한 margin 설정
+                            margin: '16px 16px',
+                            width: 'calc(100% - 32px)',
+                            // 로그아웃 버튼의 크기를 xs=12로 조정 (List/ListItem은 이미 Block 요소이므로 width: '100%'로 충분합니다.)
                         }}
                     >
-                        <Button
-                            sx={{
-                                color: TEXT_COLOR,
-                                width: '100%',
-                                justifyContent: 'flex-start',
-                                p: 2,
-                                textTransform: 'none',
-                                // 로그인/로그아웃 버튼만 variant="outlined" 스타일 적용
-                                ...((item.text === '로그인' || item.isLogout) && {
-                                    border: `1px solid ${TEXT_COLOR}`,
-                                    fontWeight: 600,
-                                })
-                            }}
-                            variant={item.isUser ? 'text' : ((item.text === '로그인' || item.isLogout) ? 'outlined' : 'text')}
-                            // 로그아웃 버튼의 경우 onClick 이벤트 처리
-                            onClick={item.onClick ? (e) => { e.preventDefault(); item.onClick(); handleDrawerToggle(); } : undefined}
-                        >
-                            <ListItemText primary={item.text} />
-                        </Button>
+                        {item.isLogout ? (
+                            // 💡 수정: 로그아웃 버튼 (xs=12 크기, isUser와 동일한 테두리)
+                            <Button
+                                onClick={item.onClick ? (e) => { e.preventDefault(); item.onClick(); handleDrawerToggle(); } : undefined}
+                                color="inherit"
+                                variant="outlined" // isUser와 동일하게 outlined 적용
+                                sx={{
+                                    width: '100%',
+                                    justifyContent: 'center',
+                                    p: '8px 16px',
+                                    textTransform: 'none',
+                                    color: TEXT_COLOR,
+                                    borderColor: TEXT_COLOR,
+                                    fontWeight: 600, // 사용자명과 동일하게 fontWeight 적용
+                                }}
+                                aria-label="로그아웃"
+                                startIcon={<LogoutIcon sx={{height: '32px'}} />} // 아이콘을 텍스트와 함께 표시
+                            >
+                                {item.text}
+                            </Button>
+                        ) : (
+                            // 일반 버튼 (로그인, 회원가입, 사용자명)
+                            <Button
+                                sx={{
+                                    color: TEXT_COLOR,
+                                    width: '100%',
+                                    justifyContent: item.isUser ? 'center' : 'flex-start',
+                                    p: item.isUser ? '8px 16px' : 2,
+                                    textTransform: 'none',
+                                    // 💡 수정: isUser (사용자명)만 테두리 유지, 나머지는 제거
+                                    ...((item.isUser) && {
+                                        border: `1px solid ${TEXT_COLOR}`,
+                                        fontWeight: 600,
+                                    }),
+                                    ...((item.text === '로그인' || item.text === '회원가입') && {
+                                        // 로그인/회원가입은 테두리 제거 후 일반 텍스트 버튼으로 회귀
+                                        border: 'none',
+                                        fontWeight: 500,
+                                        justifyContent: 'center',
+                                        p: '8px 16px',
+                                    })
+                                }}
+                                // variant 설정: isUser만 outlined, 나머지는 text
+                                variant={item.isUser ? 'outlined' : 'text'}
+                                onClick={item.onClick ? (e) => { e.preventDefault(); item.onClick(); handleDrawerToggle(); } : undefined}
+                            >
+                                <ListItemText primary={item.text} sx={{ textAlign: 'center' }} />
+                            </Button>
+                        )}
                     </ListItem>
                 ))}
             </List>
@@ -200,17 +323,121 @@ const Navigation = () => {
 
                         <Box sx={{ flexGrow: 1 }} />
 
-                        {/* 메뉴 및 아이콘 영역 */}
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        {/* 데스크톱 (sm 이상) 네비게이션 아이콘 및 버튼 그룹 */}
+                        <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: { sm: 1, md: 2 } }}>
+                            {isLoggedIn ? (
+                                // 로그인 상태: 검색 -> 보관함 아이콘 -> 알림 아이콘 -> 사용자명 버튼 -> 로그아웃 아이콘
+                                <>
+                                    {/* 검색 아이콘 */}
+                                    <IconButton
+                                        color="inherit"
+                                        onClick={isSearchOpen ? handleSearchClose : () => setIsSearchOpen(true)}
+                                    >
+                                        {isSearchOpen ? <CloseIcon sx={{ fontSize: '1.7rem' }} /> : <SearchIcon sx={{ fontSize: '1.7rem' }} />}
+                                    </IconButton>
 
+                                    {/* 💡 수정: 보관함 아이콘 (테두리 제거 -> IconButton) */}
+                                    <IconButton
+                                        color="inherit"
+                                        component={Link}
+                                        to="/my/favorite"
+                                        aria-label="좋아요"
+                                    >
+                                        <FavoriteBorderOutlinedIcon sx={{ fontSize: '1.7rem' }} />
+                                    </IconButton>
+
+                                    {/* 💡 수정: 보관함 아이콘 (테두리 제거 -> IconButton) */}
+                                    <IconButton
+                                        color="inherit"
+                                        component={Link}
+                                        to="/my/actives"
+                                        aria-label="내 활동"
+                                    >
+                                        <Inventory2Outlined sx={{ fontSize: '1.7rem' }} />
+                                    </IconButton>
+
+                                    {/* 💡 수정: 알림 아이콘 (Badge 컴포넌트 적용 제거) */}
+                                    {/* 💡 삭제: Badge 컴포넌트 제거 */}
+                                    {/* <Badge 
+                                        color="error" 
+                                        variant="dot" 
+                                        invisible={!isExistsAlert} 
+                                    > */}
+                                        <IconButton
+                                            color="inherit"
+                                            component={Link}
+                                            to="/my/alerts"
+                                            aria-label="알림"
+                                        >
+                                            <NotificationsNoneIcon sx={{ fontSize: '1.7rem' }} />
+                                        </IconButton>
+                                    {/* 💡 삭제: Badge 컴포넌트 제거 */}
+                                    {/* </Badge> */}
+
+                                    {/* 💡 수정: 사용자명 버튼 (테두리 유지) */}
+                                    <Button
+                                        component={Link}
+                                        to="/my/page"
+                                        variant="outlined"
+                                        sx={{
+                                            textTransform: 'none',
+                                            borderColor: TEXT_COLOR,
+                                            color: TEXT_COLOR,
+                                            fontWeight: 600,
+                                            mr: 1,
+                                            '&:hover': {
+                                                backgroundColor: alpha(TEXT_COLOR, 0.05),
+                                                borderColor: TEXT_COLOR,
+                                            }
+                                        }}
+                                    >
+                                        {user.username}
+                                    </Button>
+
+                                    {/* 💡 수정: 로그아웃 버튼 (아이콘 버튼, 테두리 제거) */}
+                                    <IconButton
+                                        color="inherit"
+                                        onClick={logout}
+                                        aria-label="로그아웃"
+                                    >
+                                        <LogoutIcon sx={{ fontSize: '1.7rem' }} />
+                                    </IconButton>
+                                </>
+                            ) : (
+                                // 비로그인 상태: 검색 -> 회원가입 -> 로그인 (모두 테두리 제거)
+                                <>
+                                    {/* 검색 아이콘 */}
+                                    <IconButton
+                                        color="inherit"
+                                        onClick={isSearchOpen ? handleSearchClose : () => setIsSearchOpen(true)}
+                                        sx={{ mr: 1 }}
+                                    >
+                                        {isSearchOpen ? <CloseIcon sx={{ fontSize: '1.7rem' }} /> : <SearchIcon sx={{ fontSize: '1.7rem' }} />}
+                                    </IconButton>
+                                    {/* 💡 수정: 회원가입 (테두리 제거) */}
+                                    <Button color="inherit" component={Link} to="/auth/signup" sx={{ fontWeight: 500 }}>
+                                        회원가입
+                                    </Button>
+                                    {/* 💡 수정: 로그인 (테두리 제거) */}
+                                    <Button
+                                        color="inherit"
+                                        sx={{ ml: 2, fontWeight: 500 }}
+                                        component={Link}
+                                        to='/auth/signin'
+                                    >
+                                        로그인
+                                    </Button>
+                                </>
+                            )}
+                        </Box>
+
+                        {/* 모바일 (xs) 아이콘 그룹: 검색, 메뉴 아이콘만 표시 */}
+                        <Box sx={{ display: { xs: 'flex', sm: 'none' }, alignItems: 'center' }}>
                             {/* 검색/닫기 아이콘 버튼 */}
                             <IconButton
                                 color="inherit"
                                 onClick={isSearchOpen ? handleSearchClose : () => setIsSearchOpen(true)}
-                                sx={{
-                                    mr: { xs: 2 },
-                                    p: { xs: 1, sm: 'auto' }
-                                }}
+                                sx={{ mr: 1, p: 1 }}
                             >
                                 {isSearchOpen ? (
                                     <CloseIcon sx={{ fontSize: '1.7rem' }} />
@@ -219,63 +446,18 @@ const Navigation = () => {
                                 )}
                             </IconButton>
 
-                            {/* 햄버거 메뉴 버튼 (모바일) */}
-                            <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-                                <IconButton
-                                    color="inherit"
-                                    aria-label="open drawer"
-                                    edge="end"
-                                    onClick={handleDrawerToggle}
-                                >
-                                    <MenuIcon sx={{ fontSize: '1.7rem' }} />
-                                </IconButton>
-                            </Box>
-
-                            {/* 회원가입/로그인/사용자명/로그아웃 버튼 (데스크톱) */}
-                            <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 3 }}>
-                                {isLoggedIn ? (
-                                    <>
-                                        {/* 사용자명 버튼 */}
-                                        <Button
-                                            color="inherit"
-                                            component={Link}
-                                            to="/my/page"
-                                            sx={{ textTransform: 'none' }}
-                                        >
-                                            {user.username}
-                                        </Button>
-                                        {/* 로그아웃 버튼 */}
-                                        <Button
-                                            variant="outlined"
-                                            sx={{ color: TEXT_COLOR, borderColor: TEXT_COLOR, fontWeight: 600 }}
-                                            onClick={logout} // Context의 logout 함수 연결
-                                        >
-                                            로그아웃
-                                        </Button>
-                                    </>
-                                ) : (
-                                    <>
-                                        {/* 회원가입 버튼 */}
-                                        <Button
-                                            color="inherit"
-                                            component={Link}
-                                            to="/auth/signup"
-                                        >
-                                            회원가입
-                                        </Button>
-                                        {/* 로그인 버튼 */}
-                                        <Button
-                                            variant="outlined"
-                                            sx={{ color: TEXT_COLOR, borderColor: TEXT_COLOR, fontWeight: 600 }}
-                                            component={Link}
-                                            to='/auth/signin'
-                                        >
-                                            로그인
-                                        </Button>
-                                    </>
-                                )}
-                            </Box>
+                            {/* 햄버거 메뉴 버튼 */}
+                            <IconButton
+                                color="inherit"
+                                aria-label="open drawer"
+                                edge="end"
+                                onClick={handleDrawerToggle}
+                                sx={{ p: 1 }}
+                            >
+                                <MenuIcon sx={{ fontSize: '1.7rem' }} />
+                            </IconButton>
                         </Box>
+
                     </Toolbar>
                 </Container>
             </ModernAppBar>

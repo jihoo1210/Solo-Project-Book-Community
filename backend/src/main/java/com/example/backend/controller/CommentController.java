@@ -4,6 +4,7 @@ import com.example.backend.controller.utilities.ResponseController;
 import com.example.backend.dto.comment.create.CommentCreateRequest;
 import com.example.backend.dto.comment.create.CommentCreateResponse;
 import com.example.backend.dto.comment.delete.CommentDeleteResponse;
+import com.example.backend.dto.comment.index.CommentIndexResponse;
 import com.example.backend.dto.comment.update.CommentUpdateRequest;
 import com.example.backend.dto.comment.update.CommentUpdateResponse;
 import com.example.backend.dto.likes.LikesResponse;
@@ -13,7 +14,10 @@ import com.example.backend.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.sql.Update;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -50,6 +54,40 @@ public class CommentController {
         }
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<?> indexByUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                         @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                         @RequestParam(required = false, defaultValue = "") String searchField,
+                                         @RequestParam(required = false, defaultValue = "") String searchTerm,
+                                         @RequestParam(required = false, defaultValue = "0") Integer tab) {
+        try {
+            log.info("CustomUserDetails: {}", userDetails);
+            log.info("Pageable: {}", pageable);
+            log.info("searchField: {}", searchField);
+            log.info("searchTerm: {}", searchTerm);
+
+            Page<CommentIndexResponse> responseDto = service.indexByUser(userDetails.getUser(), pageable, searchField, searchTerm, tab);
+            return ResponseController.success(responseDto);
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
+    @GetMapping("/my/favorite")
+    public ResponseEntity<?> indexFavoriteByUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                 @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                                 @RequestParam(required = false, defaultValue = "") String searchField,
+                                                 @RequestParam(required = false, defaultValue = "") String searchTerm,
+                                                 @RequestParam(required = false, defaultValue = "0") Integer tab) {
+        log.info("CustomUserDetails: {}", userDetails);
+        log.info("Pageable: {}", pageable);
+        log.info("searchField: {}", searchField);
+        log.info("searchTerm: {}", searchTerm);
+
+        Page<CommentIndexResponse> responsePage = service.indexFavoriteByUser(userDetails.getUser(), pageable, searchField, searchTerm, tab);
+        return ResponseController.success(responsePage);
+    }
+
     // 좋아요 증감
     @GetMapping("/{commentId}/handle-likes")
     public ResponseEntity<?> handleLikes(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long commentId) {
@@ -61,6 +99,18 @@ public class CommentController {
             LikesResponse responseDto = service.handleLikes(user, commentId);
             return ResponseController.success(responseDto);
         } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{commentId}/adopt")
+    public ResponseEntity<?> adoptComment(@PathVariable Long commentId) {
+        try {
+            log.info("commentId: {}", commentId);
+
+            service.adopt(commentId);
+            return ResponseEntity.ok().build();
+        } catch (IllegalAccessException e) {
             return ResponseController.fail(e.getMessage());
         }
     }

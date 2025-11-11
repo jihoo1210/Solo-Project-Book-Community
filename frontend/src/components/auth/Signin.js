@@ -96,7 +96,6 @@ const SignIn = () => {
         apiClient.post("/auth/signin", formData).then(response => {
           // 토큰을 세션 스토리지에 저장
             login(response.data.result.username) // AuthContext의 login 함수 호출
-            alert("로그인 되었습니다.")
             navigate("/")
         }).catch(error => {
           if(error.response.data.message) alert(error.response.data.message || '예상하지 못한 에러.')

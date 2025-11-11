@@ -1,6 +1,6 @@
 package com.example.backend.service.utilities;
 
-import com.example.backend.entity.Posts;
+import com.example.backend.entity.CommentLikes;
 import com.example.backend.entity.User;
 import com.example.backend.entity.utilities.PostsSubject;
 import jakarta.persistence.criteria.Expression;
@@ -15,10 +15,8 @@ import java.util.List;
 import static com.example.backend.entity.utilities.PostsSubject.*;
 
 @Slf4j
-public class PostSearchSpec {
-
-    // 검색 필드, 검색어, 탭(주제)을 기반으로 JPA Specification을 생성하여 동적 쿼리 조건 제공
-    public static Specification<Posts> search(User user, String searchField, String searchTerm, Integer tab) {
+public class CommentLikesSearchSpec {
+    public static Specification<CommentLikes> search(User user, String searchField, String searchTerm, Integer tab) {
         log.info("searchField: {}", searchField);
         log.info("searchTerm: {}", searchTerm);
         log.info("tab: {}", tab);
@@ -36,19 +34,11 @@ public class PostSearchSpec {
             // 검색 필드에 따른 조건 추가 (OR 조건으로 검색 가능)
             // 공백 제거
             if (StringUtils.hasText(cleanSearchTerm)) {
-                if ("제목".equals(searchField)) {
-                    Expression<String> nonSpacedLowerTitle = builder.function(
-                            "REPLACE", String.class,
-                            builder.lower(root.get("title")),
-                            builder.literal(" "),
-                            builder.literal("")
-                    );
-                    predicates.add(builder.like(nonSpacedLowerTitle, pattern));
-                } else if ("내용".equals(searchField)) {
+                if ("내용".equals(searchField)) {
                     // 1. CLOB 타입인 content 필드를 빈 문자열과 연결(CONCAT)하여
                     //    Hibernate가 이 Expression을 STRING 타입으로 처리하도록 강제합니다.
                     Expression<String> stringContent = builder.concat(
-                            root.get("content"),
+                            root.get("comment").get("content"),
                             builder.literal("") // ⬅️ 빈 문자열과 연결
                     );
 
@@ -60,10 +50,10 @@ public class PostSearchSpec {
                             builder.literal("")
                     );
                     predicates.add(builder.like(nonSpacedLowerTitle, pattern));
-                } else if ("작성자".equals(searchField)) {
+                } else if("제목".equals(searchField)) {
                     Expression<String> nonSpacedLowerTitle = builder.function(
                             "REPLACE", String.class,
-                            builder.lower(root.get("user").get("username")),
+                            builder.lower(root.get("posts").get("title")),
                             builder.literal(" "),
                             builder.literal("")
                     );
@@ -81,9 +71,9 @@ public class PostSearchSpec {
                 }
 
                 log.info("tab: {}, subjectValue: {}", tab, subjectValue);
-                log.info("entity subject: {}, subjectValue: {}", root.get("subject").toString(), subjectValue);
+                log.info("entity subject: {}, subjectValue: {}", root.get("posts").get("subject").toString(), subjectValue);
                 // Enum 값을 사용하여 Posts 엔티티의 subject 필드와 일치하는 조건 추가
-                predicates.add(builder.equal(root.get("subject"), subjectValue));
+                predicates.add(builder.equal(root.get("posts").get("subject"), subjectValue));
             }
 
             // 모든 Predicate을 AND나 OR로 결합하여 최종 Predicate 반환

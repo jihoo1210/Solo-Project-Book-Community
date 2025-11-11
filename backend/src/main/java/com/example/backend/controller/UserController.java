@@ -5,6 +5,7 @@ import com.example.backend.dto.user.ChangeUserInfoRequest;
 import com.example.backend.dto.user.MyPageResponse;
 import com.example.backend.entity.User;
 import com.example.backend.security.CustomUserDetails;
+import com.example.backend.service.AlertService;
 import com.example.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService service;
+    private final AlertService alertService;
 
     @GetMapping("/my")
     public ResponseEntity<?> myPage(@AuthenticationPrincipal CustomUserDetails userDetails) {

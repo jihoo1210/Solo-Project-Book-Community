@@ -4,11 +4,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@Getter
-public enum Subject {
-    RECRUIT("모집"),
-    QUESTION("질문"),
-    SHARE("공유");
+public enum AlertSubject {
+    COMMENT("댓글"),
+    ADOPTED("채택"),
+    APPROVAL("승인"),
+    REJECTED("거절");
 
+    @Getter
     private final String subject;
 }

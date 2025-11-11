@@ -1,21 +1,25 @@
 // src/components/PostsDetail.js
 
-import React, { useState, useEffect, useRef } from 'react'; // useRef 추가
+// 💡 수정: useCallback을 import 목록에 추가했습니다.
+import React, { useState, useEffect, useRef, useCallback } from 'react'; 
 import {
     Box, Container, Typography, Paper, Chip, Button, Divider,
     List, ListItem, ListItemText, TextField, IconButton,
     CircularProgress
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { 
+    Link, useNavigate, useParams, 
+    useLocation // 💡 추가됨: URL의 쿼리 파라미터를 사용하기 위해 useLocation 추가
+} from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import FlagIcon from '@mui/icons-material/Flag';
 import { useAuth } from '../auth/AuthContext';
 import apiClient from '../../api/Api-Service'; // API 서비스 추가
-import { common } from '@mui/material/colors';
+// 💡 수정: CheckCircle 아이콘을 import 목록에 추가
+import { Favorite, CheckCircle } from '@mui/icons-material';
 
 // 상수 정의
 const BG_COLOR = '#FFFFFF';
@@ -25,8 +29,10 @@ const HEADER_HEIGHT = '64px';
 const RED_COLOR = '#f44336';
 const PURPLE_COLOR = '#9c27b0';
 const DARK_PURPLE_COLOR = '#6a1b9a'; // 보라색 호버/어두운 버전
-// 💡 추가됨: 수정됨 표시 색상 (골든 옐로우)
 const MODIFIED_COLOR = '#FFC107'; 
+// 💡 추가: 아쿠아 블루 색상 정의
+const AQUA_BLUE = '#00BCD4'; // 시안 계열
+const DARK_AQUA_BLUE = '#0097A7'; // 시안 계열 호버 색상
 
 // 스타일 컴포넌트 정의 
 const DetailWrapper = styled(Box)(({ theme }) => ({
@@ -174,19 +180,24 @@ const formatFullDate = (dateString) => {
 
 
 /**
- * 💡 추가됨: modifiedDate 비교 로직 함수
+ * 수정됨: modifiedDate 비교 로직 함수 (게시글/댓글 모두 사용)
  * createdDate와 modifiedDate를 비교하여 표시할 날짜 문자열과 수정 여부를 반환합니다.
  * @param {string} modifiedDateString 수정 날짜 문자열
  * @param {string} createdDateString 생성 날짜 문자열
  * @returns {{ dateDisplay: string, isModified: boolean }} 표시할 날짜 정보와 수정 여부
  */
 const getPostDateInfo = (modifiedDateString, createdDateString) => {
-    const createdDate = new Date(createdDateString);
-    const modifiedDate = new Date(modifiedDateString);
+    // 날짜 문자열이 유효하지 않으면 빈 문자열과 false 반환
+    if (!createdDateString) {
+        return { dateDisplay: '', isModified: false };
+    }
 
-    // modifiedDate가 createdDate보다 확실히 이후인 경우에만 수정된 것으로 간주
-    // API에서 반환되는 문자열이 정확한 밀리초 단위까지 다르다면, 날짜가 같더라도 수정된 것으로 간주될 수 있습니다.
-    const isModified = modifiedDateString && createdDateString && modifiedDate.getTime() > createdDate.getTime();
+    const createdDate = new Date(createdDateString);
+    const modifiedDate = modifiedDateString ? new Date(modifiedDateString) : createdDate; // modifiedDate가 없으면 createdDate 사용
+
+    // modifiedDate가 createdDate보다 확실히 이후인 경우에만 수정된 것으로 간주 (1초 이상 차이)
+    // API 응답 시간차를 고려하여 1000ms(1초) 이상 차이로 판단하는 것이 안전할 수 있습니다.
+    const isModified = modifiedDateString && modifiedDate.getTime() > createdDate.getTime() + 1000;
     
     // 수정된 경우 modifiedDate를 사용하고, 아닌 경우 createdDate를 사용
     const dateToDisplay = isModified ? modifiedDateString : createdDateString;
@@ -200,8 +211,20 @@ const getPostDateInfo = (modifiedDateString, createdDateString) => {
 
 const PostsDetail = () => {
     const { id } = useParams();
+    const location = useLocation(); // 💡 추가됨: location 객체 가져오기
     const { user } = useAuth();
     const navigate = useNavigate();
+
+    // 💡 수정됨: 쿼리 파라미터에서 'from' 값 추출 및 경로 설정 로직 수정
+    const queryParams = new URLSearchParams(location.search);
+    const fromParam = queryParams.get('from');
+    
+    // fromParam 값에 따라 경로 설정: 'my-actives'면 /my/actives, 'my-favorite'면 /my/favorite, 아니면 /로 이동
+    const backToPath = fromParam === 'my-actives' 
+        ? '/my/actives' 
+        : fromParam === 'my-favorite' ? '/my/favorite'
+        : fromParam === 'my-alerts' ? '/my/alerts' : '/'
+    
 
     // 댓글 리스트의 Ref 추가 (외부 클릭 감지용)
     const commentsListRef = useRef(null);
@@ -223,23 +246,27 @@ const PostsDetail = () => {
 
 
     // 댓글 수정 취소 핸들러
-    const handleCommentEditCancel = () => {
+    // 💡 수정: useCallback으로 감싸 안정화
+    const handleCommentEditCancel = useCallback(() => {
         setEditingCommentId(null);
         setEditingCommentContent('');
-    };
+    }, []); // 💡 상태 설정 함수만 사용하므로 빈 종속성 배열로 안정화
 
     // 댓글 목록 외부 클릭 감지 핸들러
-    const handleOutsideClick = (event) => {
+    // 💡 수정: useCallback으로 감싸 안정화
+    const handleOutsideClick = useCallback((event) => {
         // 댓글 목록(List) 내부의 요소가 아닌 곳을 클릭했을 때 수정 취소
         if (editingCommentId && commentsListRef.current && !commentsListRef.current.contains(event.target)) {
             handleCommentEditCancel();
         }
-    };
+    // 💡 종속성 명시: 함수 내부에서 사용되는 모든 외부 값(state, ref, stable function)을 포함합니다.
+    }, [editingCommentId, commentsListRef, handleCommentEditCancel]); 
 
     // 댓글 수정 모드일 때 Esc 키 및 외부 클릭 이벤트 리스너 등록
     useEffect(() => {
         const handleEscapeKey = (event) => {
             if (event.key === 'Escape' && editingCommentId) {
+                // handleCommentEditCancel은 이제 안정화되었습니다.
                 handleCommentEditCancel();
             }
         };
@@ -253,7 +280,8 @@ const PostsDetail = () => {
             document.removeEventListener('keydown', handleEscapeKey);
             document.removeEventListener('mousedown', handleOutsideClick);
         };
-    }, [editingCommentId]); // editingCommentId가 변경될 때마다 재등록
+    // 💡 수정: handleCommentEditCancel을 종속성 배열에 추가하여 모든 종속성을 명시합니다.
+    }, [editingCommentId, handleOutsideClick, handleCommentEditCancel]); 
 
     // API 호출 로직 (게시글 상세 정보 및 댓글 가져오기)
     useEffect(() => {
@@ -337,7 +365,7 @@ const PostsDetail = () => {
     // 댓글 수정 모드 토글
     const handleCommentEditToggle = (commentId, content) => {
         if (editingCommentId === commentId) {
-            handleCommentEditCancel(); // 이미 수정 모드였다면 취소
+            handleCommentEditCancel(); // 이미 수정 모드였다면 취소 (안정화된 함수 사용)
         } else {
             setEditingCommentId(commentId);
             setEditingCommentContent(content);
@@ -353,19 +381,23 @@ const PostsDetail = () => {
 
         try {
             const response = await apiClient.patch(`/comment/${commentId}`, {content: editingCommentContent})
-            const newContent = response.data.result.content
-            console.log(response)
+            const { content: newContent, modifiedDate: newModifiedDate } = response.data.result; // 💡 수정: modifiedDate를 응답에서 가져옴
+            
             if (newContent) {
-                // UI 업데이트
+                // UI 업데이트: content와 modifiedDate를 업데이트
                 setComments(prevComments => prevComments.map(comment =>
-                    comment.id === commentId ? { ...comment, content: newContent } : comment
+                    comment.id === commentId ? { 
+                        ...comment, 
+                        content: newContent, 
+                        modifiedDate: newModifiedDate // 💡 수정: modifiedDate 업데이트
+                    } : comment
                 ));
             }
         } catch(err) {
             console.error("댓글 수정 오류:", err.response?.data?.message || err.message);
             setError("댓글 수정 중 오류가 발생했습니다.");
         } finally {
-            handleCommentEditCancel(); // 수정 모드 종료
+            handleCommentEditCancel(); // 수정 모드 종료 (안정화된 함수 사용)
         }
     };
 
@@ -388,8 +420,12 @@ const PostsDetail = () => {
                     id: commentData.id,
                     content: commentData.content,
                     username: commentData.username,
+                    // 💡 수정: API 응답에서 createdDate도 가져온다고 가정
+                    createdDate: commentData.createdDate, 
                     modifiedDate: commentData.modifiedDate,
-                    likes: commentData.likes
+                    likes: commentData.likes,
+                    // 새로 등록된 댓글은 기본적으로 savedInLikes는 false로 가정
+                    savedInLikes: false 
                 }
                 setComments(prev => [newComment, ...prev]) // 새 댓글을 목록 맨 앞에 추가
                 setNewCommentText('');
@@ -420,11 +456,11 @@ const PostsDetail = () => {
             try {
                 const postResponse = await apiClient.delete(`/posts/${id}`)
                 if (postResponse.data.result.id) {
-                    alert(`${postResponse.data.result.id}번 게시글이 성공적으로 삭제되었습니다.`)
                 } else {
                     setError(`${id}번 게시글을 삭제하는데 실패했습니다.`)
                 }
-                navigate('/')
+                // 💡 수정됨: backToPath로 이동
+                navigate(backToPath) 
             } catch (err) {
                 alert('에러 발생:' + err.response.data.message || '예상하지 못한 에러.')
             }
@@ -446,6 +482,41 @@ const PostsDetail = () => {
             }
         }
     }
+
+    // 💡 추가: 댓글 채택 처리 (API 연동)
+    const handleCommentAdopt = async (commentId) => {
+        // 1. 게시글이 '질문' 타입이고 작성자 본인인지 확인 (UI에서 이미 필터링되지만 안전장치)
+        if (post.subject !== '질문' || user?.username !== post.username) {
+            alert('질문 게시글의 작성자만 댓글을 채택할 수 있습니다.');
+            return;
+        }
+
+        // 2. 이미 채택된 댓글이 있는지 확인 (post 객체에 adoptedCommentId 필드가 있다고 가정)
+        if (post.adoptedCommentId) {
+             alert('이미 댓글이 채택되었습니다.');
+             return;
+        }
+
+        if (window.confirm('이 댓글을 채택하시겠습니까? 채택된 댓글은 취소가 불가능할 수 있습니다.')) {
+            try {
+                // 가정: 채택 API는 /comment/{commentId}/adopt
+                // 실제로는 POST 또는 PATCH 요청이 적절
+                await apiClient.post(`/comment/${commentId}/adopt`);
+                
+                // UI 업데이트: post 상태에 adoptedCommentId를 업데이트
+                setPost(prevPost => ({
+                    ...prevPost,
+                    adoptedCommentId: commentId, // 채택된 댓글 ID 저장
+                }));
+                
+                alert('댓글이 성공적으로 채택되었습니다.');
+            } catch (err) {
+                console.error("댓글 채택 오류:", err.response?.data?.message || err.message);
+                alert("댓글 채택 중 오류가 발생했습니다: " + (err.response?.data?.message || '알 수 없는 오류'));
+            }
+        }
+    }
+
 
     // 재사용 가능한 수정/삭제 버튼 그룹 정의
     const EditDeleteButtons = (
@@ -504,7 +575,8 @@ const PostsDetail = () => {
                             {error || "게시글을 찾을 수 없습니다."}
                         </Typography>
                         <Box sx={{ mt: 3, textAlign: 'center' }}>
-                            <Button component={Link} to="/" startIcon={<ArrowBackIcon />}>목록으로</Button>
+                            {/* 💡 수정됨: backToPath 변수를 사용하여 이동 경로 설정 */}
+                            <Button component={Link} to={backToPath} startIcon={<ArrowBackIcon />}>목록으로</Button>
                         </Box>
                     </Box>
                 </Container>
@@ -512,8 +584,8 @@ const PostsDetail = () => {
         );
     }
 
-    // 💡 추가됨: 날짜 정보 가져오기 (post가 로드된 후에 실행)
-    const { dateDisplay, isModified } = getPostDateInfo(post.modifiedDate, post.createdDate);
+    // 💡 추가됨: 게시글 날짜 정보 가져오기 (post가 로드된 후에 실행)
+    const postDateInfo = getPostDateInfo(post.modifiedDate, post.createdDate);
 
     // post 객체가 있을 때만 렌더링
     return (
@@ -534,7 +606,8 @@ const PostsDetail = () => {
                     {/* 목록으로 버튼 */}
                     <Button
                         component={Link}
-                        to="/"
+                        // 💡 수정됨: backToPath 변수를 사용하여 이동 경로 설정
+                        to={backToPath} 
                         startIcon={<ArrowBackIcon />}
                         sx={{ color: TEXT_COLOR, '&:hover': { backgroundColor: alpha(TEXT_COLOR, 0.05) } }}
                     >
@@ -582,12 +655,12 @@ const PostsDetail = () => {
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
                                 작성자: {post.username}
                             </Typography>
-                            {/* 💡 수정됨: 날짜 표시 로직에 수정됨 표시 추가 */}
+                            {/* 💡 수정됨: 게시글 날짜 표시 로직 */}
                             <Typography variant="body2">
                                 작성일:
                                 <Box component="span" sx={{ ml: 0.5, whiteSpace: 'nowrap' }}>
-                                    {dateDisplay}
-                                    {isModified && (
+                                    {postDateInfo.dateDisplay}
+                                    {postDateInfo.isModified && (
                                         <Typography
                                             component="span"
                                             sx={{
@@ -619,7 +692,7 @@ const PostsDetail = () => {
                         borderRadius: 1,
                         mb: 4,
                         '& p': { margin: '0 0 1em 0' },
-                        '& strong': { fontWeight: 700, color: TEXT_COLOR },
+                        '& strong': { fontWeight: 700 },
                         [theme.breakpoints.down('sm')]: {
                             paddingX: theme.spacing(2),
                             marginX: theme.spacing(2),
@@ -645,7 +718,7 @@ const PostsDetail = () => {
                     })}>
                         <ActionButton
                             variant="contained"
-                            startIcon={<ThumbUpIcon />}
+                            startIcon={<Favorite />}
                             onClick={handlePostLike}
                             // savedInPostLikes 값에 따라 버튼 스타일 동적 변경
                             sx={{
@@ -746,7 +819,16 @@ const PostsDetail = () => {
                         })}>
                         {comments
                             .filter(comment => comment) // null/undefined 항목을 필터링하여 'id' 접근 오류 방지
-                            .map((comment, index, arr) => (
+                            .map((comment, index, arr) => {
+                                // 💡 추가: 댓글 날짜 정보 가져오기
+                                const commentDateInfo = getPostDateInfo(comment.modifiedDate, comment.createdDate);
+                                // 💡 추가: 채택 버튼 표시 조건 확인
+                                const isQuestionPostAuthor = post.subject === '질문' && user?.username === post.username;
+                                const isAdopted = post.adoptedCommentId === comment.id;
+                                // 이미 채택된 댓글이 있는 경우 (adoptedCommentId가 null/undefined/0이 아닌 경우)
+                                const isSolved = !!post.adoptedCommentId;
+
+                                return (
                                 <ListItem
                                     key={comment.id}
                                     disableGutters
@@ -755,14 +837,39 @@ const PostsDetail = () => {
                                         py: 1.5,
                                         px: 2,
                                         flexDirection: 'column',
-                                        alignItems: 'flex-start'
+                                        alignItems: 'flex-start',
+                                        // 💡 수정: 채택된 댓글의 상단 border 스타일 적용
+                                        borderTop: isAdopted ? `3px solid ${AQUA_BLUE}` : 'none',
+                                        // 상단 border가 생기면 목록 border와 겹치므로 ListItem의 상단 마진/패딩 조정이 필요할 수 있으나, 일단 기본 디자인 유지
+                                        
                                     }}
                                 >
                                     <ListItemText
                                         primary={
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5, width: '100%' }}>
                                                 <Typography variant="subtitle2" sx={{ fontWeight: 600, color: TEXT_COLOR }}>{comment.username}</Typography>
-                                                <Typography variant="caption" color={LIGHT_TEXT_COLOR}>{formatFullDate(comment.createdDate)}</Typography>
+                                                {/* 💡 수정됨: 댓글 날짜 표시 로직에 수정됨 표시 추가 */}
+                                                <Typography variant="caption" color={LIGHT_TEXT_COLOR}>
+                                                    작성일:
+                                                    <Box component="span" sx={{ ml: 0.5, whiteSpace: 'nowrap' }}>
+                                                        {commentDateInfo.dateDisplay}
+                                                        {commentDateInfo.isModified && (
+                                                            <Typography
+                                                                component="span"
+                                                                sx={{
+                                                                    ml: 0.5,
+                                                                    fontWeight: 600,
+                                                                    color: MODIFIED_COLOR,
+                                                                    fontSize: '0.8rem',
+                                                                    flexShrink: 0,
+                                                                    whiteSpace: 'nowrap',
+                                                                }}
+                                                            >
+                                                                [수정됨]
+                                                            </Typography>
+                                                        )}
+                                                    </Box>
+                                                </Typography>
                                             </Box>
                                         }
                                         secondary={
@@ -784,7 +891,7 @@ const PostsDetail = () => {
                                                     <Typography
                                                         variant="body2"
                                                         color={TEXT_COLOR}
-                                                        sx={{ mb: 1 }}
+                                                        sx={{ mb: 1, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
                                                     >
                                                         {comment.content}
                                                     </Typography>
@@ -803,7 +910,7 @@ const PostsDetail = () => {
                                                             size="small"
                                                             onClick={() => handleCommentLike(comment.id)}
                                                             disabled={editingCommentId === comment.id} // 수정 중에는 비활성화
-                                                            startIcon={<ThumbUpIcon fontSize="small" />}
+                                                            startIcon={<Favorite fontSize="small" />}
                                                             sx={{
                                                                 color: BG_COLOR,
                                                                 '&.Mui-disabled': {
@@ -918,6 +1025,42 @@ const PostsDetail = () => {
                                                             )}
                                                         </Box>
                                                     )}
+
+                                                    {/* 💡 수정: 채택 버튼 스타일 변경 및 위치 조정 */}
+                                                    {isQuestionPostAuthor && (
+                                                        <Box
+                                                            sx={{ display: 'flex', gap: 1, alignItems: 'center', ml: 2, pl: 2, borderLeft: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` }}
+                                                        >
+                                                            <Button
+                                                                variant="contained" // isAdopted와 관계없이 contained로 통일하여 배경색으로 구분
+                                                                size="small"
+                                                                onClick={() => handleCommentAdopt(comment.id)}
+                                                                // 이미 채택되었거나 수정 중이거나 이미 해결된 경우(다른 댓글이 채택된 경우) 비활성화
+                                                                disabled={isAdopted || editingCommentId === comment.id || isSolved}
+                                                                startIcon={isAdopted ? <CheckCircle fontSize="small" /> : null}
+                                                                sx={{
+                                                                    fontWeight: 600,
+                                                                    // 💡 수정: 채택 여부에 따른 색상 변경
+                                                                    color: BG_COLOR, // 채택 여부와 관계없이 흰색 텍스트
+                                                                    backgroundColor: isAdopted ? PURPLE_COLOR : AQUA_BLUE, // 채택됨: PURPLE_COLOR, 채택 전: AQUA_BLUE
+                                                                    
+                                                                    // 💡 수정: 테두리 제거 및 호버 색상 변경
+                                                                    border: '1px solid transparent',
+                                                                    '&:hover': {
+                                                                        backgroundColor: isAdopted ? DARK_PURPLE_COLOR : DARK_AQUA_BLUE, 
+                                                                    },
+
+                                                                    minWidth: 'auto',
+                                                                    padding: '4px 8px',
+                                                                    height: '32px',
+                                                                    fontSize: '0.8rem',
+                                                                    flexShrink: 0,
+                                                                }}
+                                                            >
+                                                                {isAdopted ? '채택됨' : '채택'}
+                                                            </Button>
+                                                        </Box>
+                                                    )}
                                                 </Box>
                                             </Box>
                                         }
@@ -926,7 +1069,7 @@ const PostsDetail = () => {
                                         sx={{ width: '100%', m: 0 }}
                                     />
                                 </ListItem>
-                            ))}
+                            )})}
                     </List>
 
                 </DetailCard>
