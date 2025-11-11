@@ -29,7 +29,8 @@ public class PostsShowResponse {
     private String meetingInfo;
     private Integer maxUserNumber;
     private Integer currentUserNumber;
-    private boolean savedInRecruitment;
+    // 신청 상태
+    private String recruitmentResult;
     private String bookTitle;
     private Integer pageNumber;
     private Long adoptedCommentId;

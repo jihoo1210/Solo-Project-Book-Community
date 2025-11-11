@@ -7,10 +7,7 @@ import com.example.backend.dto.posts.delete.PostsDeleteResponse;
 import com.example.backend.dto.posts.index.PostsIndexResponse;
 import com.example.backend.dto.posts.show.PostsShowResponse;
 import com.example.backend.dto.posts.update.PostsUpdateRequest;
-import com.example.backend.entity.Posts;
-import com.example.backend.entity.PostsLikes;
-import com.example.backend.entity.User;
-import com.example.backend.entity.UserViewed;
+import com.example.backend.entity.*;
 import com.example.backend.entity.utilities.PostsSubject;
 import com.example.backend.repository.*;
 import com.example.backend.service.utilities.PostLikesSpec;
@@ -169,10 +166,10 @@ public class PostsService {
                     .build();
             userViewedRepository.save(userViewed);
         }
-
-        boolean isSavedInRecruitment = alertRepository.existsByPostsAndSenderAndSubject(target, user, APPLICATION)
-                || alertRepository.existsByPostsAndSenderAndSubject(target, user, APPROVAL)
-                || alertRepository.existsByPostsAndSenderAndSubject(target, user, REJECTED);
+        Alert alertToRecruitmentResult = alertRepository.findByPostsAndSenderAndSubject(target, user, APPLICATION)
+                .orElse(alertRepository.findByPostsAndSenderAndSubject(target, user, APPROVAL)
+                        .orElse(alertRepository.findByPostsAndSenderAndSubject(target, user, REJECTED)
+                                .orElse(null)));
 
         // 게시글 상세 정보를 DTO로 빌드
         return PostsShowResponse.builder()
@@ -193,8 +190,8 @@ public class PostsService {
                 .meetingInfo(target.getMeetingInfo())
                 .maxUserNumber(target.getMaxUserNumber())
                 .currentUserNumber(target.getCurrentUserNumber() != null ? target.getCurrentUserNumber() : 0)
-                // 모임 신청했는지 여부
-                .savedInRecruitment(isSavedInRecruitment)
+                // 모임 신청 결과
+                .recruitmentResult(alertToRecruitmentResult != null ? alertToRecruitmentResult.getSubject().getSubject() : null)
                 .bookTitle(target.getBookTitle())
                 .pageNumber(target.getPageNumber())
                 .adoptedCommentId(target.getAdoptedComment() != null ? target.getAdoptedComment().getId() : null)
