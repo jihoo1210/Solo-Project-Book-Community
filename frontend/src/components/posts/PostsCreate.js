@@ -124,6 +124,7 @@ const PostsCreate = () => {
         pageNumber: '',
         region: '',
         dayInput: '',
+        maxUserNumber: '', // <<<<<<< 모집 인원수 필드 추가
     });
 
     // 🚀 Tiptap Editor는 HTML 문자열로 콘텐츠를 관리합니다.
@@ -146,7 +147,8 @@ const PostsCreate = () => {
     const handleChange = (e) => {
         let { name, value } = e.target;
 
-        if(name === 'pageNumber') {
+        // ❌ pageNumber와 maxUserNumber에 숫자만 허용하도록 수정
+        if(name === 'pageNumber' || name === 'maxUserNumber') {
             value = value.replace(/[^0-9]/g, '')
         }
 
@@ -203,6 +205,11 @@ const PostsCreate = () => {
                 errors.dayInput = '모임 일정을 입력해야 합니다.';
                 hasError = true;
             }
+            // ❌ 모집 인원수 유효성 검사 추가
+            if (formData.maxUserNumber.trim() === '' || parseInt(formData.maxUserNumber) <= 0) {
+                errors.maxUserNumber = '모집 인원수를 1명 이상 입력해야 합니다.';
+                hasError = true;
+            }
         }
 
         // 에러 상태 업데이트
@@ -224,6 +231,7 @@ const PostsCreate = () => {
             ...(showRecruitmentFields && { 
                 region: formData.region, 
                 meetingInfo: formData.dayInput,
+                maxUserNumber: formData.maxUserNumber, // <<<<<<< 모집 인원수 데이터 추가
             }),
         };
         
@@ -231,16 +239,15 @@ const PostsCreate = () => {
                 navigate('/');
         })
         .catch(error => {
-            console.log('error.response.data.result.message', error)
+            console.log('error.response.data.message', error)
             if(error.response.data.message) {
-                alert(error.resposne.data.message)
+                alert(error.response.data.message)
                 return;
             }
         })
     };
 
-    // (AuthorAndSubjectGrid, TitleGrid, QuestionFields, RecruitmentFields 컴포넌트는 동일하게 유지)
-    // ... (기존 컴포넌트 코드)
+    // (AuthorAndSubjectGrid, TitleGrid, QuestionFields 컴포넌트는 동일하게 유지)
     
     const AuthorAndSubjectGrid = (
         <>
@@ -320,7 +327,7 @@ const PostsCreate = () => {
                 <Grid size={{xs:12, sm:6}}>
                     <CustomTextField
                         fullWidth
-                        label="페이지 번호"
+                        label="페이지 번호 (숫자만)"
                         name="pageNumber"
                         value={formData.pageNumber}
                         onChange={handleChange}
@@ -351,7 +358,8 @@ const PostsCreate = () => {
                     />
                 </Grid>
 
-                <Grid size={{xs:12}}>
+                {/* ❌ 모임 일정 Grid size 수정 */}
+                <Grid size={{xs:12, sm:9}}> 
                     <CustomTextField
                         fullWidth
                         label="모임 일정 (예: 매주 토요일 오후 2시)"
@@ -362,6 +370,25 @@ const PostsCreate = () => {
                         // ❌ required 제거
                         error={!!fieldErrors.dayInput} // 에러 상태 바인딩
                         helperText={fieldErrors.dayInput} // 에러 메시지 바인딩
+                    />
+                </Grid>
+
+                {/* ❌ 모집 인원수 필드 추가 */}
+                <Grid size={{xs:12, sm:3}}>
+                    <CustomTextField
+                        fullWidth
+                        label="모집 인원수 (숫자만, 작성자 미포함)"
+                        name="maxUserNumber"
+                        value={formData.maxUserNumber}
+                        onChange={handleChange}
+                        variant="outlined"
+                        slotProps= {{
+                            input: {
+                                inputMode: 'numeric', pattern: '[0-9]*' 
+                            }
+                        }} // 숫자만 입력되도록 힌트 추가
+                        error={!!fieldErrors.maxUserNumber} // 에러 상태 바인딩
+                        helperText={fieldErrors.maxUserNumber} // 에러 메시지 바인딩
                     />
                 </Grid>
             </Grid>

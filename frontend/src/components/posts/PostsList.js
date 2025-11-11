@@ -17,19 +17,11 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import apiClient from '../../api/Api-Service';
-
-// 상수 정의
-const BG_COLOR = '#FFFFFF';
-const TEXT_COLOR = '#000000';
-const LIGHT_TEXT_COLOR = '#555555';
-const HEADER_HEIGHT = '64px';
-const PURPLE_COLOR = '#9c27b0';
-const RED_COLOR = '#F44336';
-const MODIFIED_COLOR = '#FFC107'; 
-const VIEW_SAVED_COLOR = '#8B4513'; 
-
-// [추가] MyAlert.js에서 가져온 새 알림(읽지 않음) 색상
-const NEW_COLOR = '#4CAF50'; 
+import { 
+    BG_COLOR, TEXT_COLOR, LIGHT_TEXT_COLOR, 
+    PURPLE_COLOR, RED_COLOR, MODIFIED_COLOR, VIEW_SAVED_COLOR, NEW_COLOR, HEADER_HEIGHT
+} from '../constants/Theme';
+import { getPostDateInfo } from '../utilities/DateUtiles';
 
 // 스타일 컴포넌트 정의
 const PostsListWrapper = styled(Box)(({ theme }) => ({
@@ -124,55 +116,6 @@ const StyledChip = styled(Chip)(({ theme, subject }) => {
         height: '24px',
     };
 });
-
-/**
- * 게시글 날짜를 조건부로 포매팅하는 함수 (오늘: HH:MM, 그 외: MM/DD)
- * @param {string} dateString 포매팅할 날짜 문자열
- * @returns {string} 포매팅된 시간 또는 날짜 문자열
- */
-const formatTimeOrDate = (dateString) => {
-    const postDate = new Date(dateString);
-    const today = new Date();
-
-    // 날짜 비교를 위해 시, 분, 초를 0으로 설정
-    const postDay = new Date(postDate.getFullYear(), postDate.getMonth(), postDate.getDate());
-    const todayDay = new Date(today.getFullYear(), today.toDateString());
-
-    // 1. 날짜가 오늘과 같을 경우: "시간:분" (예: 10:05)
-    if (postDay.getTime() === todayDay.getTime()) {
-        const hours = String(postDate.getHours()).padStart(2, '0');
-        const minutes = String(postDate.getMinutes()).padStart(2, '0');
-        return `${hours}:${minutes}`;
-    }
-    // 2. 날짜가 오늘과 다를 경우: "월/일" (예: 11/04)
-    else {
-        const month = String(postDate.getMonth() + 1).padStart(2, '0');
-        const day = String(postDate.getDate()).padStart(2, '0');
-        return `${month}/${day}`;
-    }
-};
-
-/**
- * createdDate와 modifiedDate를 비교하여 표시할 날짜 문자열과 수정 여부를 반환합니다.
- * @param {string} modifiedDateString 수정 날짜 문자열
- * @param {string} createdDateString 생성 날짜 문자열
- * @returns {{ dateDisplay: string, isModified: boolean }} 표시할 날짜 정보와 수정 여부
- */
-const getPostDateInfo = (modifiedDateString, createdDateString) => {
-    const createdDate = new Date(createdDateString);
-    const modifiedDate = new Date(modifiedDateString);
-
-    // modifiedDate가 createdDate보다 이후인 경우에만 수정된 것으로 간주
-    const isModified = modifiedDateString && createdDateString && modifiedDate.getTime() > createdDate.getTime();
-    
-    // 수정된 경우 modifiedDate를 사용하고, 아닌 경우 createdDate를 사용
-    const dateToDisplay = isModified ? modifiedDateString : createdDateString;
-
-    return {
-        dateDisplay: formatTimeOrDate(dateToDisplay),
-        isModified: isModified,
-    };
-};
 
 const PostsList = () => {
     const navigate = useNavigate();
@@ -462,9 +405,9 @@ const PostsList = () => {
                                             handleSearchSubmit();
                                         }
                                     }}
-                                    sx={{ minWidth: { xs: '100%', md: '200px' }, flexGrow: 1, mt: { xs: 1, md: 0 }, color: { xs: LIGHT_TEXT_COLOR } }}
-                                    InputProps={{
-                                        endAdornment: (
+                                    sx={{ minWidth: { xs: '100%', md: '200px' }, flexGrow: 1, mt: { xs: 1, md: 0 }, color: LIGHT_TEXT_COLOR }}
+                                    slotProps={{
+                                        input: {endAdornment: (
                                             <InputAdornment position="end">
                                                 <IconButton
                                                     sx={{ color: TEXT_COLOR }}
@@ -476,6 +419,7 @@ const PostsList = () => {
                                             </InputAdornment>
                                         ),
                                     }}
+                                }
                                 />
                                 {/* 몇 개씩 보여줄지 선택 메뉴 (Rows Per Page) */}
                                 <FilterButton

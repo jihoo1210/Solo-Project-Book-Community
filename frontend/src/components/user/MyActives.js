@@ -18,16 +18,12 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ForumIcon from '@mui/icons-material/Forum'; 
 import apiClient from '../../api/Api-Service';
-
-// --- 상수 정의 ---
-const BG_COLOR = '#FFFFFF';
-const TEXT_COLOR = '#000000';
-const LIGHT_TEXT_COLOR = '#555555';
-const HEADER_HEIGHT = '64px';
-const PURPLE_COLOR = '#9c27b0';
-const RED_COLOR = '#F44336';
-const MODIFIED_COLOR = '#FFC107'; 
-const VIEW_SAVED_COLOR = '#8B4513'; 
+import { 
+    BG_COLOR, TEXT_COLOR, LIGHT_TEXT_COLOR, 
+    RED_COLOR, PURPLE_COLOR, MODIFIED_COLOR, HEADER_HEIGHT, VIEW_SAVED_COLOR,
+    NEW_COLOR // <<<<<<< 추가됨: 새로운 글 배경색을 위한 상수
+} from '../constants/Theme';
+import { getPostDateInfo } from '../utilities/DateUtiles';
 
 // --- 스타일 컴포넌트 정의 (생략) ---
 const PostsListWrapper = styled(Box)(({ theme }) => ({
@@ -122,49 +118,6 @@ const StyledChip = styled(Chip)(({ theme, subject }) => {
         height: '24px',
     };
 });
-
-/**
- * 게시글 날짜를 조건부로 포매팅하는 함수 (오늘: HH:MM, 그 외: MM/DD)
- * @param {string} dateString 포매팅할 날짜 문자열
- * @returns {string} 포매팅된 시간 또는 날짜 문자열
- */
-const formatTimeOrDate = (dateString) => {
-    const postDate = new Date(dateString);
-    const today = new Date();
-
-    const postDay = new Date(postDate.getFullYear(), postDate.getMonth(), postDate.getDate());
-    const todayDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-    if (postDay.getTime() === todayDay.getTime()) {
-        const hours = String(postDate.getHours()).padStart(2, '0');
-        const minutes = String(postDate.getMinutes()).padStart(2, '0');
-        return `${hours}:${minutes}`;
-    }
-    else {
-        const month = String(postDate.getMonth() + 1).padStart(2, '0');
-        const day = String(postDate.getDate()).padStart(2, '0');
-        return `${month}/${day}`;
-    }
-};
-
-/**
- * 생성일과 수정일을 비교하여 표시할 날짜 정보와 수정 여부를 반환합니다.
- * @param {string} modifiedDateString 수정 날짜 문자열
- * @param {string} createdDateString 생성 날짜 문자열
- * @returns {{ dateDisplay: string, isModified: boolean }} 표시할 날짜 정보와 수정 여부
- */
-const getPostDateInfo = (modifiedDateString, createdDateString) => {
-    const createdDate = new Date(createdDateString);
-    const modifiedDate = new Date(modifiedDateString);
-
-    const isModified = modifiedDateString && createdDateString && modifiedDate.getTime() > createdDate.getTime();
-    const dateToDisplay = isModified ? modifiedDateString : createdDateString;
-
-    return {
-        dateDisplay: formatTimeOrDate(dateToDisplay),
-        isModified: isModified,
-    };
-};
 
 // 모바일 뷰 테이블 셀에 사용될 레이블 정의
 const labelStyles = { fontWeight: 'bold', color: TEXT_COLOR, minWidth: '60px', marginRight: '8px' };
@@ -308,7 +261,7 @@ const MyActivities = () => {
     const handlePerPageSelect = (value) => {
         setRowsPerPage(value);
         setPage(1);
-        setPerPageAnchorEl(null);
+        perPageAnchorEl(null);
     };
 
     const handlePageChange = (event, value) => {
@@ -423,6 +376,8 @@ const MyActivities = () => {
                 textDecoration: 'none',
                 '& > .MuiTableCell-root': { borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` },
                 '&:last-child > .MuiTableCell-root': { borderBottom: 'none' },
+                // [수정 사항 적용]: activityType이 0 (게시글)일 때만 savedInViews를 사용하여 배경색 설정
+                backgroundColor: activityType === 0 && !item.savedInViews ? alpha(NEW_COLOR, 0.1) : BG_COLOR,
                 '&:hover': {
                     backgroundColor: alpha(TEXT_COLOR, 0.05),
                     cursor: 'pointer'
