@@ -67,7 +67,6 @@ const PALETTE_COLORS = [
 
 // 범용 색상 피커 팝오버 컴포넌트
 const CustomColorPopover = ({ editor, anchorEl, handleClose, attribute }) => {
-  const isColorActive = (color) => editor.isActive(attribute, { color });
 
   const setColor = (color) => {
     // 텍스트 색상 (textStyle) 또는 하이라이트 (highlight)에 따라 다른 명령 실행

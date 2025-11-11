@@ -40,15 +40,15 @@ public class AlertController {
         }
     }
 
-    @DeleteMapping("/close")
-    public ResponseEntity<?> close(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        try {
-            User user = userDetails.getUser();
-
-            service.close(user);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseController.fail(e.getMessage());
-        }
-    }
+//    @DeleteMapping("/close")
+//    public ResponseEntity<?> close(@AuthenticationPrincipal CustomUserDetails userDetails) {
+//        try {
+//            User user = userDetails.getUser();
+//
+//            service.close(user);
+//            return ResponseEntity.ok().build();
+//        } catch (Exception e) {
+//            return ResponseController.fail(e.getMessage());
+//        }
+//    }
 }
