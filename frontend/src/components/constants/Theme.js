@@ -36,3 +36,5 @@ export const REJECT_COLOR = '#FF5722'; // 주황/붉은 계열 (거절)
 export const RECRUIT_ACCENT_COLOR = '#00a8cc'; // 청록색 계열 (액센트)
 export const RECRUIT_DARK_COLOR = '#008c99'; // 진한 청록색 계열 (버튼 hover)
 export const RECRUIT_LIGHT_BG = '#e6f9ff'// 아주 옅은 배경색 (심플함 강조)
+
+export const RECRUIT_APPROVE_COLOR = '#1B5E20'

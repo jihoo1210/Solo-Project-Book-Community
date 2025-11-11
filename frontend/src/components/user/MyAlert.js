@@ -13,7 +13,7 @@ import { styled, alpha } from '@mui/material/styles';
 
 import apiClient from '../../api/Api-Service';
 
-// 검색 및 정렬 관련 아이콘 추가
+// 검색 및 정렬 관련 아이콘
 import SearchIcon from '@mui/icons-material/Search';
 import SortIcon from '@mui/icons-material/Sort';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -24,14 +24,14 @@ import CancelIcon from '@mui/icons-material/Cancel';
 
 import {
     BG_COLOR, TEXT_COLOR, LIGHT_TEXT_COLOR, HEADER_HEIGHT,
-    NEW_COLOR, READ_COLOR, COMMENT_COLOR, ADOPT_COLOR,
+    COMMENT_COLOR, ADOPT_COLOR,
     APPROVE_COLOR, REJECT_COLOR,
     APPLICATION_COLOR
 } from '../constants/Theme';
 import { formatTimeOrDate } from '../utilities/DateUtiles';
 
 
-// --- 스타일 컴포넌트 정의 (MyAlertWrapper, AlertCard, CustomTab, CustomTableCell, CustomSearchField, FilterButton) ---
+// --- 스타일 컴포넌트 정의 ---
 
 const MyAlertWrapper = styled(Box)(({ theme }) => ({
     marginTop: HEADER_HEIGHT,
@@ -45,7 +45,6 @@ const AlertCard = styled(Paper)(({ theme }) => ({
     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
     border: `1px solid ${TEXT_COLOR}`,
     backgroundColor: BG_COLOR,
-
     [theme.breakpoints.down('sm')]: {
         padding: theme.spacing(2, 0),
     },
@@ -70,7 +69,6 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
     borderBottom: `1px solid ${TEXT_COLOR}`,
     fontSize: '1rem',
     [theme.breakpoints.down('sm')]: {
-        // 모바일에서는 테이블 헤더 숨김
         display: 'none',
     },
 }));
@@ -144,7 +142,7 @@ const MyAlert = () => {
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [pendingSearchTerm, setPendingSearchTerm] = useState('');
+    const [pendingSearchTerm, setSearchTermPending] = useState('');
     const [searchField, setSearchField] = useState('제목');
 
     const [sortAnchorEl, setSortAnchorEl] = useState(null);
@@ -156,7 +154,7 @@ const MyAlert = () => {
 
     const [sortOrder, setSortOrder] = useState('desc');
 
-    // 💡 신규: Hover 및 인라인 액션 관련 상태
+    // Hover 및 인라인 액션 관련 상태
     const [hoveredAlertId, setHoveredAlertId] = useState(null);
     const [reason, setReason] = useState('');
     const [actionLoading, setActionLoading] = useState(null);
@@ -197,6 +195,8 @@ const MyAlert = () => {
             setAlerts([]);
             setTotalAlerts(0);
         } finally {
+            // 알림 읽음 처리 로직 제거 (서버에서 이미 처리하거나, '읽음' 상태 표시를 하지 않음)
+            // apiClient.delete("/alert/close") // AlertService.java에서 관련 로직 삭제했으므로 클라이언트에서도 제거
             setIsLoading(false);
         }
     };
@@ -218,7 +218,8 @@ const MyAlert = () => {
         try {
             // POST 요청
             await apiClient.post(`/recruit/${alert.id}/accept`, { content: reason.trim() });
-            setAlerts(prevAlerts => prevAlerts.map(a => a.id === alert.id ? { ...a, isRead: true, subject: '승인', content: '신청이 승인되었습니다.' } : a));
+            // 승인 후 로컬 상태 업데이트: subject를 '승인'으로 변경
+            setAlerts(prevAlerts => prevAlerts.map(a => a.id === alert.id ? { ...a, subject: '승인', content: '신청이 승인되었습니다.' } : a)); 
             window.alert("신청이 승인되었습니다.");
             fetchAlerts(page, selectedTab, sortOrder, rowsPerPage, searchField, searchTerm);
         } catch (error) {
@@ -254,7 +255,8 @@ const MyAlert = () => {
                 content: reason.trim()
             });
             const newContent = `신청이 거절되었습니다. 사유: ${reason.trim()}`;
-            setAlerts(prevAlerts => prevAlerts.map(a => a.id === alert.id ? { ...a, isRead: true, subject: '거절', content: newContent } : a));
+            // 거절 후 로컬 상태 업데이트: subject를 '거절'로 변경
+            setAlerts(prevAlerts => prevAlerts.map(a => a.id === alert.id ? { ...a, subject: '거절', content: newContent } : a));
             window.alert("신청이 거절되었습니다.");
             fetchAlerts(page, selectedTab, sortOrder, rowsPerPage, searchField, searchTerm);
         } catch (error) {
@@ -294,7 +296,8 @@ const MyAlert = () => {
 
     // 호버 시작/종료 핸들러
     const handleRowMouseEnter = (alertId, subject) => {
-        if (subject !== '신청' || alerts.find(a => a.id === alertId)?.isRead) return;
+        // 신청 알림에 대해서만 호버 액션 활성화
+        if (subject !== '신청') return; 
 
         setHoveredAlertId(alertId);
         if (hoveredAlertId !== alertId) {
@@ -427,7 +430,6 @@ const MyAlert = () => {
                                         id="filter-menu"
                                         slotProps={{ paper: { sx: { border: `1px solid ${TEXT_COLOR}`, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', }, }, }}
                                     >
-                                        {/* 검색 필드 '게시글 제목' 오타 수정: '제목'으로 통일 */}
                                         <MenuItem onClick={() => handleFilterOptionSelect('제목')}>게시글 제목</MenuItem>
                                         <MenuItem onClick={() => handleFilterOptionSelect('내용')}>알림 내용</MenuItem>
                                         <MenuItem onClick={() => handleFilterOptionSelect('작성자')}>작성자</MenuItem>
@@ -440,7 +442,7 @@ const MyAlert = () => {
                                     variant="outlined"
                                     size="small"
                                     value={pendingSearchTerm}
-                                    onChange={(e) => { setPendingSearchTerm(e.target.value); }}
+                                    onChange={(e) => { setSearchTermPending(e.target.value); }}
                                     onKeyDown={(e) => { if (e.key === 'Enter') { handleSearchSubmit(); } }}
                                     sx={{
                                         minWidth: { xs: '100%', md: '200px' }, flexGrow: 1, mt: { xs: 1, md: 0 }, '& label.Mui-focused': {
@@ -534,37 +536,39 @@ const MyAlert = () => {
                                 ) : (
                                     // 알림 목록 렌더링
                                     alerts.map((alert) => {
-                                        const isRead = alert.isRead;
                                         const subjectString = alert.subject;
-                                        const rowColor = isRead ? READ_COLOR : TEXT_COLOR;
-                                        const rowFontWeight = isRead ? 400 : 700;
+                                        // isRead/willRead 관련 스타일 제거. 기본 색상과 굵기 사용
+                                        const rowColor = TEXT_COLOR;
+                                        const rowFontWeight = 400;
 
                                         const typeDisplayString = (subjectString === '승인' || subjectString === '거절')
                                             ? `신청(${subjectString})`
                                             : subjectString;
 
                                         const isApplication = subjectString === '신청';
-                                        const isHovered = hoveredAlertId === alert.id;
+                                        // 읽음 상태 무시하고 신청 알림에 대해서만 호버 액션 활성화
+                                        const isHovered = hoveredAlertId === alert.id; 
                                         const isActionProcessing = actionLoading === alert.id;
 
                                         // 모바일 뷰에서 순서를 지정하기 위한 인덱스
                                         const [
-                                            idxId, idxType, idxTitle, idxContent, idxAuthor, idxDate
+                                            idxId, idxType, idxTitle, idxAuthor, idxDate
                                         ] = [6, 1, 2, 3, 4, 5];
 
 
                                         return (
                                             <React.Fragment key={alert.id}>
                                                 <TableRow
-                                                    onMouseEnter={isApplication && !isRead ? () => handleRowMouseEnter(alert.id, subjectString) : null}
-                                                    onMouseLeave={isApplication && !isRead ? handleRowMouseLeave : null}
+                                                    // 신청 알림에 대해서만 호버 이벤트 적용
+                                                    onMouseEnter={isApplication ? () => handleRowMouseEnter(alert.id, subjectString) : null}
+                                                    onMouseLeave={isApplication ? handleRowMouseLeave : null}
                                                     onClick={(event) => handleRowClick(alert, event)}
                                                     sx={(theme) => ({
                                                         textDecoration: 'none',
                                                         '& > .MuiTableCell-root': { borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` },
-                                                        // 호버 중이거나 아래 액션 Row가 열릴 경우 아래쪽 border 제거 (액션 Row에서 border 처리)
                                                         '&:last-child > .MuiTableCell-root': { borderBottom: 'none' },
-                                                        backgroundColor: isRead ? BG_COLOR : alpha(NEW_COLOR, 0.1),
+                                                        // [요청 반영] 배경색을 BG_COLOR로 통일하고 조건부 스타일링 제거
+                                                        backgroundColor: BG_COLOR, 
                                                         '&:hover': {
                                                             backgroundColor: isHovered ? alpha(APPLICATION_COLOR, 0.05) : alpha(TEXT_COLOR, 0.05),
                                                             cursor: 'pointer'
@@ -607,9 +611,7 @@ const MyAlert = () => {
                                                         })}
                                                     >
                                                         <Chip label={typeDisplayString} size="small" style={getChipStyle(subjectString)} />
-                                                        <Box component="span" sx={{ ml: 1, color: isRead ? READ_COLOR : NEW_COLOR, fontWeight: 600, display: { xs: 'inline', sm: 'none' } }}>
-                                                            ({isRead ? '읽음' : '새 알림'})
-                                                        </Box>
+                                                        {/* '읽음/새 알림' 표시 로직 제거 */}
                                                     </TableCell>
 
                                                     {/* 3. 게시글 제목 */}
@@ -634,11 +636,6 @@ const MyAlert = () => {
                                                     <TableCell
                                                         sx={(theme) => ({
                                                             fontWeight: rowFontWeight, color: rowColor, fontSize: '0.85rem',
-                                                            // ✅ 수정: PC 뷰 TableCell에서 중복되는 ellipsis 관련 속성 제거
-                                                            [theme.breakpoints.up('sm')]: {
-                                                                maxWidth: '300px',
-                                                            },
-                                                            // 모바일 뷰: display: flex 유지 (라벨 분리 목적)
                                                             [theme.breakpoints.down('sm')]: {
                                                                 display: 'flex', 
                                                                 justifyContent: 'flex-start',
@@ -652,10 +649,10 @@ const MyAlert = () => {
                                                                 flexGrow: 1, 
                                                                 minWidth: 0, 
                                                                 display: 'block',
-                                                                width: {xs: '100px', sm: 'auto'}, 
-                                                                whiteSpace: 'nowrap', // 줄바꿈 금지 (모바일 포함)
-                                                                overflow: 'hidden',   // 넘치는 내용 숨김 (모바일 포함)
-                                                                textOverflow: 'ellipsis', // ... 표시 (모바일 포함)
+                                                                width: {xs: '100%', sm: 'auto'},
+                                                                whiteSpace: 'nowrap',
+                                                                overflow: 'hidden',
+                                                                textOverflow: 'ellipsis',
                                                             }}
                                                         >
                                                             {alert.content || '알림 내용이 없습니다.'}
@@ -689,15 +686,15 @@ const MyAlert = () => {
                                                     </TableCell>
                                                 </TableRow>
 
-                                                {/* 💡 수정: 호버 시 액션 UI Row (Collapse 적용 및 반응형 적용) */}
-                                                {isApplication && !isRead && (
+                                                {/* 호버 시 액션 UI Row (Collapse 적용 및 반응형 적용) */}
+                                                {/* 신청 알림에 대해서만 액션 표시 */}
+                                                {isApplication && ( 
                                                     <TableRow
                                                         sx={(theme) => ({
                                                             '& > .MuiTableCell-root': { padding: 0, borderBottom: 'none !important' },
                                                             backgroundColor: BG_COLOR,
                                                             [theme.breakpoints.down('sm')]: {
-                                                                display: 'block',
-                                                                borderBottom: isHovered ? `1px solid ${TEXT_COLOR} !important` : 'none !important', // 모바일에서만 액션 Row가 열릴 때 구분선 추가
+                                                                borderBottom: isHovered ? `1px solid ${TEXT_COLOR} !important` : 'none !important',
                                                             },
                                                         })}
                                                         onMouseEnter={() => setHoveredAlertId(alert.id)}
@@ -706,28 +703,26 @@ const MyAlert = () => {
                                                         <TableCell colSpan={6} sx={{ display: { xs: 'block', md: 'table-cell' } }}>
                                                             <Collapse in={isHovered} timeout={200} unmountOnExit>
                                                                 <Box
-                                                                    // fullWidth
                                                                     sx={{
-                                                                        // ✅ 수정: 전체 너비의 블록으로 분리하기 위해 flex-direction: column 적용
                                                                         display: 'flex',
                                                                         alignItems: 'center',
                                                                         gap: 2,
                                                                         p: 4,
                                                                         justifyContent: 'space-between',
-                                                                        flexDirection: 'column', // 항상 수직 정렬 (알림 내용 전체 박스를 맨 위로)
+                                                                        flexDirection: 'column',
                                                                         borderTop: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.2)}`,
                                                                     }}
                                                                 >
                                                                     
                                                                     {/* 1. 알림 내용 전체 표시 (짤림 없이) - 상단 블록으로 독립 */}
                                                                     <Box sx={{
-                                                                        width: '100%', // 전체 너비
+                                                                        width: '100%',
                                                                         p: 0,
-                                                                        mb: 1, // 아래 입력/버튼 그룹과의 간격
+                                                                        mb: 1,
                                                                         backgroundColor: alpha(APPLICATION_COLOR, 0.1), 
                                                                         border: `1px solid ${APPLICATION_COLOR}`,
                                                                         borderRadius: 1,
-                                                                        whiteSpace: 'pre-wrap', // 줄바꿈 유지
+                                                                        whiteSpace: 'pre-wrap',
                                                                         wordBreak: 'break-word',
                                                                         color: TEXT_COLOR,
                                                                         fontWeight: 500,
@@ -748,7 +743,7 @@ const MyAlert = () => {
                                                                         alignItems: 'center', 
                                                                         gap: 2, 
                                                                         flexDirection: { xs: 'column', md: 'row' },
-                                                                        flexWrap: 'wrap', // 모바일에서는 수직, PC에서는 수평
+                                                                        flexWrap: 'wrap',
                                                                         justifyContent: 'space-between',
                                                                     }}>
                                                                         {/* 거절 사유 입력 필드 */}
@@ -766,7 +761,6 @@ const MyAlert = () => {
                                                                                 '& label.Mui-focused': {
                                                                                     color: LIGHT_TEXT_COLOR,
                                                                                 },
-                                                                                // ✅ 수정: PC에서 입력 필드 영역을 넓게 확보
                                                                                 maxWidth: '100%', 
                                                                                 flexGrow: 1,
                                                                                 flexShrink: 0,
@@ -791,7 +785,7 @@ const MyAlert = () => {
                                                                                     backgroundColor: APPROVE_COLOR,
                                                                                     color: BG_COLOR,
                                                                                     '&:hover': { backgroundColor: alpha(APPROVE_COLOR, 0.8) },
-                                                                                    width: { xs: '50%', md: '120px' } // 모바일에서 50% 너비 적용
+                                                                                    width: { xs: '50%', md: '120px' }
                                                                                 }}
                                                                             >
                                                                                 {isActionProcessing ? '승인 중' : '승인'}
@@ -808,7 +802,7 @@ const MyAlert = () => {
                                                                                     color: BG_COLOR,
                                                                                     '&:hover': { backgroundColor: alpha(REJECT_COLOR, 0.8) },
                                                                                     '&.Mui-disabled': { backgroundColor: alpha(REJECT_COLOR, 0.4), color: BG_COLOR },
-                                                                                    width: { xs: '50%', md: '120px' } // 모바일에서 50% 너비 적용
+                                                                                    width: { xs: '50%', md: '120px' }
                                                                                 }}
                                                                             >
                                                                                 {isActionProcessing ? '거절 중' : '거절'}
