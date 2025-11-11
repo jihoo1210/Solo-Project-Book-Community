@@ -13,10 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,6 +35,18 @@ public class AlertController {
 
             Page<AlertIndexResponse> responseDto = service.index(user, pageable, searchField, searchTerm, tab);
             return ResponseController.success(responseDto);
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/close")
+    public ResponseEntity<?> close(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        try {
+            User user = userDetails.getUser();
+
+            service.close(user);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseController.fail(e.getMessage());
         }

@@ -16,7 +16,7 @@ public class AlertIndexResponse {
     private Long postsId;
     private String postsTitle;
     private String username;
-    private Integer commentNumber;
+    private boolean willRead;
 
     private String subject;
     private String content;
