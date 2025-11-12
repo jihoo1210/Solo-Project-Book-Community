@@ -8,6 +8,7 @@ package com.example.backend.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -76,6 +77,7 @@ public class SecurityConfig {
 
                 // 4. 요청별 인가(권한) 규칙 설정
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET, "/posts").permitAll()
                         // "/auth/**" (인증/인가 관련 API)와 "/h2-console/**" 경로에 대한 접근은 모두 허용합니다.
                         .requestMatchers("/auth/**", "/h2-console/**").permitAll()
                         // "/admin/**" 경로는 "ADMIN" 권한을 가진 사용자만 접근 가능합니다. (권한명에는 "ROLE_" 접두사가 자동으로 붙습니다.)

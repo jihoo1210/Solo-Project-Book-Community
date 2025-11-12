@@ -28,4 +28,6 @@ public class PostsUpdateRequest {
     private String bookTitle;
 
     private Integer pageNumber;
+
+    private Integer maxUserNumber;
 }

@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.controller.utilities.ResponseController;
 import com.example.backend.dto.alert.AlertIndexResponse;
+import com.example.backend.dto.alert.CheckNewAlertResponse;
 import com.example.backend.entity.User;
 import com.example.backend.security.CustomUserDetails;
 import com.example.backend.service.AlertService;
@@ -37,6 +38,18 @@ public class AlertController {
             User user = userDetails.getUser();
 
             Page<AlertIndexResponse> responseDto = service.index(user, pageable, searchField, searchTerm, tab);
+            return ResponseController.success(responseDto);
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
+    @GetMapping("/check-new-alert")
+    public ResponseEntity<?> checkNewAlert(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        try {
+            User user = userDetails.getUser();
+
+            CheckNewAlertResponse responseDto = service.checkNewAlert(user);
             return ResponseController.success(responseDto);
         } catch (Exception e) {
             return ResponseController.fail(e.getMessage());

@@ -7,10 +7,7 @@ import com.example.backend.dto.posts.delete.PostsDeleteResponse;
 import com.example.backend.dto.posts.index.PostsIndexResponse;
 import com.example.backend.dto.posts.show.PostsShowResponse;
 import com.example.backend.dto.posts.update.PostsUpdateRequest;
-import com.example.backend.entity.Posts;
-import com.example.backend.entity.PostsLikes;
-import com.example.backend.entity.User;
-import com.example.backend.entity.UserViewed;
+import com.example.backend.entity.*;
 import com.example.backend.entity.utilities.PostsSubject;
 import com.example.backend.repository.*;
 import com.example.backend.service.utilities.PostLikesSpec;
@@ -26,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.example.backend.entity.utilities.AlertSubject.*;
 import static com.example.backend.entity.utilities.PostsSubject.*;
 
 @Slf4j
@@ -37,7 +35,8 @@ public class PostsService {
     private final UserRepository userRepository; // 현재 코드에서 사용되지 않지만, 의존성 관리를 위해 유지
     private final PostsLikesRepository postsLikesRepository;
     private final CommentLikesRepository commentLikesRepository;
-    private final UserViewedRepository userViewedRepository;
+    private final PostsViewedRepository postsViewedRepository;
+    private final AlertRepository alertRepository;
 
     /**
      * 전체 게시글 목록을 검색 조건과 페이징 조건에 따라 조회합니다.
@@ -74,7 +73,7 @@ public class PostsService {
                 // 현재 사용자의 게시글 좋아요 여부를 확인하여 포함
                 .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, post))
                 .viewCount(post.getViewCount())
-                .savedInViews(userViewedRepository.existsByUserAndPosts(user, post))
+                .savedInViews(postsViewedRepository.existsByUserAndPosts(user, post))
                 .build());
     }
 
@@ -109,7 +108,28 @@ public class PostsService {
                 // 현재 사용자의 게시글 좋아요 여부를 확인하여 포함
                 .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, post))
                 .viewCount(post.getViewCount())
-                .savedInViews(userViewedRepository.existsByUserAndPosts(user, post))
+                .savedInViews(postsViewedRepository.existsByUserAndPosts(user, post))
+                .build());
+    }
+
+    public Page<PostsIndexResponse> indexFavoriteByUser(User user, Pageable pageable, String searchField, String searchTerm, Integer tab) {
+        Specification<PostsLikes> spec = PostLikesSpec.search(user, searchField, searchTerm, tab);
+
+        Page<PostsLikes> postsLikesPage = postsLikesRepository.findAll(spec, pageable);
+
+        return postsLikesPage.map(postsLikes -> PostsIndexResponse.builder()
+                .id(postsLikes.getPosts().getId())
+                .subject(postsLikes.getPosts().getSubject().getSubject())
+                .title(postsLikes.getPosts().getTitle())
+                .username(postsLikes.getPosts().getUser().getUsername())
+                .createdDate(postsLikes.getPosts().getCreatedDate())
+                .modifiedDate(postsLikes.getPosts().getModifiedDate())
+                .likes(postsLikes.getPosts().getLikes().size())
+                .commentNumber(postsLikes.getPosts().getComments().size())
+                // 현재 사용자의 게시글 좋아요 여부를 확인하여 포함
+                .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, postsLikes.getPosts()))
+                .viewCount(postsLikes.getPosts().getViewCount())
+                .savedInViews(postsViewedRepository.existsByUserAndPosts(user, postsLikes.getPosts()))
                 .build());
     }
 
@@ -160,13 +180,17 @@ public class PostsService {
                 .modifiedDate(comment.getModifiedDate())
                 .build()).toList();
 
-        if(!userViewedRepository.existsByUserAndPosts(user, target)) {
-            UserViewed userViewed = UserViewed.builder()
+        if(!postsViewedRepository.existsByUserAndPosts(user, target)) {
+            PostsViewed postsViewed = PostsViewed.builder()
                     .user(user)
                     .posts(target)
                     .build();
-            userViewedRepository.save(userViewed);
+            postsViewedRepository.save(postsViewed);
         }
+        Alert alertToRecruitmentResult = alertRepository.findByPostsAndSenderAndSubject(target, user, APPLICATION)
+                .orElse(alertRepository.findByPostsAndSenderAndSubject(target, user, APPROVAL)
+                        .orElse(alertRepository.findByPostsAndSenderAndSubject(target, user, REJECTED)
+                                .orElse(null)));
 
         // 게시글 상세 정보를 DTO로 빌드
         return PostsShowResponse.builder()
@@ -185,6 +209,10 @@ public class PostsService {
                 // 주제별 추가 정보 (모집, 질문)
                 .region(target.getRegion())
                 .meetingInfo(target.getMeetingInfo())
+                .maxUserNumber(target.getMaxUserNumber())
+                .currentUserNumber(target.getCurrentUserNumber() != null ? target.getCurrentUserNumber() : 0)
+                // 모임 신청 결과
+                .recruitmentResult(alertToRecruitmentResult != null ? alertToRecruitmentResult.getSubject().getSubject() : null)
                 .bookTitle(target.getBookTitle())
                 .pageNumber(target.getPageNumber())
                 .adoptedCommentId(target.getAdoptedComment() != null ? target.getAdoptedComment().getId() : null)
@@ -257,6 +285,7 @@ public class PostsService {
                 .pageNumber(dto.getPageNumber())
                 .region(dto.getRegion())
                 .meetingInfo(dto.getMeetingInfo())
+                .maxUserNumber(dto.getMaxUserNumber())
                 .user(user)
                 .build();
 
@@ -298,6 +327,14 @@ public class PostsService {
         target.setBookTitle(dto.getBookTitle());
         target.setPageNumber(dto.getPageNumber());
         target.setModifiedDate(LocalDateTime.now());
+        if (dto.getMaxUserNumber() != null) {
+            if (dto.getMaxUserNumber() >= target.getCurrentUserNumber()) {
+                target.setMaxUserNumber(dto.getMaxUserNumber());
+            }
+            else {
+                throw new IllegalArgumentException("현재 모집된 인원수보다 최대 인원수가 더 적을 수 없습니다.");
+            }
+        }
     }
 
     /**

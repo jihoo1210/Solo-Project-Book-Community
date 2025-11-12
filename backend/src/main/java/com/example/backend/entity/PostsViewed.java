@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 
 @Entity
-public class UserViewed {
+public class PostsViewed {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

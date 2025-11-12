@@ -60,7 +60,14 @@ public class Posts extends BaseEntity {
     @Column
     private String meetingInfo;
 
-    // 모집 게시글 댓글
+    // 최대 인원 수
+    @Column
+    private Integer maxUserNumber;
+
+    // 현재 인원 수
+    @Builder.Default
+    @Column
+    private Integer currentUserNumber = 0;
 
     // 질문 게시글
     @Column

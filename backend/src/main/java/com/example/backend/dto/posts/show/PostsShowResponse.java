@@ -27,6 +27,10 @@ public class PostsShowResponse {
     private List<CommentResponse> comments;
     private String region;
     private String meetingInfo;
+    private Integer maxUserNumber;
+    private Integer currentUserNumber;
+    // 신청 상태
+    private String recruitmentResult;
     private String bookTitle;
     private Integer pageNumber;
     private Long adoptedCommentId;

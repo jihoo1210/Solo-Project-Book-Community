@@ -43,8 +43,10 @@ public class PostsController {
         log.info("searchField: {}", searchField);
         log.info("searchTerm: {}", searchTerm);
 
+        User user = userDetails != null ? userDetails.getUser() : null;
+
         // Service에서 Page 객체를 받아 ResponseController로 감싸서 반환
-        Page<PostsIndexResponse> responsePage = service.index(userDetails.getUser(), pageable, searchField, searchTerm, tab);
+        Page<PostsIndexResponse> responsePage = service.index(user, pageable, searchField, searchTerm, tab);
         return ResponseController.success(responsePage);
     }
 

@@ -54,6 +54,28 @@ public class CommentController {
         }
     }
 
+    @PostMapping("/{postsId}/apply-recruitment")
+    public ResponseEntity<?> applyRecruitment(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                              @PathVariable Long postsId,
+                                              @Valid @RequestBody CommentCreateRequest dto,
+                                              BindingResult bindingResult) {
+        try {
+            log.info("CustomUserDetails: {}", userDetails);
+            log.info("postsId: {}", postsId);
+            log.info("CommentCreateRequest: {}", dto);
+
+            if(bindingResult.hasErrors()) throw new IllegalArgumentException("형식이 올바르지 않습니다.");
+
+            User user = userDetails.getUser();
+
+            service.applyRecruitment(dto, user, postsId);
+
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
     @GetMapping("/my")
     public ResponseEntity<?> indexByUser(@AuthenticationPrincipal CustomUserDetails userDetails,
                                          @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
@@ -103,12 +125,15 @@ public class CommentController {
         }
     }
 
+    // 댓글 채택
     @PostMapping("/{commentId}/adopt")
-    public ResponseEntity<?> adoptComment(@PathVariable Long commentId) {
+    public ResponseEntity<?> adoptComment(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long commentId) {
         try {
             log.info("commentId: {}", commentId);
 
-            service.adopt(commentId);
+            User user = userDetails.getUser();
+
+            service.adopt(user, commentId);
             return ResponseEntity.ok().build();
         } catch (IllegalAccessException e) {
             return ResponseController.fail(e.getMessage());
