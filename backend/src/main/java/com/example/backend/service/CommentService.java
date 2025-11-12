@@ -33,6 +33,7 @@ public class CommentService {
     private final PostsRepository postsRepository;
     private final CommentLikesRepository commentLikesRepository;
     private final AlertRepository alertRepository;
+    private final AlertViewedRepository alertViewedRepository;
     private final UserRepository userRepository;
 
     @Transactional
@@ -193,6 +194,7 @@ public class CommentService {
         Posts posts = postsRepository.findById(postsId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
         User postsUser = posts.getUser();
 
+        // 신청 알림
         Alert alert = Alert.builder()
                 // 게시글 작성자
                 .user(postsUser)
