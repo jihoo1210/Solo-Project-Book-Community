@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: backend
+  # database config
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+
+  # h2 config
+  h2:
+    console:
+      enabled: true
+
+  # jpa config
+  jpa:
+    hibernate:
+      ddl-auto: update # validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # Redis config
+  data:
+    redis:
+      host: localhost
+      port: 6379 # 기본 포트
+
+# set jwt variable
+jwt:
+  secret: rsjNExuttUU2lj7z2BFUnocLOEEhts4EoESOzU46XMYnK9Lp # ${jwt.secret}
+  expiration: 3600000 # ${jwt.expiration}
+
