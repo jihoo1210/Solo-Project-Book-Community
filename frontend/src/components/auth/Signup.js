@@ -1,3 +1,5 @@
+// src/components/Signup.js
+
 import React, { useState } from 'react';
 import {
   Box, Container, Typography, TextField, Button, Grid, Paper,
@@ -7,14 +9,9 @@ import { alpha, styled } from '@mui/material/styles';
 import { Link, useNavigate } from 'react-router-dom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import apiClient from '../../api/Api-Service'; // 오류 발생으로 인해 주석 처리
-
-// 색상 정의
-const BG_COLOR = '#FFFFFF';
-const TEXT_COLOR = '#000000';
-const LIGHT_TEXT_COLOR = '#555555';
-
-const HEADER_HEIGHT = '64px';
+import apiClient from '../../api/Api-Service'; 
+// 상수명 변경 없음: RED_COLOR, NEW_COLOR 그대로 사용
+import { BG_COLOR, HEADER_HEIGHT, LIGHT_TEXT_COLOR, RED_COLOR, TEXT_COLOR, NEW_COLOR } from '../constants/Theme';
 
 // 레이아웃 래퍼
 const SignupWrapper = styled(Box)(({ theme }) => ({
@@ -39,14 +36,26 @@ const SignupCard = styled(Paper)(({ theme }) => ({
   },
 }));
 
-// 텍스트 필드 스타일
+// 텍스트 필드 스타일 (오류 시 붉은색 테두리 유지)
 const CustomTextField = styled(TextField)(({ theme }) => ({
   '& .MuiInputLabel-root': { color: LIGHT_TEXT_COLOR },
   '& .MuiOutlinedInput-root': {
     '& fieldset': { borderColor: TEXT_COLOR },
     '&:hover fieldset': { borderColor: TEXT_COLOR },
+    // 오류가 아닐 때 포커스 시
     '&.Mui-focused fieldset': {
       borderColor: TEXT_COLOR,
+      borderWidth: '1px',
+    },
+    // 오류일 때 포커스 및 호버 시 붉은색 유지
+    '&.Mui-error fieldset': {
+      borderColor: RED_COLOR,
+    },
+    '&.Mui-error:hover fieldset': {
+      borderColor: RED_COLOR,
+    },
+    '&.Mui-error.Mui-focused fieldset': {
+      borderColor: RED_COLOR,
       borderWidth: '1px',
     },
   },
@@ -66,8 +75,8 @@ const DuplicateCheckButton = styled(Button)(({ theme }) => ({
   color: TEXT_COLOR,
   borderColor: TEXT_COLOR,
   fontWeight: 600,
-  padding: theme.spacing(1.6, 4), // 높이와 가로폭 조정
-  minWidth: '140px',              // 버튼 최소 너비 확장
+  padding: theme.spacing(1.6, 4), 
+  minWidth: '140px',             
   whiteSpace: 'nowrap',
   fontSize: '1rem',
   '&:hover': {
@@ -86,41 +95,62 @@ const Signup = () => {
     username: '',
     password: '',
   });
-  // 이전 이메일 값을 저장하여 변경 여부를 감지
   const [lastSentEmail, setLastSentEmail] = useState('');
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  // NEW: 이메일 인증 관련 상태 추가
   const [showEmailVerificationInput, setShowEmailVerificationInput] = useState(false);
   const [emailVerificationCode, setEmailVerificationCode] = useState('');
   const navigate = useNavigate();
-  // NEW: 이메일 인증 완료 상태 추가
   const [isEmailVerified, setIsEmailVerified] = useState(false); 
+  // 변수명 변경: signupErrors -> signupInfos
+  const [signupInfos, setSignupInfos] = useState({
+    email: '',
+    username: '',
+    password: '',
+    submit: ''
+  });
+  // 변수명 변경: isEmailVerificationError -> emailVerificationInfo
+  const [emailVerificationInfo, setEmailVerificationInfo] = useState('');
 
+
+  // 오류 상태를 초기화하는 함수 (함수명은 직관적으로 clearError 유지)
+  const clearError = (name) => {
+    // signupErrors -> signupInfos
+    setSignupInfos((prev) => ({ ...prev, [name]: '' }));
+    // isEmailVerificationError -> emailVerificationInfo
+    if (name === 'email') setEmailVerificationInfo('');
+  };
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     let newValue = value.replace(/\s/g, '');
 
-    // NEW: 이메일 검증 코드 처리 로직 추가 (6자리 대문자 또는 숫자만 허용)
+    // 이메일 검증 코드 처리 로직 (6자리 대문자 또는 숫자만 허용)
     if (name === 'emailVerificationCode') {
       newValue = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
       setEmailVerificationCode(newValue);
+      // CODE_SENT 메시지를 유지하기 위해 초기화 조건 변경
+      // emailVerificationInfo 사용
+      if (!emailVerificationInfo.startsWith('CODE_SENT:')) {
+          setEmailVerificationInfo('');
+      }
       return;
     }
     
     setFormData((prev) => {
       const updatedFormData = { ...prev, [name]: newValue };
 
-      // 사용자가 이메일을 수정했는지 확인하는 로직 추가
+      // 사용자가 이메일을 수정했는지 확인하는 로직
       if (name === 'email' && value !== prev.email) {
-        // 이메일 주소가 변경되면 인증 상태 초기화
+        // 이메일 주소가 변경되면 인증 상태 초기화 및 오류 메시지 표시
         if (showEmailVerificationInput && value !== lastSentEmail) {
             setShowEmailVerificationInput(false);
             setEmailVerificationCode('');
-            setIsEmailVerified(false); // 인증 완료 상태 초기화
-            // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-            // alert('이메일 주소가 변경되어 인증 상태가 초기화되었습니다. 다시 전송 버튼을 눌러주세요.');
+            setIsEmailVerified(false); 
+            // 이메일 변경 시 인증 초기화 메시지 표시
+            // emailVerificationInfo 사용
+            setEmailVerificationInfo('이메일 주소가 변경되어 인증 상태가 초기화되었습니다. 다시 전송 버튼을 눌러주세요.');
         }
       }
 
@@ -128,114 +158,192 @@ const Signup = () => {
     });
 
     if (name === 'username') setIsUsernameAvailable(null); // 회원명 변경 시 중복 상태 초기화
+    
+    clearError(name); // 입력 변경 시 해당 필드의 오류 초기화
   };
 
   const handleClickShowPassword = () => setShowPassword((s) => !s);
   
-  // NEW: 이메일 전송 버튼 클릭 메서드
-  const handleSendVerificationEmail = () => {
+  // 이메일 전송 버튼 클릭 메서드
+  const handleSendVerificationEmail = async () => {
+    clearError('email');
+    // emailVerificationInfo 사용
+    setEmailVerificationInfo('');
+
     if (!formData.email.trim()) {
-      // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-      alert('이메일을 입력해 주세요.');
+      // signupErrors -> signupInfos
+      setSignupInfos(prev => ({ ...prev, email: '이메일을 입력해 주세요.' }));
       return;
     }
     
-    // API 호출 로직은 요청에 따라 추가하지 않고, 인증 코드 입력란만 표시
-    console.log(`이메일: ${formData.email}로 검증 코드 전송 시도...`);
-    
-    // 실제로 서버에서 코드를 전송하는 API가 호출되어야 함
-    setShowEmailVerificationInput(true);
-    setLastSentEmail(formData.email); // 전송한 이메일 주소를 저장
-    setIsEmailVerified(false); // 재전송 시 인증 완료 상태 초기화
-    
-    // 코드 전송이 성공했다고 가정하고 메시지를 띄웁니다.
-    // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-    alert('인증 코드가 이메일로 전송되었습니다. 6자리 코드를 입력해주세요.');
+    try {
+      // 이메일 중복 검사 및 코드 전송 API 호출
+      const response = await apiClient.get(`/auth/check-email?email=${formData.email}`)
+      const isAvailable = response.data.result.available
+
+      if (isAvailable) {
+        setShowEmailVerificationInput(true);
+        setLastSentEmail(formData.email); // 전송한 이메일 주소를 저장
+        setIsEmailVerified(false); // 재전송 시 인증 완료 상태 초기화
+        // 성공 메시지에 특수 접두사 추가
+        // emailVerificationInfo 사용
+        setEmailVerificationInfo('CODE_SENT:인증 코드가 전송되었습니다. 이메일을 확인해 주세요.');
+      } else {
+        // 서버에서 이메일이 이미 사용 중이라고 응답했을 때
+        // signupErrors -> signupInfos
+        setSignupInfos(prev => ({ ...prev, email: '이미 사용 중인 이메일 주소입니다.' }));
+      }
+      
+    } catch (error) {
+      // API 호출 자체에 오류가 발생했을 때
+      const errorMessage = error.response?.data?.message || "이메일 검증 및 전송 중 오류가 발생했습니다.";
+      // emailVerificationInfo 사용
+      setEmailVerificationInfo(errorMessage);
+    }
   };
 
-  // NEW: 이메일 인증 버튼 클릭 메서드 (기능 없이 UI만 구현)
+  // 이메일 인증 버튼 클릭 메서드 (기능 없이 UI만 구현)
   const handleVerifyEmailCode = () => {
+    // emailVerificationInfo 사용
+    setEmailVerificationInfo('');
+
     if (emailVerificationCode.length !== 6) {
-      alert('6자리의 인증 코드를 입력해야 합니다.');
+      // emailVerificationInfo 사용
+      setEmailVerificationInfo('6자리의 인증 코드를 입력해야 합니다.');
       return;
     }
-    console.log(`인증 코드: ${emailVerificationCode} 검증 시도...`);
     
     // TODO: 실제 서버 API 호출 및 응답 처리 로직 구현 필요
     
     // 모의 성공 처리
-    setIsEmailVerified(true);
-    alert('이메일 인증이 완료되었습니다.');
+    if (emailVerificationCode === 'SUCCES') { // 예시로 'SUCCESS' 코드를 성공으로 가정
+        setIsEmailVerified(true);
+        // 인증 성공 메시지에 특수 접두사 추가
+        // emailVerificationInfo 사용
+        setEmailVerificationInfo('CODE_SUCCESS:이메일 인증이 성공적으로 완료되었습니다.');
+    } else {
+        setIsEmailVerified(false);
+        // '인증 코드가 일치하지 않습니다.' 메시지에 특수 오류 접두사 추가
+        // emailVerificationInfo 사용
+        setEmailVerificationInfo('CODE_ERROR:인증 코드가 일치하지 않습니다.');
+    }
   };
 
   // 회원명 중복 체크 메서드
   const handleDuplicateCheck = () => {
+    clearError('username');
     const currentUsername = formData.username.trim();
+
     if (!currentUsername) {
-      // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-      alert('회원명을 입력해 주세요.');
+      // signupErrors -> signupInfos
+      setSignupInfos(prev => ({ ...prev, username: '회원명을 입력해 주세요.' }));
       return;
     }
-    console.log(`${currentUsername} 중복 검사 실행...`);
+    
     // API 호출
     apiClient.get(`auth/check-username?username=${currentUsername}`).then(response => {
-      console.log(response.data.result.available)
         setIsUsernameAvailable(response.data.result.available)
 
         if(response.data.result.available) {
-          // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-          alert('사용 가능한 회원명입니다.');
+          // 성공 메시지
+          // signupErrors -> signupInfos
+          setSignupInfos(prev => ({ ...prev, username: '사용 가능한 회원명입니다.' }));
         } else {
-          // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-          alert('이미 사용 중인 회원명입니다.');
+          // 실패 메시지
+          // signupErrors -> signupInfos
+          setSignupInfos(prev => ({ ...prev, username: '이미 사용 중인 회원명입니다.' }));
         }
+      })
+      .catch(error => {
+        const errorMessage = error.response?.data?.message || '회원명 검사 중 오류가 발생했습니다.';
+        // API 오류 메시지 표시
+        // signupErrors -> signupInfos
+        setSignupInfos(prev => ({ ...prev, username: errorMessage }));
+        setIsUsernameAvailable(false);
       })
   };
 
   // 회원가입 api 요청 메서드
   const handleSubmit = (e) => {
     e.preventDefault();
+    // signupErrors -> signupInfos
+    setSignupInfos({ email: '', username: '', password: '', submit: '' });
+
+    // 1. 회원명 중복 검사 여부 확인
     if (isUsernameAvailable !== true) {
-      // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-      alert('회원명 중복 검사를 완료해 주세요.');
+      // signupErrors -> signupInfos
+      setSignupInfos(prev => ({ ...prev, username: prev.username || '회원명 중복 검사를 완료해 주세요.' }));
+      return;
+    }
+    
+    // 2. 이메일 인증 완료 여부 확인
+    if (showEmailVerificationInput && !isEmailVerified) {
+      // emailVerificationInfo 사용
+      setEmailVerificationInfo('이메일 인증을 완료해 주세요.');
       return;
     }
 
-    // 이메일 인증 코드가 표시되었고, 인증이 완료되지 않았다면 경고
-    if (showEmailVerificationInput && !isEmailChanged && !isEmailVerified) {
-      // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-      alert('이메일 인증을 완료해 주세요.');
-      return;
-    }
-    // TODO: 실제 API에서는 이메일 인증 코드를 서버로 보내서 검증하는 로직이 추가되어야 함
-
-    console.log('회원가입 요청 데이터:', formData);
+    // 3. 비밀번호 유효성 검사 (예시)
+    // if (formData.password.length < 8) {
+    //     setSignupInfos(prev => ({ ...prev, password: '비밀번호는 최소 8자 이상이어야 합니다.' }));
+    //     return;
+    // }
+    
+    // 4. API 호출
     apiClient.post('auth/signup', formData).then(response => {
-      
-      console.log('성공 응답 데이터:', response.data);
+
 
       if (response.data && response.data.result && response.data.result.email) {
           navigate("/auth/signin?email=" + response.data.result.email);
       } else {
-          // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-          alert('회원가입은 성공했으나, 서버 응답에서 이메일 정보를 받지 못했습니다. 로그인 페이지로 이동합니다.');
+          // 최종 성공 후 서버 응답에 문제가 있는 경우
+          // signupErrors -> signupInfos
+          setSignupInfos(prev => ({ 
+              ...prev, 
+              submit: '회원가입은 성공했으나, 서버 응답에 문제가 있습니다. 로그인 페이지로 이동합니다.' 
+          }));
           navigate("/auth/signin");
       }
     })
       .catch(error => {
-        console.log('error', error)
-        const errorMessage =  error.response?.data?.message || error.response
-        // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-        alert(errorMessage)
+        const errorMessage =  error.response?.data?.message || '회원가입 처리 중 오류가 발생했습니다.'
+        // signupErrors -> signupInfos
+        setSignupInfos(prev => ({ ...prev, submit: errorMessage }));
       })
   };
 
-  // 이메일이 마지막으로 전송된 이메일과 다른지 확인하는 플래그
   const isEmailChanged = formData.email !== lastSentEmail;
-  // 전송 버튼 활성화 조건: 이메일이 입력되었고, (인증 코드가 표시되지 않았거나 || 이메일이 변경되었을 때)
-  const isSendButtonDisabled = !formData.email || (showEmailVerificationInput && !isEmailChanged && !isEmailVerified);
-  // 인증 버튼 활성화 조건: 6자리 코드가 모두 입력되었고, 아직 인증되지 않았을 때
   const isVerifyButtonDisabled = emailVerificationCode.length !== 6 || isEmailVerified;
+  // 이메일 전송 버튼 비활성화: 이메일이 유효하고, 코드가 전송되었으며, 변경되지 않았을 때
+  const isSendButtonDisabled = showEmailVerificationInput && !isEmailChanged;
+
+  // NEW_COLOR를 사용할 색상 결정 로직 함수
+  const getEmailMessageColor = () => {
+    // emailVerificationInfo 사용
+    if (!emailVerificationInfo) return RED_COLOR; 
+
+    // 인증 완료는 항상 NEW_COLOR
+    if (isEmailVerified) return NEW_COLOR;
+    
+    // 코드가 전송되었거나 인증 성공 메시지이면 NEW_COLOR
+    if (emailVerificationInfo.startsWith('CODE_SENT:') || emailVerificationInfo.startsWith('CODE_SUCCESS:')) return NEW_COLOR;
+    // 그 외 일반 오류 메시지
+    return RED_COLOR;
+  };
+
+  // 메시지에서 특수 접두사를 제거하는 함수
+  const getCleanEmailMessage = (message) => {
+    if (message.startsWith('CODE_SENT:')) {
+      return message.replace('CODE_SENT:', '');
+    }
+    if (message.startsWith('CODE_SUCCESS:')) {
+      return message.replace('CODE_SUCCESS:', '');
+    }
+    if (message.startsWith('CODE_ERROR:')) {
+      return message.replace('CODE_ERROR:', '');
+    }
+    return message;
+  };
 
   return (
     <SignupWrapper>
@@ -276,8 +384,14 @@ const Signup = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
+                    // NEW: 오류 및 도움말 텍스트 추가
+                    // signupInfos 사용, 이메일 입력 필드 아래는 CODE_SENT, CODE_SUCCESS, CODE_ERROR를 표시하지 않음
+                    error={
+                        !!signupInfos.email || 
+                        (!!emailVerificationInfo && !emailVerificationInfo.startsWith('CODE_SENT:') && !emailVerificationInfo.startsWith('CODE_SUCCESS:') && !emailVerificationInfo.startsWith('CODE_ERROR:'))
+                    }
+                    helperText={signupInfos.email}
                   />
-                  {/* 회원명 검증 버튼과 동일한 디자인 */}
                   <DuplicateCheckButton
                     variant="outlined"
                     onClick={handleSendVerificationEmail}
@@ -286,6 +400,19 @@ const Signup = () => {
                     {showEmailVerificationInput && !isEmailChanged && !isEmailVerified ? '재전송' : '전송'}
                   </DuplicateCheckButton>
                 </Box>
+                {/* 이메일 전송/인증 관련 메시지 (CODE_ERROR를 제외한 메시지만 표시) */}
+                {!!emailVerificationInfo && !emailVerificationInfo.startsWith('CODE_ERROR:') && (
+                    <Typography
+                      variant="caption"
+                      sx={{ 
+                        mt: 0.5, ml: 1, display: 'block', 
+                        // 색상 결정 함수 사용
+                        color: getEmailMessageColor()
+                      }}
+                    >
+                      {getCleanEmailMessage(emailVerificationInfo)}
+                    </Typography>
+                )}
               </Grid>
 
               {/* 이메일 검증 코드 입력 필드 + 인증 버튼 */}
@@ -304,16 +431,34 @@ const Signup = () => {
                       label="인증 코드 (6자리 대문자/숫자)"
                       name="emailVerificationCode"
                       type="text"
-                      inputProps={{
-                        maxLength: 6,
-                        style: { textTransform: 'uppercase' } // 시각적으로 대문자 표시
+                      slotProps={{
+                        input: {
+                          maxLength: 6,
+                          style: { textTransform: 'uppercase' }
+                        } 
                       }}
                       value={emailVerificationCode}
                       onChange={handleChange}
                       required
                       disabled={isEmailVerified}
+                      // NEW: 이메일 인증 오류 메시지 표시
+                      // 인증이 완료되지 않았고, 오류 메시지가 있으며, 해당 메시지가 성공 메시지가 아닐 때 오류 상태 표시
+                      error={
+                        !isEmailVerified && 
+                        !!emailVerificationInfo && 
+                        !emailVerificationInfo.startsWith('CODE_SENT:') &&
+                        !emailVerificationInfo.startsWith('CODE_SUCCESS:')
+                      }
+                      helperText={
+                        // 인증이 완료되지 않았고, 오류 메시지가 있으며, 해당 메시지가 성공 메시지가 아닐 때 헬퍼 텍스트 표시
+                        !isEmailVerified && 
+                        !!emailVerificationInfo && 
+                        !emailVerificationInfo.startsWith('CODE_SENT:') &&
+                        !emailVerificationInfo.startsWith('CODE_SUCCESS:')
+                        ? getCleanEmailMessage(emailVerificationInfo) 
+                        : null
+                      }
                     />
-                    {/* NEW: 인증 버튼 (검사/전송 버튼과 동일 디자인) */}
                     <DuplicateCheckButton
                       variant="outlined"
                       onClick={handleVerifyEmailCode}
@@ -322,15 +467,6 @@ const Signup = () => {
                       {isEmailVerified ? '인증 완료' : '인증'}
                     </DuplicateCheckButton>
                   </Box>
-                  {/* 인증 완료 메시지 */}
-                  {isEmailVerified && (
-                    <Typography
-                      variant="caption"
-                      sx={{ mt: 0.5, ml: 1, display: 'block', color: 'green' }}
-                    >
-                      이메일 인증이 성공적으로 완료되었습니다.
-                    </Typography>
-                  )}
                 </Grid>
               )}
 
@@ -351,6 +487,19 @@ const Signup = () => {
                     value={formData.username}
                     onChange={handleChange}
                     required
+                    // NEW: 오류 및 도움말 텍스트 추가
+                    // signupErrors -> signupInfos
+                    error={
+                        !!signupInfos.username && 
+                        signupInfos.username !== '사용 가능한 회원명입니다.'
+                    }
+                    helperText={
+                        // signupErrors -> signupInfos
+                        (!!signupInfos.username && 
+                        signupInfos.username !== '사용 가능한 회원명입니다.') 
+                        ? signupInfos.username 
+                        : null
+                    }
                   />
                   <DuplicateCheckButton
                     variant="outlined"
@@ -360,8 +509,9 @@ const Signup = () => {
                     검사
                   </DuplicateCheckButton>
                 </Box>
-                {/* 중복 검사 결과 메시지 */}
-                {isUsernameAvailable !== null && (
+                {/* 중복 검사 결과 메시지 (성공 메시지는 별도로 표시) */}
+                {/* signupErrors -> signupInfos */}
+                {isUsernameAvailable !== null && signupInfos.username && (
                   <Typography
                     variant="caption"
                     sx={{
@@ -369,19 +519,25 @@ const Signup = () => {
                       ml: 1,
                       display: 'block',
                       textAlign: { xs: 'center', sm: 'left' },
-                      color: isUsernameAvailable ? 'green' : 'red',
+                      // NEW_COLOR를 사용하도록 변경
+                      color: isUsernameAvailable ? NEW_COLOR : RED_COLOR,
                     }}
                   >
-                    {isUsernameAvailable
-                      ? '사용 가능한 회원명입니다.'
-                      : '이미 사용 중이거나 유효하지 않은 회원명입니다.'}
+                    {signupInfos.username}
                   </Typography>
                 )}
               </Grid>
 
               {/* 비밀번호 입력 필드 */}
               <Grid item size={{ xs: 12 }}>
-                <FormControl fullWidth variant="outlined" required>
+                <FormControl 
+                    fullWidth 
+                    variant="outlined" 
+                    required
+                    // NEW: 비밀번호 오류 상태 설정
+                    // signupErrors -> signupInfos
+                    error={!!signupInfos.password}
+                >
                   <InputLabel sx={{ color: LIGHT_TEXT_COLOR }}>비밀번호</InputLabel>
                   <OutlinedInput
                     name="password"
@@ -389,10 +545,21 @@ const Signup = () => {
                     value={formData.password}
                     onChange={handleChange}
                     sx={{
+                      // NEW: 오류 시 붉은색 테두리
                       '& fieldset': { borderColor: TEXT_COLOR },
                       '&:hover fieldset': { borderColor: TEXT_COLOR },
                       '&.Mui-focused fieldset': {
                         borderColor: TEXT_COLOR,
+                        borderWidth: '1px',
+                      },
+                      '&.Mui-error fieldset': {
+                        borderColor: RED_COLOR,
+                      },
+                      '&.Mui-error:hover fieldset': {
+                        borderColor: RED_COLOR,
+                      },
+                      '&.Mui-error.Mui-focused fieldset': {
+                        borderColor: RED_COLOR,
                         borderWidth: '1px',
                       },
                     }}
@@ -406,6 +573,19 @@ const Signup = () => {
                     label="비밀번호"
                   />
                 </FormControl>
+                {/* NEW: 비밀번호 오류 메시지 */}
+                {/* signupErrors -> signupInfos */}
+                {!!signupInfos.password && (
+                    <Typography
+                      variant="caption"
+                      sx={{ 
+                        mt: 0.5, ml: 1, display: 'block', 
+                        color: RED_COLOR 
+                      }}
+                    >
+                      {signupInfos.password}
+                    </Typography>
+                )}
               </Grid>
 
               {/* 회원가입 제출 버튼 */}
@@ -416,6 +596,22 @@ const Signup = () => {
               </Grid>
             </Grid>
           </Box>
+          
+          {/* NEW: 전반적인 제출 오류 메시지 */}
+          {/* signupErrors -> signupInfos */}
+          {!!signupInfos.submit && (
+            <Typography
+              variant="body2"
+              align="center"
+              sx={{
+                mt: 3,
+                color: RED_COLOR,
+                fontWeight: 600,
+              }}
+            >
+              ⚠️ {signupInfos.submit}
+            </Typography>
+          )}
 
           {/* 로그인 페이지 링크 */}
           <Typography

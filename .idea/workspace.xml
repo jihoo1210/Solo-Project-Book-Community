@@ -4,15 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#20 알림 읽음 상태 로직 비활성화(오류 발생: 추가 후에 바로 삭제하면 안됨)">
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#20 UserViewedRepository.java -&gt; PostsViewedRepository.java 이름 변경">
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/alert/CheckNewAlertResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/CheckEmailRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/CheckEmailResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AlertController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AlertController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/constants/Theme.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/constants/Theme.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/comment/CommentSection.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/comment/CommentSection.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/utilities/TiptabEditor.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/utilities/TiptabEditor.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,6 +70,16 @@
     }
   ]
 }</component>
+  <component name="GitRewordedCommitMessages">
+    <option name="commitMessagesMapping">
+      <RewordedCommitMessageMapping>
+        <option name="originalMessage" value="#20 모임 신청 상태에 따라 모임 신청란 다르게 표시" />
+        <option name="rewordedMessage" value="#20 모임 신청 상태에 따라 모임 신청란 다르게 표시" />
+      </RewordedCommitMessageMapping>
+    </option>
+    <option name="currentCommit" value="1" />
+    <option name="onto" value="61bc9a8d2fd761767345276980761efb1a84cdeb" />
+  </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/jihoo1210/Solo-Project-Book-Community.git&quot;,
@@ -87,31 +97,31 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.backend [:com.example.backend.DemoApplication.main()].executor": "Run",
-    "Gradle.소스 다운로드.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "dev",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "프로젝트",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "editor.preferences.import"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.backend [:com.example.backend.DemoApplication.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.소스 다운로드.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;프로젝트&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.import&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.example.backend.dto.alert" />
+      <recent name="com.example.backend.dto.auth.signup" />
       <recent name="com.example.backend.dto.alert.recurit" />
       <recent name="com.example.backend.service" />
-      <recent name="com.example.backend.dto.alert" />
       <recent name="com.example.backend.dto.comment.index" />
-      <recent name="com.example.backend.dto.posts.delete" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.example.backend.dto.posts.show" />
@@ -261,7 +271,63 @@
       <option name="project" value="LOCAL" />
       <updated>1762851264270</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="#20 알림을 읽지 않았을 때 녹색 표시 비활성화(오류)">
+      <option name="closed" value="true" />
+      <created>1762851428092</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1762851428092</updated>
+    </task>
+    <task id="LOCAL-00019" summary="#20 모임 신청 상태에 따라 모임 신청란 다르게 표시">
+      <option name="closed" value="true" />
+      <created>1762851450015</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1762851450015</updated>
+    </task>
+    <task id="LOCAL-00020" summary="#20 이전 커밋과 동일">
+      <option name="closed" value="true" />
+      <created>1762851463852</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1762851463852</updated>
+    </task>
+    <task id="LOCAL-00021" summary="#20 회원가입 이메일 검증 Page">
+      <option name="closed" value="true" />
+      <created>1762851489416</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1762851489416</updated>
+    </task>
+    <task id="LOCAL-00022" summary="#20 읽은 알림 구분을 기능 및 UserViewed -&gt; PostsViewed로 이름 변경">
+      <option name="closed" value="true" />
+      <created>1762914861081</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1762914861081</updated>
+    </task>
+    <task id="LOCAL-00023" summary="#20 useLocation을 이용해서 매 랜더링마다 새로운 알림이 있는지 검사 및 표시, 읽지 않은 알림을 NEW_COLOR로 표시">
+      <option name="closed" value="true" />
+      <created>1762914916894</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1762914916894</updated>
+    </task>
+    <task id="LOCAL-00024" summary="#20 UserViewedRepository.java -&gt; PostsViewedRepository.java 이름 변경">
+      <option name="closed" value="true" />
+      <created>1762915002828</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1762915002828</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -275,7 +341,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="main" />
+                        <option value="dev" />
                       </list>
                     </value>
                   </entry>
@@ -288,6 +354,7 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <MESSAGE value="fix files to commit" />
     <MESSAGE value="delete error folder" />
     <MESSAGE value="#3 회원명 중복 검사 로직" />
@@ -305,6 +372,13 @@
     <MESSAGE value="#19 Create Favorite and My Actives Function" />
     <MESSAGE value="#19 Create Favorite and My Actives Pages and delete alert" />
     <MESSAGE value="#20 알림 읽음 상태 로직 비활성화(오류 발생: 추가 후에 바로 삭제하면 안됨)" />
-    <option name="LAST_COMMIT_MESSAGE" value="#20 알림 읽음 상태 로직 비활성화(오류 발생: 추가 후에 바로 삭제하면 안됨)" />
+    <MESSAGE value="#20 알림을 읽지 않았을 때 녹색 표시 비활성화(오류)" />
+    <MESSAGE value="#20 이전 커밋과 동일" />
+    <MESSAGE value="#20 회원가입 이메일 검증 Page" />
+    <MESSAGE value="#20 모임 신청 상태에 따라 모임 신청란 다르게 표시" />
+    <MESSAGE value="#20 읽은 알림 구분을 기능 및 UserViewed -&gt; PostsViewed로 이름 변경" />
+    <MESSAGE value="#20 useLocation을 이용해서 매 랜더링마다 새로운 알림이 있는지 검사 및 표시, 읽지 않은 알림을 NEW_COLOR로 표시" />
+    <MESSAGE value="#20 UserViewedRepository.java -&gt; PostsViewedRepository.java 이름 변경" />
+    <option name="LAST_COMMIT_MESSAGE" value="#20 UserViewedRepository.java -&gt; PostsViewedRepository.java 이름 변경" />
   </component>
 </project>
