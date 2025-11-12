@@ -160,11 +160,11 @@ public class PostsService {
                 .build()).toList();
 
         if(!userViewedRepository.existsByUserAndPosts(user, target)) {
-            UserViewed userViewed = UserViewed.builder()
+            PostsViewed postsViewed = PostsViewed.builder()
                     .user(user)
                     .posts(target)
                     .build();
-            userViewedRepository.save(userViewed);
+            userViewedRepository.save(postsViewed);
         }
         Alert alertToRecruitmentResult = alertRepository.findByPostsAndSenderAndSubject(target, user, APPLICATION)
                 .orElse(alertRepository.findByPostsAndSenderAndSubject(target, user, APPROVAL)

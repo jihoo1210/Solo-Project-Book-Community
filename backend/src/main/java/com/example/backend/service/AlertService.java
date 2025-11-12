@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.alert.AlertIndexResponse;
+import com.example.backend.dto.alert.CheckNewAlertResponse;
 import com.example.backend.entity.Alert;
 import com.example.backend.entity.AlertViewed;
 import com.example.backend.entity.User;
@@ -33,23 +34,26 @@ public class AlertService {
 
         Page<Alert> alertPage = alertRepository.findAll(spec, pageable);
 
-        // 읽을 알림 저장
-        alertViewedRepository.saveAll(alertPage.map(item -> AlertViewed.builder()
-                .alert(item)
-                .user(item.getUser())
-                .build()));
-
-        return alertPage.map(item -> AlertIndexResponse.builder()
+        Page<AlertIndexResponse> responses = alertPage.map(item -> AlertIndexResponse.builder()
                 .id(item.getId())
                 .subject(item.getSubject().getSubject())
                 .postsId(item.getPosts().getId())
                 .postsTitle(item.getPosts().getTitle())
                 .username(item.getSender().getUsername())
                 // 읽을 알림에 저장되어 있으면 true 아니면 false
-                // .willRead(alertViewedRepository.existsByAlert(item))
+                .savedInViews(alertViewedRepository.existsByAlert(item))
                 .content(item.getContent())
                 .createdDate(item.getCreatedDate())
                 .build());
+
+        // 안 읽은 알림들 읽음에 저장
+        alertPage.stream().forEach(item -> {
+            if (!alertViewedRepository.existsByAlert(item)) {
+                alertViewedRepository.save(AlertViewed.builder().user(user).alert(item).build());
+            }
+        });
+
+        return responses;
     }
 
     public boolean isExistsAlert(User user) {
@@ -57,11 +61,9 @@ public class AlertService {
         return !alertViewedRepository.existsByUser(user) && alertRepository.existsByUser(user);
     }
 
-//    @Modifying
-//    @Transactional
-//    public void close(User user) {
-//        // 읽을 알림 전부 삭제
-//        alertViewedRepository.deleteAllByUser(user);
-//        entityManager.clear();
-//    }
+    public CheckNewAlertResponse checkNewAlert(User user) {
+        // 알림이 존재하고, 읽지 않은 알림이 있을 때
+        boolean isExistsNewAlert = alertRepository.findAll().stream().anyMatch(item -> !alertViewedRepository.existsByAlert(item));
+        return CheckNewAlertResponse.builder().haveNew(isExistsNewAlert).build();
+    }
 }

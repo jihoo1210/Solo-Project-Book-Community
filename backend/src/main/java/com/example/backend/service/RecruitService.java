@@ -6,6 +6,7 @@ import com.example.backend.entity.Alert;
 import com.example.backend.entity.Posts;
 import com.example.backend.entity.User;
 import com.example.backend.repository.AlertRepository;
+import com.example.backend.repository.AlertViewedRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import static com.example.backend.entity.utilities.AlertSubject.REJECTED;
 public class RecruitService {
 
     private final AlertRepository alertRepository;
+    private final AlertViewedRepository alertViewedRepository;
 
     @Transactional
     public void accept(Long alertId, AlertAcceptRequest dto) throws IllegalAccessException {
@@ -53,7 +55,7 @@ public class RecruitService {
         log.info("posts: {}", posts);
 
         // 수락 했으니 알림 삭제
-        alertRepository.delete(target);
+        deleteAlert(target);
 
         // 커뮤니티 로직 추가 예정
     }
@@ -78,6 +80,13 @@ public class RecruitService {
         alertRepository.save(alert);
 
         // 거절 했으니 알림 삭제
-        alertRepository.delete(target);
+        deleteAlert(target);
+    }
+
+    private void deleteAlert(Alert alert) {
+        // 1. 삭제하려는 알림을 참조하고 있는 레코드 우선 삭제
+        alertViewedRepository.deleteByAlert(alert);
+        // 2. 삭제하려는 레코드 삭제
+        alertRepository.delete(alert);
     }
 }
