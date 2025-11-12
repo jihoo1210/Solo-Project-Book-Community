@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import Signup from './components/auth/Signup'
 import Signin from './components/auth/Signin'
 import Navigation from './components/templates/Navigation';
@@ -14,12 +14,13 @@ import MyPage from './components/user/MyPage';
 import MyActivities from './components/user/MyActives';
 import MyFavorite from './components/user/MyFavorite';
 import MyAlert from './components/user/MyAlert';
-
+import { AlertProvider } from './components/utilities/AlertContext';
 function App() {
 
   return (
     <AuthProvider>
     <BrowserRouter>
+    <AlertProvider>
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Navigation />
 
@@ -45,6 +46,7 @@ function App() {
     </Box>
       <Footer />
     </div>
+    </AlertProvider>
     </BrowserRouter>
     </AuthProvider>
   );

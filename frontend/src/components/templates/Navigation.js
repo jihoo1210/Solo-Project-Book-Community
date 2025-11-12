@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import {
     AppBar, Toolbar, Typography, Button, Box, Container, InputBase,
     IconButton, Drawer, List, ListItem, ListItemText, Slide, Grid,
-    // 💡 삭제: Badge 컴포넌트 import 제거
-    // Badge
+    // 💡 수정: Badge 컴포넌트 import 다시 추가
+    Badge
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
@@ -11,11 +11,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-// 💡 수정: 로그아웃 아이콘 임포트 추가
+// 💡 수정: 로그아웃 아이콘 임포트 추가 유지
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { Inventory2Outlined } from '@mui/icons-material';
+// 💡 추가: AlertContext 임포트
+import { useAlert } from '../utilities/AlertContext';
 
 // 색상 정의
 const BG_COLOR = '#FFFFFF';
@@ -97,8 +99,10 @@ const Navigation = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    // 💡 수정: isExistsAlert 상태를 useAuth에서 가져오는 부분 제거
+    // 💡 수정: isExistsAlert 상태를 useAuth에서 가져오는 부분 제거 유지
     const { isLoggedIn, user, logout } = useAuth();
+    // 💡 추가: useAlert에서 haveNewAlert 상태 가져오기
+    const { haveNewAlert } = useAlert();
 
     const handleDrawerToggle = () => {
         setIsDrawerOpen(!isDrawerOpen);
@@ -161,7 +165,7 @@ const Navigation = () => {
                     }}
                 >
                     {/* 💡 수정: 보관함 버튼 (Grid xs=6으로 크기 조정) */}
-                    <Grid size={{xs:6}} sx={{ p: '0 !important' }}>
+                    <Grid size={{ xs: 6 }} sx={{ p: '0 !important' }}>
                         <Button
                             component={Link}
                             to="/my/favorite"
@@ -182,7 +186,7 @@ const Navigation = () => {
                         </Button>
                     </Grid>
 
-                    <Grid size={{xs:6}} sx={{ p: '0 !important' }}>
+                    <Grid size={{ xs: 6 }} sx={{ p: '0 !important' }}>
                         <Button
                             component={Link}
                             to="/my/actives"
@@ -203,38 +207,36 @@ const Navigation = () => {
                         </Button>
                     </Grid>
 
-                    {/* 💡 수정: 알림 버튼 (Grid xs=12으로 크기 조정 및 Badge 제거) */}
-                    <Grid size={{xs:12}} sx={{ p: '0 !important' }}>
-                        {/* 💡 삭제: Badge 컴포넌트 제거 */}
-                        {/* <Badge 
-                            color="error"
-                            variant="dot"
-                            invisible={!isExistsAlert}
-                            sx={{ width: '100%', display: 'flex' }}
-                        > */}
-                            <Button
-                                component={Link}
-                                to="/my/alerts"
-                                onClick={handleDrawerToggle}
-                                color="inherit"
-                                aria-label="알림"
-                                sx={{
-                                    width: '100%',
-                                    p: '12px 0',
-                                    color: TEXT_COLOR,
-                                    border: `1px solid ${TEXT_COLOR}`,
-                                    // border: 'none', // 테두리 제거 (요청에 따라)
-                                    '& .MuiButton-startIcon': { m: 0 } // 아이콘만 남기기 위해 텍스트 제거
-                                }}
-                                startIcon={<NotificationsNoneIcon sx={{ fontSize: '1.5rem' }} />}
-                            >
-                                {/* 텍스트를 제거하고 아이콘만 남깁니다. */}
-                            </Button>
-                        {/* 💡 삭제: Badge 컴포넌트 제거 */}
-                        {/* </Badge> */}
+                    {/* 💡 수정: 알림 버튼 (Grid xs=12으로 크기 조정 및 Badge 적용) */}
+                    <Grid size={{ xs: 12 }} sx={{ p: '0 !important' }}>
+                        {/* 💡 수정: Badge 컴포넌트 다시 추가 및 invisible={!haveNewAlert} 적용 */}
+                        <Button
+                            component={Link}
+                            to="/my/alerts"
+                            onClick={handleDrawerToggle}
+                            color="inherit"
+                            aria-label="알림"
+                            sx={{
+                                width: '100%',
+                                p: '12px 0',
+                                color: TEXT_COLOR,
+                                border: `1px solid ${TEXT_COLOR}`,
+                                // border: 'none', // 테두리 제거 (요청에 따라)
+                                '& .MuiButton-startIcon': { m: 0 } // 아이콘만 남기기 위해 텍스트 제거
+                            }}
+                            startIcon={
+                                <Badge
+                                    color="error"
+                                    variant="dot"
+                                    invisible={!haveNewAlert} // haveNewAlert가 false일 때 숨김
+                                >
+                                    <NotificationsNoneIcon sx={{ fontSize: '1.5rem' }} />
+                                </Badge>}
+                        >
+                        </Button>
                     </Grid>
                 </Grid>
-                
+
                 {/* 기존 navItems 목록 */}
                 {navItems.map((item) => (
                     <ListItem
@@ -267,7 +269,7 @@ const Navigation = () => {
                                     fontWeight: 600, // 사용자명과 동일하게 fontWeight 적용
                                 }}
                                 aria-label="로그아웃"
-                                startIcon={<LogoutIcon sx={{height: '32px'}} />} // 아이콘을 텍스트와 함께 표시
+                                startIcon={<LogoutIcon sx={{ height: '32px' }} />} // 아이콘을 텍스트와 함께 표시
                             >
                                 {item.text}
                             </Button>
@@ -356,23 +358,22 @@ const Navigation = () => {
                                         <Inventory2Outlined sx={{ fontSize: '1.7rem' }} />
                                     </IconButton>
 
-                                    {/* 💡 수정: 알림 아이콘 (Badge 컴포넌트 적용 제거) */}
-                                    {/* 💡 삭제: Badge 컴포넌트 제거 */}
-                                    {/* <Badge 
-                                        color="error" 
-                                        variant="dot" 
-                                        invisible={!isExistsAlert} 
-                                    > */}
-                                        <IconButton
-                                            color="inherit"
-                                            component={Link}
-                                            to="/my/alerts"
-                                            aria-label="알림"
+                                    {/* 💡 수정: 알림 아이콘 (Badge 컴포넌트 적용) */}
+
+                                    <IconButton
+                                        color="inherit"
+                                        component={Link}
+                                        to="/my/alerts"
+                                        aria-label="알림"
+                                    >
+                                        <Badge
+                                            color="error"
+                                            variant="dot"
+                                            invisible={!haveNewAlert} // haveNewAlert가 false일 때 숨김
                                         >
                                             <NotificationsNoneIcon sx={{ fontSize: '1.7rem' }} />
-                                        </IconButton>
-                                    {/* 💡 삭제: Badge 컴포넌트 제거 */}
-                                    {/* </Badge> */}
+                                        </Badge>
+                                    </IconButton>
 
                                     {/* 💡 수정: 사용자명 버튼 (테두리 유지) */}
                                     <Button

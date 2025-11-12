@@ -26,7 +26,8 @@ import {
     BG_COLOR, TEXT_COLOR, LIGHT_TEXT_COLOR, HEADER_HEIGHT,
     COMMENT_COLOR, ADOPT_COLOR,
     APPROVE_COLOR, REJECT_COLOR,
-    APPLICATION_COLOR
+    APPLICATION_COLOR,
+    NEW_COLOR // [추가] 안 읽은 알림 강조를 위해 NEW_COLOR를 import합니다.
 } from '../constants/Theme';
 import { formatTimeOrDate } from '../utilities/DateUtiles';
 
@@ -537,6 +538,11 @@ const MyAlert = () => {
                                     // 알림 목록 렌더링
                                     alerts.map((alert) => {
                                         const subjectString = alert.subject;
+                                        
+                                        // [추가] savedInViews 상태에 따라 배경색을 결정합니다. (PostsList.js와 동일)
+                                        const isViewed = alert.savedInViews;
+                                        const rowBackgroundColor = isViewed ? BG_COLOR : alpha(NEW_COLOR, 0.1);
+
                                         // isRead/willRead 관련 스타일 제거. 기본 색상과 굵기 사용
                                         const rowColor = TEXT_COLOR;
                                         const rowFontWeight = 400;
@@ -567,8 +573,8 @@ const MyAlert = () => {
                                                         textDecoration: 'none',
                                                         '& > .MuiTableCell-root': { borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` },
                                                         '&:last-child > .MuiTableCell-root': { borderBottom: 'none' },
-                                                        // [요청 반영] 배경색을 BG_COLOR로 통일하고 조건부 스타일링 제거
-                                                        backgroundColor: BG_COLOR, 
+                                                        // [수정] 읽음 상태에 따라 배경색 설정
+                                                        backgroundColor: rowBackgroundColor,
                                                         '&:hover': {
                                                             backgroundColor: isHovered ? alpha(APPLICATION_COLOR, 0.05) : alpha(TEXT_COLOR, 0.05),
                                                             cursor: 'pointer'
@@ -701,7 +707,7 @@ const MyAlert = () => {
                                                         onMouseLeave={handleRowMouseLeave}
                                                     >
                                                         <TableCell colSpan={6} sx={{ display: { xs: 'block', md: 'table-cell' } }}>
-                                                            <Collapse in={isHovered} timeout={200} unmountOnExit>
+                                                            <Collapse in={isHovered} timeout={300} unmountOnExit>
                                                                 <Box
                                                                     sx={{
                                                                         display: 'flex',
@@ -711,6 +717,7 @@ const MyAlert = () => {
                                                                         justifyContent: 'space-between',
                                                                         flexDirection: 'column',
                                                                         borderTop: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.2)}`,
+                                                                        borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.2)}`,
                                                                     }}
                                                                 >
                                                                     
@@ -774,7 +781,7 @@ const MyAlert = () => {
                                                                         />
 
                                                                         {/* 승인/거절 버튼 그룹 */}
-                                                                        <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, width: { xs: '100%', md: 'auto' } }}>
+                                                                        <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, width: '100%', justifyContent: 'end' }}>
                                                                             {/* 승인 버튼 (APPROVE_COLOR) */}
                                                                             <Button
                                                                                 variant="contained"
