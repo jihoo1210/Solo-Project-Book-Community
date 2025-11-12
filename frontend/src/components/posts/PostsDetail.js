@@ -181,6 +181,36 @@ const SubjectSpecificDetails = ({ post }) => {
 };
 
 
+/**
+ * 수정됨: modifiedDate 비교 로직 함수 (게시글/댓글 모두 사용)
+ * createdDate와 modifiedDate를 비교하여 표시할 날짜 문자열과 수정 여부를 반환합니다.
+ * @param {string} modifiedDateString 수정 날짜 문자열
+ * @param {string} createdDateString 생성 날짜 문자열
+ * @returns {{ dateDisplay: string, isModified: boolean }} 표시할 날짜 정보와 수정 여부
+ */
+const getPostDateInfo = (modifiedDateString, createdDateString) => {
+    // 날짜 문자열이 유효하지 않으면 빈 문자열과 false 반환
+    if (!createdDateString) {
+        return { dateDisplay: '', isModified: false };
+    }
+
+    const createdDate = new Date(createdDateString);
+    const modifiedDate = modifiedDateString ? new Date(modifiedDateString) : createdDate; // modifiedDate가 없으면 createdDate 사용
+
+    // modifiedDate가 createdDate보다 확실히 이후인 경우에만 수정된 것으로 간주 (1초 이상 차이)
+    // API 응답 시간차를 고려하여 1000ms(1초) 이상 차이로 판단하는 것이 안전할 수 있습니다.
+    const isModified = modifiedDateString && modifiedDate.getTime() > createdDate.getTime() + 1000;
+    
+    // 수정된 경우 modifiedDate를 사용하고, 아닌 경우 createdDate를 사용
+    const dateToDisplay = isModified ? modifiedDateString : createdDateString;
+
+    return {
+        dateDisplay: formatFullDate(dateToDisplay),
+        isModified: isModified,
+    };
+};
+
+
 const PostsDetail = () => {
     const { id } = useParams();
     const location = useLocation(); 
@@ -432,6 +462,7 @@ const PostsDetail = () => {
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
                                 작성자: {post.username}
                             </Typography>
+                            {/* 💡 수정됨: 게시글 날짜 표시 로직 */}
                             <Typography variant="body2">
                                 작성일:
                                 <Box component="span" sx={{ ml: 0.5, whiteSpace: 'nowrap' }}>

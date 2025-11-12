@@ -73,7 +73,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/jihoo1210/Solo-Project-Book-Community.git&quot;,
-    &quot;accountId&quot;: &quot;981623e4-9cc5-4c69-9507-d334c6a6570f&quot;
+    &quot;accountId&quot;: &quot;2851e419-635c-4983-9c5d-41855a7be81c&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -104,7 +104,7 @@
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "editor.preferences.import"
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.example.backend.dto.alert.recurit" />
