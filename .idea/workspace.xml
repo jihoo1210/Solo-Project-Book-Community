@@ -4,9 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#22 인증 코드 생성 클래스">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/EmailService.java" afterDir="false" />
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#22 인증코드 전송 및 검사 서비스">
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/verify/VerifyCodeRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/EmailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,11 +124,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.example.backend.dto.auth.verify" />
       <recent name="com.example.backend.dto.alert" />
       <recent name="com.example.backend.dto.auth.signup" />
       <recent name="com.example.backend.dto.alert.recurit" />
       <recent name="com.example.backend.service" />
-      <recent name="com.example.backend.dto.comment.index" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.example.backend.dto.posts.show" />
@@ -369,7 +374,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762918406452</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="#22 인증코드 전송 및 검사 서비스">
+      <option name="closed" value="true" />
+      <created>1762919284608</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1762919284608</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -397,7 +410,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#3 회원명 중복 검사 로직" />
     <MESSAGE value="#3 주석 수정 및 약간의 오류 수정" />
     <MESSAGE value="#3 회원명 중복 검사 api 연동" />
     <MESSAGE value="#3 내비게이션 로고 크기 및 클릭 범위 수정" />
@@ -422,6 +434,7 @@
     <MESSAGE value="#22 git ignore" />
     <MESSAGE value="#22 이메일 서버(Gmail SMTP) 및 Redis 연결 정보 설정" />
     <MESSAGE value="#22 인증 코드 생성 클래스" />
-    <option name="LAST_COMMIT_MESSAGE" value="#22 인증 코드 생성 클래스" />
+    <MESSAGE value="#22 인증코드 전송 및 검사 서비스" />
+    <option name="LAST_COMMIT_MESSAGE" value="#22 인증코드 전송 및 검사 서비스" />
   </component>
 </project>

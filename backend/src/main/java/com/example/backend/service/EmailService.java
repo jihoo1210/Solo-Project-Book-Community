@@ -20,7 +20,7 @@ public class EmailService {
     private final StringRedisTemplate redisTemplate;
 
     // 인증 코드 유효 시간
-    private static final Duration AUTH_CODE_EXPIRATION_TIME = Duration.ofMillis(5);
+    private static final Duration AUTH_CODE_EXPIRATION_TIME = Duration.ofMinutes(5);
 
     /**
      * Redis에 저장한 후 이메일로 인증 코드를 전송합니다.
