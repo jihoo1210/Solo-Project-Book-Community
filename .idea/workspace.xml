@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#22 git ignore">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/application-dev.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yaml" afterDir="false" />
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#22 이메일 서버(Gmail SMTP) 및 Redis 연결 정보 설정">
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/AuthCodeGenerator.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,12 +66,12 @@
   <component name="GitRewordedCommitMessages">
     <option name="commitMessagesMapping">
       <RewordedCommitMessageMapping>
-        <option name="originalMessage" value="#20 모임 신청 상태에 따라 모임 신청란 다르게 표시" />
-        <option name="rewordedMessage" value="#20 모임 신청 상태에 따라 모임 신청란 다르게 표시" />
+        <option name="originalMessage" value="#22 git ignore" />
+        <option name="rewordedMessage" value="#22 git ignore" />
       </RewordedCommitMessageMapping>
     </option>
     <option name="currentCommit" value="1" />
-    <option name="onto" value="61bc9a8d2fd761767345276980761efb1a84cdeb" />
+    <option name="onto" value="242858b6faf36cd205d1372ddc4db6e2783a8735" />
   </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
@@ -109,6 +107,13 @@
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "editor.preferences.import"
+  },
+  "keyToStringList": {
+    "GitStage.ChangesTree.GroupingKeys": [
+      "directory",
+      "module",
+      "repository"
+    ]
   }
 }]]></component>
   <component name="RecentsManager">
@@ -331,7 +336,31 @@
       <option name="project" value="LOCAL" />
       <updated>1762917776978</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="#22 git ignore">
+      <option name="closed" value="true" />
+      <created>1762917847589</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1762917847589</updated>
+    </task>
+    <task id="LOCAL-00027" summary="#22 git ignore">
+      <option name="closed" value="true" />
+      <created>1762917948800</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1762917948800</updated>
+    </task>
+    <task id="LOCAL-00028" summary="#22 이메일 서버(Gmail SMTP) 및 Redis 연결 정보 설정">
+      <option name="closed" value="true" />
+      <created>1762918053743</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1762918053743</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -359,7 +388,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="fix files to commit" />
     <MESSAGE value="delete error folder" />
     <MESSAGE value="#3 회원명 중복 검사 로직" />
     <MESSAGE value="#3 주석 수정 및 약간의 오류 수정" />
@@ -384,6 +412,7 @@
     <MESSAGE value="#20 useLocation을 이용해서 매 랜더링마다 새로운 알림이 있는지 검사 및 표시, 읽지 않은 알림을 NEW_COLOR로 표시" />
     <MESSAGE value="#20 UserViewedRepository.java -&gt; PostsViewedRepository.java 이름 변경" />
     <MESSAGE value="#22 git ignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="#22 git ignore" />
+    <MESSAGE value="#22 이메일 서버(Gmail SMTP) 및 Redis 연결 정보 설정" />
+    <option name="LAST_COMMIT_MESSAGE" value="#22 이메일 서버(Gmail SMTP) 및 Redis 연결 정보 설정" />
   </component>
 </project>
