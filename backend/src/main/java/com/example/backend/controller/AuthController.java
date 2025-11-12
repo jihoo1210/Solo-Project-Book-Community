@@ -14,9 +14,11 @@ import com.example.backend.dto.auth.signin.SigninRequest;
 import com.example.backend.dto.auth.signin.SigninResponse;
 import com.example.backend.dto.auth.signup.SignupRequest;
 import com.example.backend.dto.auth.signup.SignupResponse;
+import com.example.backend.dto.auth.verify.VerifyCodeRequest;
 import com.example.backend.security.CustomUserDetails;
 import com.example.backend.security.CustomUserDetailsService;
 import com.example.backend.security.TokenProvider;
+import com.example.backend.service.EmailService;
 import com.example.backend.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,6 +40,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserService service;
+    private final EmailService emailService;
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService customUserDetailsService;
     private final TokenProvider tokenProvider;
@@ -147,6 +150,12 @@ public class AuthController {
         return ResponseController.success("로그아웃 되었습니다.");
     }
 
+    /**
+     * 이메일 중복 확인 및 인증 코드 전송
+     * @param dto 사용자 이메일 정보
+     * @param bindingResult 유효성 확인
+     * @return 이메일 사용 가능 boolean 값
+     */
     @GetMapping("/check-email")
     public ResponseEntity<?> checkEmail(@Valid @ModelAttribute CheckEmailRequest dto, BindingResult bindingResult) {
         try {
@@ -161,9 +170,24 @@ public class AuthController {
             CheckEmailResponse responseDto = service.isEmailAvailable(email);
             if(!responseDto.isAvailable()) throw new IllegalArgumentException("동일한 이메일로 가입한 계정이 존재합니다.");
 
-            // 2. 이메일로 숫자 전송 (구현 예정)
+            // 2. 이메일로 코드 전송
+            emailService.sendAuthCode(email);
 
             return ResponseController.success(responseDto);
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
+    @GetMapping("/verify-code")
+    public ResponseEntity<?> verifyCode(@Valid @ModelAttribute VerifyCodeRequest dto, BindingResult bindingResult) {
+        try {
+            boolean verified = emailService.verifyAuthCode(dto.getEmail(), dto.getCode());
+
+            if(verified) {
+                return ResponseEntity.ok().build();
+            }
+            throw new IllegalArgumentException("인증 코드가 유효하지 않습니다.");
         } catch (Exception e) {
             return ResponseController.fail(e.getMessage());
         }
