@@ -6,6 +6,8 @@
 package com.example.backend.controller;
 
 import com.example.backend.controller.utilities.ResponseController;
+import com.example.backend.dto.auth.CheckEmailRequest;
+import com.example.backend.dto.auth.CheckEmailResponse;
 import com.example.backend.dto.auth.CheckUsernameResponse;
 import com.example.backend.dto.auth.UsernameResponse;
 import com.example.backend.dto.auth.signin.SigninRequest;
@@ -143,6 +145,28 @@ public class AuthController {
         response.addCookie(cookie);
 
         return ResponseController.success("로그아웃 되었습니다.");
+    }
+
+    @GetMapping("/check-email")
+    public ResponseEntity<?> checkEmail(@Valid @ModelAttribute CheckEmailRequest dto, BindingResult bindingResult) {
+        try {
+            log.info("dto: {}", dto);
+            if(bindingResult.hasErrors()) throw new IllegalArgumentException("이메일 형식을 확인해주세요.");
+
+            String email = dto.getEmail();
+
+            if(!StringUtils.hasText(email)) throw new IllegalArgumentException("형식이 올바르지 않습니다");
+
+            // 1. 이메일 중복 검사
+            CheckEmailResponse responseDto = service.isEmailAvailable(email);
+            if(!responseDto.isAvailable()) throw new IllegalArgumentException("동일한 이메일로 가입한 계정이 존재합니다.");
+
+            // 2. 이메일로 숫자 전송 (구현 예정)
+
+            return ResponseController.success(responseDto);
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
     }
 
     @GetMapping("/check-username")

@@ -5,6 +5,7 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.auth.CheckUsernameResponse;
+import com.example.backend.dto.auth.CheckEmailResponse;
 import com.example.backend.dto.auth.signup.SignupRequest;
 import com.example.backend.dto.auth.signup.SignupResponse;
 import com.example.backend.dto.user.ChangeUserInfoRequest;
@@ -41,13 +42,6 @@ public class UserService {
     public SignupResponse signup(SignupRequest dto) throws DataIntegrityViolationException {
         log.info("SignupRequest: {}", dto);
 
-        // 1. 이메일 중복 검사
-        // 해당 이메일로 이미 등록된 사용자가 있는지 확인합니다.
-        if(repository.existsByEmail(dto.getEmail())) {
-            log.warn("Signup failed: Duplicate email found: {}", dto.getEmail());
-            throw new DataIntegrityViolationException("이미 동일한 이메일로 가입된 계정이 존재합니다.");
-        }
-
         // 2. User 엔티티 생성 및 비밀번호 암호화
         User target = User.builder()
                 .email(dto.getEmail())
@@ -64,6 +58,19 @@ public class UserService {
         return SignupResponse.builder()
                 .email(saved.getEmail())
                 .build();
+    }
+
+    public CheckEmailResponse isEmailAvailable(String email) {
+
+        if(repository.existsByEmail(email)) {
+            return CheckEmailResponse.builder()
+                    .isAvailable(false)
+                    .build();
+        } else {
+            return CheckEmailResponse.builder()
+                    .isAvailable(true)
+                    .build();
+        }
     }
 
     public CheckUsernameResponse isUsernameAvailable(String username) {
