@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#22 이메일 서버(Gmail SMTP) 및 Redis 연결 정보 설정">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/AuthCodeGenerator.java" afterDir="false" />
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#22 인증 코드 생성 클래스">
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/EmailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -360,7 +361,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762918053743</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="#22 인증 코드 생성 클래스">
+      <option name="closed" value="true" />
+      <created>1762918406452</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1762918406452</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -388,7 +397,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="delete error folder" />
     <MESSAGE value="#3 회원명 중복 검사 로직" />
     <MESSAGE value="#3 주석 수정 및 약간의 오류 수정" />
     <MESSAGE value="#3 회원명 중복 검사 api 연동" />
@@ -413,6 +421,7 @@
     <MESSAGE value="#20 UserViewedRepository.java -&gt; PostsViewedRepository.java 이름 변경" />
     <MESSAGE value="#22 git ignore" />
     <MESSAGE value="#22 이메일 서버(Gmail SMTP) 및 Redis 연결 정보 설정" />
-    <option name="LAST_COMMIT_MESSAGE" value="#22 이메일 서버(Gmail SMTP) 및 Redis 연결 정보 설정" />
+    <MESSAGE value="#22 인증 코드 생성 클래스" />
+    <option name="LAST_COMMIT_MESSAGE" value="#22 인증 코드 생성 클래스" />
   </component>
 </project>
