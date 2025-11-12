@@ -202,7 +202,7 @@ const Signup = () => {
     }
   };
 
-  // 이메일 인증 버튼 클릭 메서드 (기능 없이 UI만 구현)
+  // 이메일 인증 버튼 클릭 메서드 
   const handleVerifyEmailCode = () => {
     // emailVerificationInfo 사용
     setEmailVerificationInfo('');
@@ -213,19 +213,15 @@ const Signup = () => {
       return;
     }
     
-    // TODO: 실제 서버 API 호출 및 응답 처리 로직 구현 필요
-    
-    // 모의 성공 처리
-    if (emailVerificationCode === 'SUCCES') { // 예시로 'SUCCESS' 코드를 성공으로 가정
-        setIsEmailVerified(true);
-        // 인증 성공 메시지에 특수 접두사 추가
-        // emailVerificationInfo 사용
-        setEmailVerificationInfo('CODE_SUCCESS:이메일 인증이 성공적으로 완료되었습니다.');
-    } else {
-        setIsEmailVerified(false);
-        // '인증 코드가 일치하지 않습니다.' 메시지에 특수 오류 접두사 추가
-        // emailVerificationInfo 사용
-        setEmailVerificationInfo('CODE_ERROR:인증 코드가 일치하지 않습니다.');
+    try {
+      const url = `/auth/verify-code?email=${formData.email}&code=${emailVerificationCode}`
+      apiClient.get(url)
+      setIsEmailVerified(true)
+      setEmailVerificationInfo('CODE_SUCCESS:이메일 인증이 성공적으로 완료되었습니다.');
+    } catch (error) {
+      console.log(error.response.data.message || "이메일 인증 중 오류가 발생했습니다.")
+      setIsEmailVerified(false);
+      setEmailVerificationInfo('CODE_ERROR:인증 코드가 일치하지 않습니다.');
     }
   };
 
