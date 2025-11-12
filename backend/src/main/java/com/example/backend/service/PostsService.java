@@ -35,7 +35,7 @@ public class PostsService {
     private final UserRepository userRepository; // 현재 코드에서 사용되지 않지만, 의존성 관리를 위해 유지
     private final PostsLikesRepository postsLikesRepository;
     private final CommentLikesRepository commentLikesRepository;
-    private final UserViewedRepository userViewedRepository;
+    private final PostsViewedRepository postsViewedRepository;
     private final AlertRepository alertRepository;
 
     /**
@@ -73,7 +73,7 @@ public class PostsService {
                 // 현재 사용자의 게시글 좋아요 여부를 확인하여 포함
                 .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, post))
                 .viewCount(post.getViewCount())
-                .savedInViews(userViewedRepository.existsByUserAndPosts(user, post))
+                .savedInViews(postsViewedRepository.existsByUserAndPosts(user, post))
                 .build());
     }
 
@@ -108,7 +108,7 @@ public class PostsService {
                 // 현재 사용자의 게시글 좋아요 여부를 확인하여 포함
                 .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, post))
                 .viewCount(post.getViewCount())
-                .savedInViews(userViewedRepository.existsByUserAndPosts(user, post))
+                .savedInViews(postsViewedRepository.existsByUserAndPosts(user, post))
                 .build());
     }
 
@@ -129,7 +129,7 @@ public class PostsService {
                 // 현재 사용자의 게시글 좋아요 여부를 확인하여 포함
                 .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, postsLikes.getPosts()))
                 .viewCount(postsLikes.getPosts().getViewCount())
-                .savedInViews(userViewedRepository.existsByUserAndPosts(user, postsLikes.getPosts()))
+                .savedInViews(postsViewedRepository.existsByUserAndPosts(user, postsLikes.getPosts()))
                 .build());
     }
 
@@ -159,12 +159,12 @@ public class PostsService {
                 .modifiedDate(comment.getModifiedDate())
                 .build()).toList();
 
-        if(!userViewedRepository.existsByUserAndPosts(user, target)) {
+        if(!postsViewedRepository.existsByUserAndPosts(user, target)) {
             PostsViewed postsViewed = PostsViewed.builder()
                     .user(user)
                     .posts(target)
                     .build();
-            userViewedRepository.save(postsViewed);
+            postsViewedRepository.save(postsViewed);
         }
         Alert alertToRecruitmentResult = alertRepository.findByPostsAndSenderAndSubject(target, user, APPLICATION)
                 .orElse(alertRepository.findByPostsAndSenderAndSubject(target, user, APPROVAL)
