@@ -13,7 +13,7 @@ apiClient.interceptors.response.use(response => {
 error => {
     const { response } = error
     if(response && (response.status === 401 || response.status === 403)) {
-        console.log('error :>> ', error);
+        alert("로그인이 필요한 서비스 입니다.")
         window.location.href = "/auth/signin";
 
         // 리디렉션 후 요청 체인을 중단하기 위해 비표준적인 방식으로 요청 체인을 중단
