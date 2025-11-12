@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AlertViewedRepository extends JpaRepository<AlertViewed, Long> {
+    void deleteByAlert(Alert alert);
     void deleteAllByUser(User user);
     boolean existsByUser(User user);
     boolean existsByAlert(Alert alert);
