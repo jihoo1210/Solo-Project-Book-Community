@@ -322,7 +322,7 @@ const MyActivities = () => {
         return [
             <MenuItem key="title" onClick={() => handleFilterOptionSelect('제목')}>제목</MenuItem>,
             <MenuItem key="content" onClick={() => handleFilterOptionSelect('내용')}>내용</MenuItem>,
-            <MenuItem key="author" onClick={() => handleFilterOptionSelect('작성자')} disabled={activityType === 1}>작성자 (게시판만)</MenuItem>,
+            <MenuItem key="author" onClick={() => handleFilterOptionSelect('작성자')} disabled>작성자</MenuItem>,
         ];
     }, [activityType]);
 

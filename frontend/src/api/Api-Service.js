@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const apiClient = axios.create({
     baseURL: 'http://localhost:8080',
-    timeout: 3600,
+    timeout: 7200,
     withCredentials: true // 쿠키를 같이 보냄
 })
 

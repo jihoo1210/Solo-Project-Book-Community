@@ -133,27 +133,6 @@ public class PostsService {
                 .build());
     }
 
-    public Page<PostsIndexResponse> indexFavoriteByUser(User user, Pageable pageable, String searchField, String searchTerm, Integer tab) {
-        Specification<PostsLikes> spec = PostLikesSpec.search(user, searchField, searchTerm, tab);
-
-        Page<PostsLikes> postsLikesPage = postsLikesRepository.findAll(spec, pageable);
-
-        return postsLikesPage.map(postsLikes -> PostsIndexResponse.builder()
-                .id(postsLikes.getPosts().getId())
-                .subject(postsLikes.getPosts().getSubject().getSubject())
-                .title(postsLikes.getPosts().getTitle())
-                .username(postsLikes.getPosts().getUser().getUsername())
-                .createdDate(postsLikes.getPosts().getCreatedDate())
-                .modifiedDate(postsLikes.getPosts().getModifiedDate())
-                .likes(postsLikes.getPosts().getLikes().size())
-                .commentNumber(postsLikes.getPosts().getComments().size())
-                // 현재 사용자의 게시글 좋아요 여부를 확인하여 포함
-                .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, postsLikes.getPosts()))
-                .viewCount(postsLikes.getPosts().getViewCount())
-                .savedInViews(userViewedRepository.existsByUserAndPosts(user, postsLikes.getPosts()))
-                .build());
-    }
-
     /**
      * 특정 게시글을 상세 조회하고, 조회수를 1 증가시킵니다.
      *

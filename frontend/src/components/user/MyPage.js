@@ -119,7 +119,6 @@ const MyPage = () => {
     const fetchUserData = async () => {
         try {
             const response = await apiClient.get("/user/my")
-            console.log('response :>> ', response);
             const userData = response.data.result
             if(userData) {
                 setFormData({...userData})
@@ -180,7 +179,6 @@ const MyPage = () => {
       return;
     }
 
-    console.log(`${currentUsername} 중복 검사 실행...`);
     apiClient.get(`auth/check-username?username=${currentUsername}`).then(response => {
         setIsUsernameAvailable(response.data.result.available)
         if(response.data.result.available) {
@@ -225,12 +223,10 @@ const MyPage = () => {
         ...(formData.password && { password: formData.password }) 
     };
     
-    console.log('회원 정보 수정 요청 데이터:', updateData);
     
     // API 호출 (PUT 또는 PATCH 메서드 사용 권장)
     apiClient.patch('/user/my/change-userInfo', updateData) 
       .then(response => {
-        console.log('성공 응답 데이터:', response.data);
         alert('회원 정보가 성공적으로 수정되었습니다.');
         // 수정 완료 후 읽기 모드로 전환 및 상태 초기화
         setIsEditMode(false);

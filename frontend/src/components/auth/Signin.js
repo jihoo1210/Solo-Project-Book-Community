@@ -1,3 +1,5 @@
+// src/components/Signin.js
+
 import React, { useEffect, useState } from 'react';
 import {
     Box, Container, Typography, TextField, Button, Grid, Paper,
@@ -9,13 +11,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import apiClient from '../../api/Api-Service';
 import { useAuth } from './AuthContext';
-
-// 색상 정의
-const BG_COLOR = '#FFFFFF';
-const TEXT_COLOR = '#000000';
-const LIGHT_TEXT_COLOR = '#555555';
-
-const HEADER_HEIGHT = '64px';
+import { BG_COLOR, HEADER_HEIGHT, LIGHT_TEXT_COLOR, RED_COLOR, TEXT_COLOR } from '../constants/Theme';
 
 // 레이아웃 래퍼
 const SigninWrapper = styled(Box)(({ theme }) => ({
@@ -40,7 +36,7 @@ const SigninCard = styled(Paper)(({ theme }) => ({
     },
 }));
 
-// 텍스트 필드 스타일
+// 텍스트 필드 스타일 (회원가입 페이지와 동일)
 const CustomTextField = styled(TextField)(({ theme }) => ({
     '& .MuiInputLabel-root': { color: LIGHT_TEXT_COLOR },
     '& .MuiOutlinedInput-root': {
@@ -48,6 +44,16 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
         '&:hover fieldset': { borderColor: TEXT_COLOR },
         '&.Mui-focused fieldset': {
             borderColor: TEXT_COLOR,
+            borderWidth: '1px',
+        },
+        '&.Mui-error fieldset': {
+            borderColor: RED_COLOR,
+        },
+        '&.Mui-error:hover fieldset': {
+            borderColor: RED_COLOR,
+        },
+        '&.Mui-error.Mui-focused fieldset': {
+            borderColor: RED_COLOR,
             borderWidth: '1px',
         },
     },
@@ -63,48 +69,64 @@ const ActionButton = styled(Button)(({ theme }) => ({
 }));
 
 const SignIn = () => {
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
+    const [formData, setFormData] = useState({ email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
-    const {login} = useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
 
-    // URL 파라미터에서 이메일 추출하여 폼 데이터에 설정
+    const [signinInfos, setSigninInfos] = useState({
+        email: '',
+        password: '',
+        submit: ''
+    });
+
+    // URL 파라미터에서 이메일 추출
     useEffect(() => {
-      const urlParams = new window.URLSearchParams(window.location.search)
-      const email = urlParams.get('email');
-      if(email) setFormData(prev => ({...prev, email: email}))
-    }, [])
+        const urlParams = new window.URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
+        if (email) setFormData(prev => ({ ...prev, email }));
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
         const newValue = value.replace(/\s/g, '');
-
         setFormData((prev) => ({ ...prev, [name]: newValue }));
+        setSigninInfos((prev) => ({ ...prev, [name]: '', submit: '' }));
     };
 
     const handleClickShowPassword = () => setShowPassword((s) => !s);
 
-    // 로그인 API 요청 처리
+    // 로그인 API 요청
     const handleSubmit = (e) => {
         e.preventDefault();
-        
-        console.log('로그인 요청 데이터:', formData);
+        setSigninInfos({ email: '', password: '', submit: '' });
+        let hasError = false;
+        const newErrors = { email: "", username: "", password: "", submit: "" };
+
+        if (!formData.email) {
+            newErrors.email = '이메일을 입력해 주세요.'
+            hasError = true
+        }
+        if (!formData.password) {
+            newErrors.password = '비밀번호를 입력해 주세요.';
+            hasError = true
+        }
+        if(hasError) {
+            setSigninInfos(newErrors)
+            return;
+        }
         apiClient.post("/auth/signin", formData).then(response => {
-          // 토큰을 세션 스토리지에 저장
-            login(response.data.result.username) // AuthContext의 login 함수 호출
-            navigate("/")
+            login(response.data.result.username);
+            navigate("/");
         }).catch(error => {
-          if(error.response.data.message) alert(error.response.data.message || '예상하지 못한 에러.')
-        })
+            const errorMessage = error.response?.data?.message || '예상하지 못한 에러가 발생했습니다.';
+            alert(errorMessage);
+        });
     };
 
     return (
         <SigninWrapper>
-            <Container maxWidth="md" disableGutters sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <Container maxWidth="md" disableGutters sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <SigninCard elevation={0}>
                     <Typography
                         variant="h4"
@@ -122,7 +144,7 @@ const SignIn = () => {
 
                     <Box component="form" onSubmit={handleSubmit} noValidate>
                         <Grid container spacing={3}>
-                            
+
                             {/* 이메일 입력 필드 */}
                             <Grid size={{ xs: 12 }}>
                                 <CustomTextField
@@ -133,12 +155,18 @@ const SignIn = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
+                                    error={!!signinInfos.email}
                                 />
+                                {!!signinInfos.email && (
+                                    <Typography variant="caption" sx={{ mt: 0.5, ml: 1, display: 'block', color: RED_COLOR }}>
+                                        {signinInfos.email}
+                                    </Typography>
+                                )}
                             </Grid>
 
                             {/* 비밀번호 입력 필드 */}
                             <Grid size={{ xs: 12 }}>
-                                <FormControl fullWidth variant="outlined" required>
+                                <FormControl fullWidth variant="outlined" required error={!!signinInfos.password}>
                                     <InputLabel sx={{ color: LIGHT_TEXT_COLOR }}>비밀번호</InputLabel>
                                     <OutlinedInput
                                         name="password"
@@ -149,10 +177,10 @@ const SignIn = () => {
                                         sx={{
                                             '& fieldset': { borderColor: TEXT_COLOR },
                                             '&:hover fieldset': { borderColor: TEXT_COLOR },
-                                            '&.Mui-focused fieldset': {
-                                                borderColor: TEXT_COLOR,
-                                                borderWidth: '1px',
-                                            },
+                                            '&.Mui-focused fieldset': { borderColor: TEXT_COLOR, borderWidth: '1px' },
+                                            '&.Mui-error fieldset': { borderColor: RED_COLOR },
+                                            '&.Mui-error:hover fieldset': { borderColor: RED_COLOR },
+                                            '&.Mui-error.Mui-focused fieldset': { borderColor: RED_COLOR, borderWidth: '1px' },
                                         }}
                                         endAdornment={
                                             <InputAdornment position="end">
@@ -163,6 +191,11 @@ const SignIn = () => {
                                         }
                                     />
                                 </FormControl>
+                                {!!signinInfos.password && (
+                                    <Typography variant="caption" sx={{ mt: 0.5, ml: 1, display: 'block', color: RED_COLOR }}>
+                                        {signinInfos.password}
+                                    </Typography>
+                                )}
                             </Grid>
 
                             {/* 로그인 제출 버튼 */}
@@ -174,7 +207,7 @@ const SignIn = () => {
                         </Grid>
                     </Box>
 
-                    {/* 회원가입 페이지 링크 */}
+                    {/* 회원가입 및 비밀번호 찾기 링크 */}
                     <Typography
                         variant="body2"
                         align="center"
@@ -186,15 +219,18 @@ const SignIn = () => {
                     >
                         계정이 없으신가요?
                         <Link to="/auth/signup" style={{ textDecoration: 'none' }}>
-                            <Box
-                                component="span"
-                                sx={{ ml: 1, color: TEXT_COLOR, fontWeight: 600 }}
-                            >
+                            <Box component="span" sx={{ ml: 1, color: TEXT_COLOR, fontWeight: 600 }}>
                                 회원가입
                             </Box>
                         </Link>
+                        <Box component="span" sx={{ mx: 1, color: LIGHT_TEXT_COLOR, display: {xs: 'block', sm: 'inline'} }}>|</Box>
+                        비밀번호를 잊어버리셨나요?
+                        <Link to="/auth/resetPassword" style={{ textDecoration: 'none' }}>
+                            <Box component="span" sx={{ ml: 1, color: TEXT_COLOR, fontWeight: 600 }}>
+                                비밀번호 찾기
+                            </Box>
+                        </Link>
                     </Typography>
-
                 </SigninCard>
             </Container>
         </SigninWrapper>

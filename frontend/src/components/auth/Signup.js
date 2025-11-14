@@ -1,27 +1,41 @@
-import React, { useState } from 'react';
+// src/components/Signup.js
+
+import React, { useState } from "react";
 import {
-  Box, Container, Typography, TextField, Button, Grid, Paper,
-  IconButton, InputAdornment, FormControl, InputLabel, OutlinedInput
-} from '@mui/material';
-import { alpha, styled } from '@mui/material/styles';
-import { Link, useNavigate } from 'react-router-dom';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import apiClient from '../../api/Api-Service'; // 오류 발생으로 인해 주석 처리
-
-// 색상 정의
-const BG_COLOR = '#FFFFFF';
-const TEXT_COLOR = '#000000';
-const LIGHT_TEXT_COLOR = '#555555';
-
-const HEADER_HEIGHT = '64px';
+  Box,
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Paper,
+  IconButton,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+} from "@mui/material";
+import { alpha, styled } from "@mui/material/styles";
+import { Link, useNavigate } from "react-router-dom";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import apiClient from "../../api/Api-Service";
+import {
+  BG_COLOR,
+  HEADER_HEIGHT,
+  LIGHT_TEXT_COLOR,
+  RED_COLOR,
+  TEXT_COLOR,
+  NEW_COLOR,
+  AQUA_BLUE,
+} from "../constants/Theme";
 
 // 레이아웃 래퍼
 const SignupWrapper = styled(Box)(({ theme }) => ({
   marginTop: HEADER_HEIGHT,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
   backgroundColor: BG_COLOR,
   padding: theme.spacing(4),
 }));
@@ -29,25 +43,35 @@ const SignupWrapper = styled(Box)(({ theme }) => ({
 // 카드 컨테이너
 const SignupCard = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(5),
-  width: '60%',
+  width: "60%",
   borderRadius: (theme.shape?.borderRadius || 4) * 2,
-  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
   border: `1px solid ${TEXT_COLOR}`,
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.down("sm")]: {
     width: "80%",
     padding: theme.spacing(3),
   },
 }));
 
-// 텍스트 필드 스타일
+// 텍스트 필드 스타일 (오류 시 붉은색 테두리 유지)
 const CustomTextField = styled(TextField)(({ theme }) => ({
-  '& .MuiInputLabel-root': { color: LIGHT_TEXT_COLOR },
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': { borderColor: TEXT_COLOR },
-    '&:hover fieldset': { borderColor: TEXT_COLOR },
-    '&.Mui-focused fieldset': {
+  "& .MuiInputLabel-root": { color: LIGHT_TEXT_COLOR },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: TEXT_COLOR },
+    "&:hover fieldset": { borderColor: TEXT_COLOR },
+    "&.Mui-focused fieldset": {
       borderColor: TEXT_COLOR,
-      borderWidth: '1px',
+      borderWidth: "1px",
+    },
+    "&.Mui-error fieldset": {
+      borderColor: RED_COLOR,
+    },
+    "&.Mui-error:hover fieldset": {
+      borderColor: RED_COLOR,
+    },
+    "&.Mui-error.Mui-focused fieldset": {
+      borderColor: RED_COLOR,
+      borderWidth: "1px",
     },
   },
 }));
@@ -58,214 +82,292 @@ const ActionButton = styled(Button)(({ theme }) => ({
   backgroundColor: TEXT_COLOR,
   fontWeight: 600,
   padding: theme.spacing(1.5),
-  '&:hover': { backgroundColor: LIGHT_TEXT_COLOR },
+  "&:hover": { backgroundColor: LIGHT_TEXT_COLOR },
 }));
 
-// 중복검사/전송/인증 버튼 (동일한 디자인)
+// 중복검사/전송/인증 버튼
 const DuplicateCheckButton = styled(Button)(({ theme }) => ({
   color: TEXT_COLOR,
   borderColor: TEXT_COLOR,
   fontWeight: 600,
-  padding: theme.spacing(1.6, 4), // 높이와 가로폭 조정
-  minWidth: '140px',              // 버튼 최소 너비 확장
-  whiteSpace: 'nowrap',
-  fontSize: '1rem',
-  '&:hover': {
+  padding: theme.spacing(1.6, 4),
+  minWidth: "140px",
+  whiteSpace: "nowrap",
+  fontSize: "1rem",
+  "&:hover": {
     borderColor: TEXT_COLOR,
     backgroundColor: alpha(TEXT_COLOR, 0.05),
   },
-  [theme.breakpoints.down('sm')]: {
-    minWidth: '100%',
+  [theme.breakpoints.down("sm")]: {
+    minWidth: "100%",
     padding: theme.spacing(1.5, 2),
   },
 }));
 
 const Signup = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    username: '',
-    password: '',
+    email: "",
+    username: "",
+    password: "",
   });
-  // 이전 이메일 값을 저장하여 변경 여부를 감지
-  const [lastSentEmail, setLastSentEmail] = useState('');
+  const [lastSentEmail, setLastSentEmail] = useState("");
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  // NEW: 이메일 인증 관련 상태 추가
-  const [showEmailVerificationInput, setShowEmailVerificationInput] = useState(false);
-  const [emailVerificationCode, setEmailVerificationCode] = useState('');
+  const [showEmailVerificationInput, setShowEmailVerificationInput] =
+    useState(false);
+  const [emailVerificationCode, setEmailVerificationCode] = useState("");
   const navigate = useNavigate();
-  // NEW: 이메일 인증 완료 상태 추가
-  const [isEmailVerified, setIsEmailVerified] = useState(false); 
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [signupInfos, setSignupInfos] = useState({
+    email: "",
+    username: "",
+    password: "",
+    submit: "",
+  });
+  const [emailVerificationInfo, setEmailVerificationInfo] = useState("");
+
+  // 오류 상태 초기화
+  const clearError = (name) => {
+    setSignupInfos((prev) => ({ ...prev, [name]: "" }));
+    if (name === "email") setEmailVerificationInfo("");
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    let newValue = value.replace(/\s/g, '');
-
-    // NEW: 이메일 검증 코드 처리 로직 추가 (6자리 대문자 또는 숫자만 허용)
-    if (name === 'emailVerificationCode') {
-      newValue = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    let newValue = value.replace(/\s/g, "");
+    if (name === "emailVerificationCode") {
+      newValue = value
+        .toUpperCase()
+        .replace(/[^0-9]/g, "")
+        .slice(0, 6);
       setEmailVerificationCode(newValue);
+      if (!emailVerificationInfo.startsWith("CODE_SENT:"))
+        setEmailVerificationInfo("");
       return;
     }
-    
     setFormData((prev) => {
       const updatedFormData = { ...prev, [name]: newValue };
-
-      // 사용자가 이메일을 수정했는지 확인하는 로직 추가
-      if (name === 'email' && value !== prev.email) {
-        // 이메일 주소가 변경되면 인증 상태 초기화
+      if (name === "email" && value !== prev.email) {
         if (showEmailVerificationInput && value !== lastSentEmail) {
-            setShowEmailVerificationInput(false);
-            setEmailVerificationCode('');
-            setIsEmailVerified(false); // 인증 완료 상태 초기화
-            // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-            // alert('이메일 주소가 변경되어 인증 상태가 초기화되었습니다. 다시 전송 버튼을 눌러주세요.');
+          setShowEmailVerificationInput(false);
+          setEmailVerificationCode("");
+          setIsEmailVerified(false);
+          setEmailVerificationInfo(
+            "이메일 주소가 변경되어 인증 상태가 초기화되었습니다. 다시 전송 버튼을 눌러주세요."
+          );
+        }
+        // 다시 원래 이메일로 입력했을 때 인증 코드 입력란 복원
+        if (value === lastSentEmail) {
+          setShowEmailVerificationInput(true);
         }
       }
-
       return updatedFormData;
     });
-
-    if (name === 'username') setIsUsernameAvailable(null); // 회원명 변경 시 중복 상태 초기화
+    if (name === "username") setIsUsernameAvailable(null);
+    clearError(name);
   };
 
   const handleClickShowPassword = () => setShowPassword((s) => !s);
-  
-  // NEW: 이메일 전송 버튼 클릭 메서드
-  const handleSendVerificationEmail = () => {
+
+  // 이메일 전송
+  const handleSendVerificationEmail = async () => {
+    clearError("email");
+    setEmailVerificationInfo("");
     if (!formData.email.trim()) {
-      // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-      alert('이메일을 입력해 주세요.');
+      setSignupInfos((prev) => ({ ...prev, email: "이메일을 입력해 주세요." }));
       return;
     }
-    
-    // API 호출 로직은 요청에 따라 추가하지 않고, 인증 코드 입력란만 표시
-    console.log(`이메일: ${formData.email}로 검증 코드 전송 시도...`);
-    
-    // 실제로 서버에서 코드를 전송하는 API가 호출되어야 함
-    setShowEmailVerificationInput(true);
-    setLastSentEmail(formData.email); // 전송한 이메일 주소를 저장
-    setIsEmailVerified(false); // 재전송 시 인증 완료 상태 초기화
-    
-    // 코드 전송이 성공했다고 가정하고 메시지를 띄웁니다.
-    // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-    alert('인증 코드가 이메일로 전송되었습니다. 6자리 코드를 입력해주세요.');
+    try {
+      setIsLoading(true);
+      const response = await apiClient.get(
+        `/auth/check-email?email=${formData.email}`
+      );
+      const isAvailable = response.data.result.available;
+      if (isAvailable) {
+        setShowEmailVerificationInput(true);
+        setLastSentEmail(formData.email);
+        setIsEmailVerified(false);
+        setEmailVerificationInfo(
+          "CODE_SENT:인증 코드가 전송되었습니다. 이메일을 확인해 주세요."
+        );
+      } else {
+        setSignupInfos((prev) => ({
+          ...prev,
+          email: "이미 사용 중인 이메일 주소입니다.",
+        }));
+      }
+    } catch (error) {
+      console.log(error);
+      const errorMessage =
+        error.response?.data?.message ||
+        "이메일 전송 중 오류가 발생했습니다.";
+      setEmailVerificationInfo(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // NEW: 이메일 인증 버튼 클릭 메서드 (기능 없이 UI만 구현)
-  const handleVerifyEmailCode = () => {
+  // 이메일 인증
+  const handleVerifyEmailCode = async () => {
+    setEmailVerificationInfo("");
     if (emailVerificationCode.length !== 6) {
-      alert('6자리의 인증 코드를 입력해야 합니다.');
+      setEmailVerificationInfo("6자리의 인증 코드를 입력해야 합니다.");
       return;
     }
-    console.log(`인증 코드: ${emailVerificationCode} 검증 시도...`);
-    
-    // TODO: 실제 서버 API 호출 및 응답 처리 로직 구현 필요
-    
-    // 모의 성공 처리
-    setIsEmailVerified(true);
-    alert('이메일 인증이 완료되었습니다.');
+    try {
+      const url = `/auth/verify-code?email=${formData.email}&code=${emailVerificationCode}`;
+      await apiClient.get(url);
+      setIsEmailVerified(true);
+      setEmailVerificationInfo(
+        "CODE_SUCCESS:이메일 인증이 성공적으로 완료되었습니다."
+      );
+    } catch {
+      setIsEmailVerified(false);
+      setEmailVerificationInfo("CODE_ERROR:인증 코드가 일치하지 않습니다.");
+    }
   };
 
-  // 회원명 중복 체크 메서드
-  const handleDuplicateCheck = () => {
+  // 회원명 중복 체크
+  const handleDuplicateCheck = async () => {
+    clearError("username");
     const currentUsername = formData.username.trim();
     if (!currentUsername) {
-      // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-      alert('회원명을 입력해 주세요.');
+      setSignupInfos((prev) => ({
+        ...prev,
+        username: "회원명을 입력해 주세요.",
+      }));
       return;
     }
-    console.log(`${currentUsername} 중복 검사 실행...`);
-    // API 호출
-    apiClient.get(`auth/check-username?username=${currentUsername}`).then(response => {
-      console.log(response.data.result.available)
-        setIsUsernameAvailable(response.data.result.available)
-
-        if(response.data.result.available) {
-          // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-          alert('사용 가능한 회원명입니다.');
-        } else {
-          // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-          alert('이미 사용 중인 회원명입니다.');
-        }
-      })
+    try {
+      setIsLoading(true);
+      const response = await apiClient.get(
+        `auth/check-username?username=${currentUsername}`
+      );
+      setIsUsernameAvailable(response.data.result.available);
+      if (response.data.result.available) {
+        setSignupInfos((prev) => ({
+          ...prev,
+          username: "사용 가능한 회원명입니다.",
+        }));
+      } else {
+        setSignupInfos((prev) => ({
+          ...prev,
+          username: "이미 사용 중인 회원명입니다.",
+        }));
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "회원명 검사 중 오류가 발생했습니다.";
+      setSignupInfos((prev) => ({ ...prev, username: errorMessage }));
+      setIsUsernameAvailable(false);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // 회원가입 api 요청 메서드
+  // 회원가입 요청
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (isUsernameAvailable !== true) {
-      // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-      alert('회원명 중복 검사를 완료해 주세요.');
+    setSignupInfos({ email: "", username: "", password: "", submit: "" });
+    let hasError = false;
+    const newErrors = { email: "", username: "", password: "", submit: "" };
+    if (!formData.email.trim()) {
+      newErrors.email = "이메일을 입력해 주세요.";
+      hasError = true;
+    }
+    if (!formData.username.trim()) {
+      newErrors.username = "회원명을 입력해 주세요.";
+      hasError = true;
+    } else if (isUsernameAvailable !== true) {
+      newErrors.username = "회원명 중복 검사를 완료해 주세요.";
+      hasError = true;
+    }
+    if (!formData.password.trim()) {
+      newErrors.password = "비밀번호를 입력해 주세요.";
+      hasError = true;
+    }
+    if (showEmailVerificationInput && !isEmailVerified) {
+      setEmailVerificationInfo("이메일 인증을 완료해 주세요.");
+      hasError = true;
+    }
+    if (hasError) {
+      setSignupInfos(newErrors);
       return;
     }
-
-    // 이메일 인증 코드가 표시되었고, 인증이 완료되지 않았다면 경고
-    if (showEmailVerificationInput && !isEmailChanged && !isEmailVerified) {
-      // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-      alert('이메일 인증을 완료해 주세요.');
-      return;
-    }
-    // TODO: 실제 API에서는 이메일 인증 코드를 서버로 보내서 검증하는 로직이 추가되어야 함
-
-    console.log('회원가입 요청 데이터:', formData);
-    apiClient.post('auth/signup', formData).then(response => {
-      
-      console.log('성공 응답 데이터:', response.data);
-
-      if (response.data && response.data.result && response.data.result.email) {
+    apiClient
+      .post("auth/signup", formData)
+      .then((response) => {
+        if (
+          response.data &&
+          response.data.result &&
+          response.data.result.email
+        ) {
           navigate("/auth/signin?email=" + response.data.result.email);
-      } else {
-          // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-          alert('회원가입은 성공했으나, 서버 응답에서 이메일 정보를 받지 못했습니다. 로그인 페이지로 이동합니다.');
+        } else {
           navigate("/auth/signin");
-      }
-    })
-      .catch(error => {
-        console.log('error', error)
-        const errorMessage =  error.response?.data?.message || error.response
-        // NOTE: alert() 대신 메시지 박스를 사용해야 하지만, 기존 코드의 패턴을 유지합니다.
-        alert(errorMessage)
+        }
       })
+      .catch((error) => {
+        const errorMessage =
+          error.response?.data?.message ||
+          "회원가입 처리 중 오류가 발생했습니다.";
+        setSignupInfos((prev) => ({ ...prev, submit: errorMessage }));
+      });
   };
 
-  // 이메일이 마지막으로 전송된 이메일과 다른지 확인하는 플래그
   const isEmailChanged = formData.email !== lastSentEmail;
-  // 전송 버튼 활성화 조건: 이메일이 입력되었고, (인증 코드가 표시되지 않았거나 || 이메일이 변경되었을 때)
-  const isSendButtonDisabled = !formData.email || (showEmailVerificationInput && !isEmailChanged && !isEmailVerified);
-  // 인증 버튼 활성화 조건: 6자리 코드가 모두 입력되었고, 아직 인증되지 않았을 때
-  const isVerifyButtonDisabled = emailVerificationCode.length !== 6 || isEmailVerified;
+  const isVerifyButtonDisabled =
+    emailVerificationCode.length !== 6 || isEmailVerified;
+  const isSendButtonDisabled = isLoading;
+
+  const getEmailMessageColor = () => {
+    if (!emailVerificationInfo) return RED_COLOR;
+    if (isEmailVerified) return NEW_COLOR;
+    if (
+      emailVerificationInfo.startsWith("CODE_SENT:") ||
+      emailVerificationInfo.startsWith("CODE_SUCCESS:")
+    )
+      return NEW_COLOR;
+    return RED_COLOR;
+  };
+
+  const getCleanEmailMessage = (message) => {
+    if (message.startsWith("CODE_SENT:"))
+      return message.replace("CODE_SENT:", "");
+    if (message.startsWith("CODE_SUCCESS:"))
+      return message.replace("CODE_SUCCESS:", "");
+    if (message.startsWith("CODE_ERROR:"))
+      return message.replace("CODE_ERROR:", "");
+    return message;
+  };
 
   return (
     <SignupWrapper>
-      <Container maxWidth="md" disableGutters sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+      <Container
+        maxWidth="md"
+        disableGutters
+        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+      >
         <SignupCard elevation={0}>
           <Typography
             variant="h4"
             align="center"
             gutterBottom
-            sx={{
-              fontWeight: 700,
-              mb: 4,
-              color: TEXT_COLOR,
-              fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.4rem' },
-            }}
+            sx={{ fontWeight: 700, mb: 4, color: TEXT_COLOR }}
           >
             회원가입
           </Typography>
 
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <Grid container spacing={3}>
-              
               {/* 이메일 입력 필드 + 전송 버튼 */}
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <Box
                   sx={{
-                    display: 'flex',
-                    flexDirection: { xs: 'column', sm: 'row' },
+                    display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
                     gap: 1,
-                    alignItems: { xs: 'center', sm: 'flex-start' },
                   }}
                 >
                   <CustomTextField
@@ -276,72 +378,114 @@ const Signup = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
+                    error={!!signupInfos.email}
                   />
-                  {/* 회원명 검증 버튼과 동일한 디자인 */}
                   <DuplicateCheckButton
                     variant="outlined"
                     onClick={handleSendVerificationEmail}
                     disabled={isSendButtonDisabled}
                   >
-                    {showEmailVerificationInput && !isEmailChanged && !isEmailVerified ? '재전송' : '전송'}
+                    {showEmailVerificationInput &&
+                    !isEmailChanged &&
+                    !isEmailVerified
+                      ? "재전송"
+                      : "전송"}
                   </DuplicateCheckButton>
                 </Box>
+                {!!signupInfos.email && (
+                  <Typography
+                    variant="caption"
+                    sx={{ mt: 0.5, ml: 1, display: "block", color: RED_COLOR }}
+                  >
+                    {signupInfos.email}
+                  </Typography>
+                )}
+
+                {isLoading && (
+                  <Typography
+                    variant="caption"
+                    sx={{ mt: 0.5, ml: 1, display: "block", color: AQUA_BLUE }}
+                  >
+                    이메일이 전송중입니다...
+                  </Typography>
+                )}
+
+                {!!emailVerificationInfo &&
+                  !emailVerificationInfo.startsWith("CODE_ERROR:") && (
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        mt: 0.5,
+                        ml: 1,
+                        display: "block",
+                        color: getEmailMessageColor(),
+                      }}
+                    >
+                      {getCleanEmailMessage(emailVerificationInfo)}
+                    </Typography>
+                  )}
               </Grid>
 
               {/* 이메일 검증 코드 입력 필드 + 인증 버튼 */}
               {showEmailVerificationInput && !isEmailChanged && (
-                <Grid item size={{ xs: 12 }}>
+                <Grid size={{ xs: 12 }}>
                   <Box
                     sx={{
-                      display: 'flex',
-                      flexDirection: { xs: 'column', sm: 'row' },
+                      display: "flex",
+                      flexDirection: { xs: "column", sm: "row" },
                       gap: 1,
-                      alignItems: { xs: 'center', sm: 'flex-start' },
                     }}
                   >
                     <CustomTextField
                       fullWidth
-                      label="인증 코드 (6자리 대문자/숫자)"
+                      label="인증 코드 (6자리 숫자)"
                       name="emailVerificationCode"
                       type="text"
-                      inputProps={{
-                        maxLength: 6,
-                        style: { textTransform: 'uppercase' } // 시각적으로 대문자 표시
-                      }}
                       value={emailVerificationCode}
                       onChange={handleChange}
                       required
                       disabled={isEmailVerified}
+                      error={
+                        !isEmailVerified &&
+                        !!emailVerificationInfo &&
+                        !emailVerificationInfo.startsWith("CODE_SENT:") &&
+                        !emailVerificationInfo.startsWith("CODE_SUCCESS:")
+                      }
                     />
-                    {/* NEW: 인증 버튼 (검사/전송 버튼과 동일 디자인) */}
                     <DuplicateCheckButton
                       variant="outlined"
                       onClick={handleVerifyEmailCode}
                       disabled={isVerifyButtonDisabled}
                     >
-                      {isEmailVerified ? '인증 완료' : '인증'}
+                      {isEmailVerified ? "인증 완료" : "인증"}
                     </DuplicateCheckButton>
                   </Box>
-                  {/* 인증 완료 메시지 */}
-                  {isEmailVerified && (
-                    <Typography
-                      variant="caption"
-                      sx={{ mt: 0.5, ml: 1, display: 'block', color: 'green' }}
-                    >
-                      이메일 인증이 성공적으로 완료되었습니다.
-                    </Typography>
-                  )}
+                  {!isEmailVerified &&
+                    !!emailVerificationInfo &&
+                    !emailVerificationInfo.startsWith("CODE_SENT:") &&
+                    !emailVerificationInfo.startsWith("CODE_SUCCESS:") && (
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          mt: 0.5,
+                          ml: 1,
+                          display: "block",
+                          color: RED_COLOR,
+                        }}
+                      >
+                        {getCleanEmailMessage(emailVerificationInfo)}
+                      </Typography>
+                    )}
                 </Grid>
               )}
 
               {/* 회원명 + 중복검사 버튼 */}
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <Box
                   sx={{
-                    display: 'flex',
-                    flexDirection: { xs: 'column', sm: 'row' },
+                    display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
                     gap: 1,
-                    alignItems: { xs: 'center', sm: 'flex-start' },
                   }}
                 >
                   <CustomTextField
@@ -351,54 +495,85 @@ const Signup = () => {
                     value={formData.username}
                     onChange={handleChange}
                     required
+                    error={
+                      !!signupInfos.username &&
+                      signupInfos.username !== "사용 가능한 회원명입니다."
+                    }
                   />
                   <DuplicateCheckButton
                     variant="outlined"
                     onClick={handleDuplicateCheck}
-                    disabled={!formData.username}
+                    disabled={!formData.username || isLoading}
                   >
                     검사
                   </DuplicateCheckButton>
                 </Box>
-                {/* 중복 검사 결과 메시지 */}
-                {isUsernameAvailable !== null && (
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      mt: 0.5,
-                      ml: 1,
-                      display: 'block',
-                      textAlign: { xs: 'center', sm: 'left' },
-                      color: isUsernameAvailable ? 'green' : 'red',
-                    }}
-                  >
-                    {isUsernameAvailable
-                      ? '사용 가능한 회원명입니다.'
-                      : '이미 사용 중이거나 유효하지 않은 회원명입니다.'}
-                  </Typography>
-                )}
+                {!!signupInfos.username &&
+                  signupInfos.username !== "사용 가능한 회원명입니다." && (
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        mt: 0.5,
+                        ml: 1,
+                        display: "block",
+                        color: RED_COLOR,
+                      }}
+                    >
+                      {signupInfos.username}
+                    </Typography>
+                  )}
+                {isUsernameAvailable &&
+                  signupInfos.username === "사용 가능한 회원명입니다." && (
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        mt: 0.5,
+                        ml: 1,
+                        display: "block",
+                        color: NEW_COLOR,
+                      }}
+                    >
+                      {signupInfos.username}
+                    </Typography>
+                  )}
               </Grid>
 
               {/* 비밀번호 입력 필드 */}
-              <Grid item size={{ xs: 12 }}>
-                <FormControl fullWidth variant="outlined" required>
-                  <InputLabel sx={{ color: LIGHT_TEXT_COLOR }}>비밀번호</InputLabel>
+              <Grid size={{ xs: 12 }}>
+                <FormControl
+                  fullWidth
+                  variant="outlined"
+                  required
+                  error={!!signupInfos.password}
+                >
+                  <InputLabel sx={{ color: LIGHT_TEXT_COLOR }}>
+                    비밀번호
+                  </InputLabel>
                   <OutlinedInput
                     name="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={handleChange}
                     sx={{
-                      '& fieldset': { borderColor: TEXT_COLOR },
-                      '&:hover fieldset': { borderColor: TEXT_COLOR },
-                      '&.Mui-focused fieldset': {
+                      "& fieldset": { borderColor: TEXT_COLOR },
+                      "&:hover fieldset": { borderColor: TEXT_COLOR },
+                      "&.Mui-focused fieldset": {
                         borderColor: TEXT_COLOR,
-                        borderWidth: '1px',
+                        borderWidth: "1px",
+                      },
+                      "&.Mui-error fieldset": { borderColor: RED_COLOR },
+                      "&.Mui-error:hover fieldset": { borderColor: RED_COLOR },
+                      "&.Mui-error.Mui-focused fieldset": {
+                        borderColor: RED_COLOR,
+                        borderWidth: "1px",
                       },
                     }}
                     endAdornment={
                       <InputAdornment position="end">
-                        <IconButton onClick={handleClickShowPassword} edge="end">
+                        <IconButton
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                        >
                           {showPassword ? <Visibility /> : <VisibilityOff />}
                         </IconButton>
                       </InputAdornment>
@@ -406,10 +581,18 @@ const Signup = () => {
                     label="비밀번호"
                   />
                 </FormControl>
+                {!!signupInfos.password && (
+                  <Typography
+                    variant="caption"
+                    sx={{ mt: 0.5, ml: 1, display: "block", color: RED_COLOR }}
+                  >
+                    {signupInfos.password}
+                  </Typography>
+                )}
               </Grid>
 
               {/* 회원가입 제출 버튼 */}
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <ActionButton type="submit" fullWidth variant="contained">
                   회원가입
                 </ActionButton>
@@ -421,14 +604,10 @@ const Signup = () => {
           <Typography
             variant="body2"
             align="center"
-            sx={{
-              mt: 3,
-              color: LIGHT_TEXT_COLOR,
-              fontSize: { xs: '0.85rem', sm: '0.9rem' },
-            }}
+            sx={{ mt: 3, color: LIGHT_TEXT_COLOR }}
           >
             계정이 이미 있으신가요?
-            <Link to="/auth/signin" style={{ textDecoration: 'none' }}>
+            <Link to="/auth/signin" style={{ textDecoration: "none" }}>
               <Box
                 component="span"
                 sx={{ ml: 1, color: TEXT_COLOR, fontWeight: 600 }}

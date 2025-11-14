@@ -377,7 +377,7 @@ const PostsCreate = () => {
                 <Grid size={{xs:12, sm:3}}>
                     <CustomTextField
                         fullWidth
-                        label="모집 인원수 (숫자만, 작성자 미포함)"
+                        label="모집 인원수 (숫자만)"
                         name="maxUserNumber"
                         value={formData.maxUserNumber}
                         onChange={handleChange}

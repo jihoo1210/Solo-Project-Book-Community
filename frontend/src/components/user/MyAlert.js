@@ -180,7 +180,6 @@ const MyAlert = () => {
 
         try {
             const response = await apiClient.get(url)
-            console.log(response)
             const alertData = response.data.result
             if (alertData) {
                 setAlerts(alertData.content)
@@ -280,7 +279,7 @@ const MyAlert = () => {
     const handleFilterClick = (event) => { setFilterAnchorEl(event.currentTarget); };
     const handleFilterClose = () => { setFilterAnchorEl(null); };
     const handleFilterOptionSelect = (field) => { setSearchField(field); setPage(1); setFilterAnchorEl(null); };
-    const handleSearchSubmit = () => { setSearchTerm(pendingSearchTerm); console.log('handleSearchSubmit'); setPage(1); };
+    const handleSearchSubmit = () => { setSearchTerm(pendingSearchTerm); setPage(1); };
     const handlePerPageClick = (event) => { setPerPageAnchorEl(event.currentTarget); };
     const handlePerPageClose = () => { setPerPageAnchorEl(null); };
     const handlePerPageSelect = (value) => { setRowsPerPage(value); setPage(1); setPerPageAnchorEl(null); };

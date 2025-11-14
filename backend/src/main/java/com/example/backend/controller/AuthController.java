@@ -6,15 +6,19 @@
 package com.example.backend.controller;
 
 import com.example.backend.controller.utilities.ResponseController;
+import com.example.backend.dto.auth.CheckEmailRequest;
+import com.example.backend.dto.auth.CheckEmailResponse;
 import com.example.backend.dto.auth.CheckUsernameResponse;
 import com.example.backend.dto.auth.UsernameResponse;
 import com.example.backend.dto.auth.signin.SigninRequest;
 import com.example.backend.dto.auth.signin.SigninResponse;
 import com.example.backend.dto.auth.signup.SignupRequest;
 import com.example.backend.dto.auth.signup.SignupResponse;
+import com.example.backend.dto.auth.verify.VerifyCodeRequest;
 import com.example.backend.security.CustomUserDetails;
 import com.example.backend.security.CustomUserDetailsService;
 import com.example.backend.security.TokenProvider;
+import com.example.backend.service.EmailService;
 import com.example.backend.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,6 +40,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserService service;
+    private final EmailService emailService;
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService customUserDetailsService;
     private final TokenProvider tokenProvider;
@@ -143,6 +148,107 @@ public class AuthController {
         response.addCookie(cookie);
 
         return ResponseController.success("로그아웃 되었습니다.");
+    }
+
+    /**
+     * 이메일 중복 확인 및 인증 코드 전송
+     * @param dto 사용자 이메일 정보
+     * @param bindingResult 유효성 확인
+     * @return 이메일 사용 가능 boolean 값
+     */
+    @GetMapping("/check-email")
+    public ResponseEntity<?> checkEmail(@Valid @ModelAttribute CheckEmailRequest dto, BindingResult bindingResult) {
+        try {
+            log.info("dto: {}", dto);
+            if(bindingResult.hasErrors()) throw new IllegalArgumentException("이메일 형식을 확인해주세요.");
+
+            String email = dto.getEmail();
+
+            if(!StringUtils.hasText(email)) throw new IllegalArgumentException("형식이 올바르지 않습니다");
+
+            // 1. 이메일 중복 검사
+            CheckEmailResponse responseDto = service.isEmailAvailable(email);
+            if(!responseDto.isAvailable()) throw new IllegalArgumentException("동일한 이메일로 가입한 계정이 존재합니다.");
+
+            // 2. 이메일로 코드 전송
+            emailService.sendAuthCode(email, "가입을 환영합니다.");
+
+            return ResponseController.success(responseDto);
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+    @GetMapping("/send-code")
+    public ResponseEntity<?> sendCode(@Valid @ModelAttribute CheckEmailRequest dto, BindingResult bindingResult) {
+        try {
+            log.info("dto: {}", dto);
+            if(bindingResult.hasErrors()) throw new IllegalArgumentException("이메일 형식을 확인해주세요.");
+
+            String email = dto.getEmail();
+
+            if(!StringUtils.hasText(email)) throw new IllegalArgumentException("형식이 올바르지 않습니다");
+
+            // 1. 이메일로 생성된 계정 존재하는지 확인
+            service.getUsernameByEmail(dto.getEmail());
+
+            // 2. 이메일로 코드 전송
+            emailService.sendAuthCode(email, "비밀번호 재생성 인증 코드입니다.");
+
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
+    @GetMapping("/verify-code")
+    public ResponseEntity<?> verifyCode(@Valid @ModelAttribute VerifyCodeRequest dto, BindingResult bindingResult) {
+        try {
+            boolean verified = emailService.verifyAuthCode(dto.getEmail(), dto.getCode());
+            if(verified) {
+                return ResponseController.success(null);
+            }
+            throw new IllegalArgumentException("인증 코드가 유효하지 않습니다.");
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
+    }
+
+    /**
+     * 이메일 코드 인증, 회원 권한 -> TEMP, 회원 이름 반환, Cookie 반환
+     * @param response Cookie 반환용 response
+     * @param dto 회원 이메일 및 인증 코드
+     * @param bindingResult 오류 검사 클래스
+     * @return 회원 이름 및 쿠키
+     */
+    @GetMapping("/verify-code/get-username")
+    public ResponseEntity<?> verifyCodeAndGetUsername(HttpServletResponse response, @Valid @ModelAttribute VerifyCodeRequest dto, BindingResult bindingResult) {
+        try {
+            boolean verified = emailService.verifyAuthCode(dto.getEmail(), dto.getCode());
+            UsernameResponse responseDto = service.getUsernameByEmail(dto.getEmail());
+            log.info("verified: {}", verified);
+            if(verified) {
+                service.createTempUser(dto);
+
+                CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(dto.getEmail());
+
+                String token = tokenProvider.tokenProvide(customUserDetails);
+
+                long maxAgeSeconds = tokenProvider.getExpiration() / 1000;
+
+                Cookie cookie = new Cookie("ACCESS_TOKEN", token);
+                cookie.setHttpOnly(true);
+                // cookie.setSecure(true) // https에서만 사용
+                cookie.setPath("/");
+                cookie.setMaxAge((int) maxAgeSeconds);
+
+                response.addCookie(cookie);
+
+                return ResponseController.success(responseDto);
+            }
+            throw new IllegalArgumentException("인증 코드가 유효하지 않습니다.");
+        } catch (Exception e) {
+            return ResponseController.fail(e.getMessage());
+        }
     }
 
     @GetMapping("/check-username")
