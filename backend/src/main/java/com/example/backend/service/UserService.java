@@ -4,10 +4,12 @@
  */
 package com.example.backend.service;
 
-import com.example.backend.dto.auth.CheckUsernameResponse;
 import com.example.backend.dto.auth.CheckEmailResponse;
+import com.example.backend.dto.auth.CheckUsernameResponse;
+import com.example.backend.dto.auth.UsernameResponse;
 import com.example.backend.dto.auth.signup.SignupRequest;
 import com.example.backend.dto.auth.signup.SignupResponse;
+import com.example.backend.dto.auth.verify.VerifyCodeRequest;
 import com.example.backend.dto.user.ChangeUserInfoRequest;
 import com.example.backend.entity.User;
 import com.example.backend.repository.UserRepository;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import static com.example.backend.entity.utilities.Role.ROLE_TEMP;
 import static com.example.backend.entity.utilities.Role.ROLE_USER;
 
 @Slf4j
@@ -104,5 +107,26 @@ public class UserService {
     @Transactional
     public void deleteUser(User user) {
         repository.delete(user);
+    }
+
+    /**
+     * 이메일로 회원명 가져오기
+     * @param email 이메일
+     * @return 회원명
+     */
+    public UsernameResponse getUsernameByEmail(String email) {
+        User target = repository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
+        log.info("User: {}", target);
+        return UsernameResponse.builder().username(target.getUsername()).build();
+    }
+
+    /**
+     * 회원 권한 TEMP로 설정
+     * @param dto 회원 이메일
+     */
+    public void createTempUser(VerifyCodeRequest dto) {
+        User user = repository.findByEmail(dto.getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
+        user.setAuthority(ROLE_TEMP);
+        log.info("temp user: {}", user);
     }
 }

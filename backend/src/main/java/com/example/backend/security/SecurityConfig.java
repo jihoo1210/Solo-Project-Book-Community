@@ -82,8 +82,8 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**", "/h2-console/**").permitAll()
                         // "/admin/**" 경로는 "ADMIN" 권한을 가진 사용자만 접근 가능합니다. (권한명에는 "ROLE_" 접두사가 자동으로 붙습니다.)
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // "/temp" 경로는 "TEMP" 권한을 가진 사용자만 접근 가능합니다.
-                        .requestMatchers("/temp").hasRole("TEMP")
+                        // "/temp/**" 경로는 "TEMP" 권한을 가진 사용자만 접근 가능합니다.
+                        .requestMatchers("/temp/**").hasRole("TEMP")
                         // 위의 규칙에 해당하지 않는 나머지 모든 요청은 "USER" 권한을 가진 사용자만 접근 가능하도록 설정합니다.
                         .anyRequest().hasRole("USER"))
 

@@ -27,11 +27,12 @@ public class EmailService {
      * @param email
      * @return 인증 코드
      */
-    public String sendAuthCode(String email) {
+    public String sendAuthCode(String email, String messageTo) {
         String authCode = authCodeGenerator.generateCode();
 
         // 1. Redis에 <이메일, 코드> 저장
         // Redis key: "AuthCode" + email
+        // 중복된 이메일로 요청하면 자동으로 덮어쓰기 됨
         redisTemplate.opsForValue().set(
                 "AuthCode:" + email,
                 authCode,
@@ -41,9 +42,10 @@ public class EmailService {
         // 2. 이메일 내용 구성 및 전송
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email); // 수신자
-        message.setSubject("BBBB 회원가입 인증 코드입니다."); // 제목
+        message.setSubject("BBBB " + messageTo); // 제목
         String text = String.format(
-                "당신의 가입을 환영합니다. [%s] 해당 인증코드를 인증코드 작성 란에 입력해주세요.",
+                "%s [%s] 해당 인증코드를 인증코드 작성 란에 입력해주세요.",
+                messageTo != null ? messageTo : "가입을 환영합니다.",
                 authCode
         );
         message.setText(text); // 본문
@@ -53,15 +55,17 @@ public class EmailService {
     }
 
     public boolean verifyAuthCode(String email, String code) {
+        log.info("email: {}, code: {}", email, code);
         String redisKey = "AuthCode:" + email;
         String storedCode = redisTemplate.opsForValue().get(redisKey);
-
+        log.info("storedCode: {}, code: {}", storedCode, code);
         // 코드가 없거나 만료됨
         if(storedCode == null) {
             return false;
         }
         if(storedCode.equals(code)) {
             // 인증 성공: Redis에서 코드 삭제(재사용 방지)
+            log.info("인증 성공!");
             redisTemplate.delete(redisKey);
             return true;
         }
