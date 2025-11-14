@@ -348,11 +348,11 @@ const MyFavorite = () => {
                 <TableRow>
                     <CustomTableCell sx={{ width: '5%' }}>ID</CustomTableCell>
                     <CustomTableCell sx={{ width: '8%' }}>주제</CustomTableCell>
-                    <CustomTableCell sx={{ width: '30%' }}>제목</CustomTableCell>
+                    <CustomTableCell sx={{ width: '37%' }}>제목</CustomTableCell>
                     <CustomTableCell sx={{ width: '15%' }}>댓글 내용</CustomTableCell>
                     <CustomTableCell sx={{ width: '15%' }}>작성자</CustomTableCell>
                     <CustomTableCell sx={{ width: '10%' }}>좋아요</CustomTableCell>
-                    <CustomTableCell sx={{ width: '17%' }}>작성일</CustomTableCell>
+                    <CustomTableCell sx={{ width: '10%' }}>작성일</CustomTableCell>
                 </TableRow>
             );
         }
@@ -464,7 +464,7 @@ const MyFavorite = () => {
                                 }
                             })}
                         ><StyledChip label={item.subject} subject={item.subject} size="small" /></TableCell>
-                        {/* 제목 (35%) */}
+                        {/* 제목 (37%) */}
                         <TableCell sx={(theme) => ({
                             fontWeight: 600, color: TEXT_COLOR,
                             [theme.breakpoints.down('sm')]: {
@@ -505,7 +505,7 @@ const MyFavorite = () => {
                         })}>
                             <VisibilityIcon sx={{ fontSize: '1rem', verticalAlign: 'middle', color: viewColor, mr: 0.5 }} />{item.viewCount || 0}
                         </TableCell>
-                        {/* 작성일 (17%) */}
+                        {/* 작성일 (10%) */}
                         <TableCell sx={(theme) => ({
                             color: LIGHT_TEXT_COLOR,
                             [theme.breakpoints.down('sm')]: {
@@ -546,11 +546,11 @@ const MyFavorite = () => {
                                 }
                             })}
                         ><StyledChip label={item.subject} subject={item.subject} size="small" /></TableCell>
-                        {/* 제목 (게시글 제목) - 30% */}
+                        {/* 제목 (게시글 제목) - 37% */}
                         <TableCell sx={(theme) => ({
                             fontWeight: 600, color: TEXT_COLOR,
                             maxWidth: isCommentMode ? '200px' : 'none', 
-                            whiteSpace: isCommentMode ? 'nowrap' : 'normal', overflow: 'hidden', textOverflow: 'ellipsis',
+                            whiteSpace: 'normal', overflow: 'hidden', textOverflow: 'ellipsis',
                             [theme.breakpoints.down('sm')]: {
                                 display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
                                 fontSize: '1rem', padding: theme.spacing(1, 2, 0.5, 2), order: 1,
@@ -597,7 +597,7 @@ const MyFavorite = () => {
                         })}>
                             <FavoriteIcon sx={{ fontSize: '1rem', verticalAlign: 'middle', color: item.savedInLikes ? PURPLE_COLOR : RED_COLOR, mr: 0.5 }} />{item.likes || 0}
                         </TableCell>
-                        {/* 작성일 - 17% */}
+                        {/* 작성일 - 10% */}
                         <TableCell sx={(theme) => ({
                             color: LIGHT_TEXT_COLOR,
                             [theme.breakpoints.down('sm')]: {

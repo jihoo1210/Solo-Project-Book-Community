@@ -1,5 +1,7 @@
 // src/constants/theme.js
 
+import { createTheme } from "@mui/material";
+
 // 기본 테마 색상
 export const BG_COLOR = '#FFFFFF';
 export const TEXT_COLOR = '#000000';
@@ -38,3 +40,11 @@ export const RECRUIT_DARK_COLOR = '#008c99'; // 진한 청록색 계열 (버튼 
 export const RECRUIT_LIGHT_BG = '#e6f9ff'// 아주 옅은 배경색 (심플함 강조)
 
 export const RECRUIT_APPROVE_COLOR = '#1B5E20'
+
+const theme = createTheme({
+  typography: {
+    fontFamily: '"Noto Sans KR","Arial",sans-serif',
+  },
+});
+
+export default theme;

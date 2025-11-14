@@ -16,7 +16,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'; 
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import ForumIcon from '@mui/icons-material/Forum'; 
+import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import apiClient from '../../api/Api-Service';
 import { 
     BG_COLOR, TEXT_COLOR, LIGHT_TEXT_COLOR, 
@@ -66,6 +66,7 @@ const ActionButton = styled(Button)(({ theme }) => ({
 
 const CustomSearchField = styled(TextField)(({ theme }) => ({
     minWidth: 150,
+    color: `${LIGHT_TEXT_COLOR} !important`,
     '& .MuiInputLabel-root': { color: LIGHT_TEXT_COLOR },
     '& .MuiOutlinedInput-root': {
         '& fieldset': { borderColor: TEXT_COLOR },
@@ -296,10 +297,10 @@ const MyActivities = () => {
             <TableRow>
                 <CustomTableCell sx={{ width: '5%' }}>ID</CustomTableCell>
                 <CustomTableCell sx={{ width: '8%' }}>주제</CustomTableCell>
-                <CustomTableCell sx={{ width: '30%' }}>제목</CustomTableCell>
+                <CustomTableCell sx={{ width: '42%' }}>제목</CustomTableCell>
                 
                 {/* 댓글 모드일 때만 '내용' 표시. 크기는 Post의 '작성자' 필드 크기(15%)와 동일하게 맞춤 */}
-                {activityType === 1 && <CustomTableCell sx={{ width: '15%' }}>내용</CustomTableCell>} 
+                {activityType === 1 && <CustomTableCell sx={{ width: '10%' }}>내용</CustomTableCell>} 
                 
                 {/* 작성자 필드 크기를 Post 모드와 동일한 15%로 통일 */}
                 <CustomTableCell sx={{ width: '15%' }}>작성자</CustomTableCell> 
@@ -310,7 +311,7 @@ const MyActivities = () => {
                 {activityType === 0 && <CustomTableCell sx={{ width: '10%' }}>조회수</CustomTableCell>} 
                 
                 {/* 작성일 필드 크기를 Post 모드와 동일한 17%로 통일 */}
-                <CustomTableCell sx={{ width: '17%' }}>작성일</CustomTableCell>
+                <CustomTableCell sx={{ width: '10%' }}>작성일</CustomTableCell>
             </TableRow>
         );
 
@@ -429,7 +430,7 @@ const MyActivities = () => {
                     <TableCell sx={(theme) => ({
                         fontWeight: 600, color: TEXT_COLOR,
                         maxWidth: isCommentMode ? '200px' : 'none', 
-                        whiteSpace: isCommentMode ? 'nowrap' : 'normal', overflow: 'hidden', textOverflow: 'ellipsis',
+                        whiteSpace: 'normal', overflow: 'hidden', textOverflow: 'ellipsis',
                         [theme.breakpoints.down('sm')]: {
                             display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
                             fontSize: '1rem', padding: theme.spacing(1, 2, 0.5, 2), order: 1,
@@ -455,7 +456,7 @@ const MyActivities = () => {
                                 '&::before': { content: `'${mobileLabels[3]}: '`, ...labelStyles }
                             }
                         })}>
-                            <ForumIcon sx={{ fontSize: '1rem', verticalAlign: 'middle', color: TEXT_COLOR, mr: 0.5 }} />
+                            <ChatOutlinedIcon sx={{ fontSize: '1rem', verticalAlign: 'middle', color: TEXT_COLOR, mr: 0.5 }} />
                             {item.content}
                         </TableCell>
                     )}

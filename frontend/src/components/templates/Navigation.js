@@ -15,7 +15,7 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { Inventory2Outlined } from '@mui/icons-material';
+import { ForumOutlined, Inventory2Outlined } from '@mui/icons-material';
 // 💡 추가: AlertContext 임포트
 import { useAlert } from '../utilities/AlertContext';
 
@@ -208,7 +208,7 @@ const Navigation = () => {
                     </Grid>
 
                     {/* 💡 수정: 알림 버튼 (Grid xs=12으로 크기 조정 및 Badge 적용) */}
-                    <Grid size={{ xs: 12 }} sx={{ p: '0 !important' }}>
+                    <Grid size={{ xs: 6 }} sx={{ p: '0 !important' }}>
                         {/* 💡 수정: Badge 컴포넌트 다시 추가 및 invisible={!haveNewAlert} 적용 */}
                         <Button
                             component={Link}
@@ -231,6 +231,33 @@ const Navigation = () => {
                                     invisible={!haveNewAlert} // haveNewAlert가 false일 때 숨김
                                 >
                                     <NotificationsNoneIcon sx={{ fontSize: '1.5rem' }} />
+                                </Badge>}
+                        >
+                        </Button>
+                    </Grid>
+                    <Grid size={{ xs: 6 }} sx={{ p: '0 !important' }}>
+                        {/* 💡 수정: Badge 컴포넌트 다시 추가 및 invisible={!haveNewAlert} 적용 */}
+                        <Button
+                            component={Link}
+                            to="/chat/list"
+                            onClick={handleDrawerToggle}
+                            color="inherit"
+                            aria-label="커뮤니티"
+                            sx={{
+                                width: '100%',
+                                p: '12px 0',
+                                color: TEXT_COLOR,
+                                border: `1px solid ${TEXT_COLOR}`,
+                                // border: 'none', // 테두리 제거 (요청에 따라)
+                                '& .MuiButton-startIcon': { m: 0 } // 아이콘만 남기기 위해 텍스트 제거
+                            }}
+                            startIcon={
+                                <Badge
+                                    color="error"
+                                    variant="dot"
+                                    invisible={!haveNewAlert} // haveNewAlert가 false일 때 숨김
+                                >
+                                    <ForumOutlined sx={{ fontSize: '1.5rem' }} />
                                 </Badge>}
                         >
                         </Button>
@@ -336,6 +363,15 @@ const Navigation = () => {
                                         onClick={isSearchOpen ? handleSearchClose : () => setIsSearchOpen(true)}
                                     >
                                         {isSearchOpen ? <CloseIcon sx={{ fontSize: '1.7rem' }} /> : <SearchIcon sx={{ fontSize: '1.7rem' }} />}
+                                    </IconButton>
+
+                                    <IconButton
+                                        color="inherit"
+                                        component={Link}
+                                        to="/chat/list"
+                                        aria-label="커뮤니티"
+                                    >
+                                        <ForumOutlined sx={{ fontSize: '1.7rem' }} />
                                     </IconButton>
 
                                     {/* 💡 수정: 보관함 아이콘 (테두리 제거 -> IconButton) */}
