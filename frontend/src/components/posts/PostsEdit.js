@@ -137,7 +137,6 @@ const PostEdit = () => {
                         meetingInfo: postData.meetingInfo || '',
                     });
                     
-                    console.log(postData)
                     // 🚀 Tiptap Editor 상태 초기화
                     setContentHtml(postData.content || ''); // API에서 받은 content로 에디터 초기화
                 }

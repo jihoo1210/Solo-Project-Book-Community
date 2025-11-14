@@ -265,7 +265,6 @@ const PostsDetail = () => {
 
     const handleReport = (type, targetId) => {
         if (window.confirm(`${type} (${targetId})를 신고하시겠습니까? 신고 후에는 되돌릴 수 없습니다.`)) {
-            console.log(`${type} (${targetId})를 신고했습니다. 감사합니다.`);
         }
     };
 

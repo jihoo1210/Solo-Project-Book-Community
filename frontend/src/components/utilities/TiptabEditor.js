@@ -267,6 +267,7 @@ const MenuBar = ({ editor }) => {
       const reader = new FileReader();
       reader.onload = () => {
         // 후에 S3와 연동해야 함
+        // S3 api 호출한 후 반환받은 url을 src에 추가
         editor.chain().focus().setResizableImage({ src: reader.result }).run();
       };
       reader.readAsDataURL(file);

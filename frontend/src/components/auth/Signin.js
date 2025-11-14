@@ -36,7 +36,7 @@ const SigninCard = styled(Paper)(({ theme }) => ({
     },
 }));
 
-// 텍스트 필드 스타일 (오류 시 붉은색 테두리 유지)
+// 텍스트 필드 스타일 (회원가입 페이지와 동일)
 const CustomTextField = styled(TextField)(({ theme }) => ({
     '& .MuiInputLabel-root': { color: LIGHT_TEXT_COLOR },
     '& .MuiOutlinedInput-root': {
@@ -46,7 +46,6 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
             borderColor: TEXT_COLOR,
             borderWidth: '1px',
         },
-        // 오류일 때 포커스 및 호버 시 붉은색 유지
         '&.Mui-error fieldset': {
             borderColor: RED_COLOR,
         },
@@ -70,71 +69,64 @@ const ActionButton = styled(Button)(({ theme }) => ({
 }));
 
 const SignIn = () => {
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
+    const [formData, setFormData] = useState({ email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
-    const {login} = useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
-    // 변수명: signinInfos 사용
+
     const [signinInfos, setSigninInfos] = useState({
         email: '',
         password: '',
-        submit: '' // 전반적인 제출 오류는 alert로 대체되므로 이 필드는 내부적으로만 사용될 수 있음
+        submit: ''
     });
 
-    // URL 파라미터에서 이메일 추출하여 폼 데이터에 설정
+    // URL 파라미터에서 이메일 추출
     useEffect(() => {
-      const urlParams = new window.URLSearchParams(window.location.search)
-      const email = urlParams.get('email');
-      if(email) setFormData(prev => ({...prev, email: email}))
-    }, [])
+        const urlParams = new window.URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
+        if (email) setFormData(prev => ({ ...prev, email }));
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
         const newValue = value.replace(/\s/g, '');
-
         setFormData((prev) => ({ ...prev, [name]: newValue }));
-        
-        // 입력 변경 시 해당 필드의 오류 및 전반적인 제출 오류 초기화
         setSigninInfos((prev) => ({ ...prev, [name]: '', submit: '' }));
     };
 
     const handleClickShowPassword = () => setShowPassword((s) => !s);
 
-    // 로그인 API 요청 처리
+    // 로그인 API 요청
     const handleSubmit = (e) => {
         e.preventDefault();
-        setSigninInfos({ email: '', password: '', submit: '' }); // 제출 시 오류 초기화
+        setSigninInfos({ email: '', password: '', submit: '' });
+        let hasError = false;
+        const newErrors = { email: "", username: "", password: "", submit: "" };
 
-        // 필수 필드 유효성 검사 (프론트엔드 레벨)
         if (!formData.email) {
-            setSigninInfos(prev => ({ ...prev, email: '이메일을 입력해 주세요.' }));
-            return;
+            newErrors.email = '이메일을 입력해 주세요.'
+            hasError = true
         }
         if (!formData.password) {
-            setSigninInfos(prev => ({ ...prev, password: '비밀번호를 입력해 주세요.' }));
+            newErrors.password = '비밀번호를 입력해 주세요.';
+            hasError = true
+        }
+        if(hasError) {
+            setSigninInfos(newErrors)
             return;
         }
-        
-        console.log('로그인 요청 데이터:', formData);
         apiClient.post("/auth/signin", formData).then(response => {
-          // 토큰을 세션 스토리지에 저장
-            login(response.data.result.username) // AuthContext의 login 함수 호출
-            navigate("/")
+            login(response.data.result.username);
+            navigate("/");
         }).catch(error => {
-          const errorMessage = error.response?.data?.message || '예상하지 못한 에러가 발생했습니다.';
-          // 🚨 전반적인 제출 오류를 alert로 대체
-          alert(errorMessage);
-          // setSigninInfos(prev => ({ ...prev, submit: errorMessage })); // 이 라인은 이제 필요 없음
-        })
+            const errorMessage = error.response?.data?.message || '예상하지 못한 에러가 발생했습니다.';
+            alert(errorMessage);
+        });
     };
 
     return (
         <SigninWrapper>
-            <Container maxWidth="md" disableGutters sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <Container maxWidth="md" disableGutters sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <SigninCard elevation={0}>
                     <Typography
                         variant="h4"
@@ -152,7 +144,7 @@ const SignIn = () => {
 
                     <Box component="form" onSubmit={handleSubmit} noValidate>
                         <Grid container spacing={3}>
-                            
+
                             {/* 이메일 입력 필드 */}
                             <Grid size={{ xs: 12 }}>
                                 <CustomTextField
@@ -163,32 +155,18 @@ const SignIn = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    // 오류 시 붉은색 테두리 표시
-                                    error={!!signinInfos.email} 
+                                    error={!!signinInfos.email}
                                 />
-                                {/* 별도의 Typography로 오류 메시지 표시 */}
                                 {!!signinInfos.email && (
-                                    <Typography
-                                      variant="caption"
-                                      sx={{ 
-                                        mt: 0.5, ml: 1, display: 'block', 
-                                        color: RED_COLOR 
-                                      }}
-                                    >
-                                      {signinInfos.email}
+                                    <Typography variant="caption" sx={{ mt: 0.5, ml: 1, display: 'block', color: RED_COLOR }}>
+                                        {signinInfos.email}
                                     </Typography>
                                 )}
                             </Grid>
 
                             {/* 비밀번호 입력 필드 */}
                             <Grid size={{ xs: 12 }}>
-                                <FormControl 
-                                    fullWidth 
-                                    variant="outlined" 
-                                    required
-                                    // 비밀번호 오류 상태 설정
-                                    error={!!signinInfos.password}
-                                >
+                                <FormControl fullWidth variant="outlined" required error={!!signinInfos.password}>
                                     <InputLabel sx={{ color: LIGHT_TEXT_COLOR }}>비밀번호</InputLabel>
                                     <OutlinedInput
                                         name="password"
@@ -197,23 +175,12 @@ const SignIn = () => {
                                         onChange={handleChange}
                                         label="비밀번호"
                                         sx={{
-                                            // 오류 시 붉은색 테두리
                                             '& fieldset': { borderColor: TEXT_COLOR },
                                             '&:hover fieldset': { borderColor: TEXT_COLOR },
-                                            '&.Mui-focused fieldset': {
-                                                borderColor: TEXT_COLOR,
-                                                borderWidth: '1px',
-                                            },
-                                            '&.Mui-error fieldset': {
-                                                borderColor: RED_COLOR,
-                                            },
-                                            '&.Mui-error:hover fieldset': {
-                                                borderColor: RED_COLOR,
-                                            },
-                                            '&.Mui-error.Mui-focused fieldset': {
-                                                borderColor: RED_COLOR,
-                                                borderWidth: '1px',
-                                            },
+                                            '&.Mui-focused fieldset': { borderColor: TEXT_COLOR, borderWidth: '1px' },
+                                            '&.Mui-error fieldset': { borderColor: RED_COLOR },
+                                            '&.Mui-error:hover fieldset': { borderColor: RED_COLOR },
+                                            '&.Mui-error.Mui-focused fieldset': { borderColor: RED_COLOR, borderWidth: '1px' },
                                         }}
                                         endAdornment={
                                             <InputAdornment position="end">
@@ -224,16 +191,9 @@ const SignIn = () => {
                                         }
                                     />
                                 </FormControl>
-                                {/* 비밀번호 오류 메시지 */}
                                 {!!signinInfos.password && (
-                                    <Typography
-                                      variant="caption"
-                                      sx={{ 
-                                        mt: 0.5, ml: 1, display: 'block', 
-                                        color: RED_COLOR 
-                                      }}
-                                    >
-                                      {signinInfos.password}
+                                    <Typography variant="caption" sx={{ mt: 0.5, ml: 1, display: 'block', color: RED_COLOR }}>
+                                        {signinInfos.password}
                                     </Typography>
                                 )}
                             </Grid>
@@ -246,10 +206,8 @@ const SignIn = () => {
                             </Grid>
                         </Grid>
                     </Box>
-                    
-                    {/* 🚨 전반적인 로그인 오류 메시지 표시 영역 삭제 (alert로 대체) */}
 
-                    {/* 회원가입 페이지 링크 */}
+                    {/* 회원가입 및 비밀번호 찾기 링크 */}
                     <Typography
                         variant="body2"
                         align="center"
@@ -261,15 +219,18 @@ const SignIn = () => {
                     >
                         계정이 없으신가요?
                         <Link to="/auth/signup" style={{ textDecoration: 'none' }}>
-                            <Box
-                                component="span"
-                                sx={{ ml: 1, color: TEXT_COLOR, fontWeight: 600 }}
-                            >
+                            <Box component="span" sx={{ ml: 1, color: TEXT_COLOR, fontWeight: 600 }}>
                                 회원가입
                             </Box>
                         </Link>
+                        <Box component="span" sx={{ mx: 1, color: LIGHT_TEXT_COLOR, display: {xs: 'block', sm: 'inline'} }}>|</Box>
+                        비밀번호를 잊어버리셨나요?
+                        <Link to="/auth/resetPassword" style={{ textDecoration: 'none' }}>
+                            <Box component="span" sx={{ ml: 1, color: TEXT_COLOR, fontWeight: 600 }}>
+                                비밀번호 찾기
+                            </Box>
+                        </Link>
                     </Typography>
-
                 </SigninCard>
             </Container>
         </SigninWrapper>

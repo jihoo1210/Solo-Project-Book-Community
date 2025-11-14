@@ -15,6 +15,7 @@ import MyActivities from './components/user/MyActives';
 import MyFavorite from './components/user/MyFavorite';
 import MyAlert from './components/user/MyAlert';
 import { AlertProvider } from './components/utilities/AlertContext';
+import ResetPassword from './components/auth/ResetPassword';
 function App() {
 
   return (
@@ -27,6 +28,7 @@ function App() {
     <Box sx={{ flexGrow: 1 }} flex justifyContent={'center'} alignContent={'center'} flexDirection={'column'} >
           <Routes>
             <Route path='/auth'>
+              <Route path='resetPassword' element={<ResetPassword />} />
               <Route path='signup' element={<Signup />} />
               <Route path='signin' element={<Signin />} />
             </Route>
