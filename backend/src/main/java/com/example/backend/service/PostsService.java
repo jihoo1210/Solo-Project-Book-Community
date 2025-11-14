@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.backend.entity.utilities.AlertSubject.*;
@@ -37,6 +38,7 @@ public class PostsService {
     private final CommentLikesRepository commentLikesRepository;
     private final PostsViewedRepository postsViewedRepository;
     private final AlertRepository alertRepository;
+    private final ChatRoomService chatRoomService;
 
     /**
      * 전체 게시글 목록을 검색 조건과 페이징 조건에 따라 조회합니다.
@@ -267,6 +269,13 @@ public class PostsService {
                 .maxUserNumber(dto.getMaxUserNumber())
                 .user(user)
                 .build();
+
+        // 웹 소켓 생성
+        if(target.getSubject().equals(RECRUIT)) {
+            List<Long> invitedUserIds = new ArrayList<>();
+            invitedUserIds.add(user.getId());
+            chatRoomService.createRoom(target.getTitle(), user, invitedUserIds);
+        }
 
         repository.save(target);
     }

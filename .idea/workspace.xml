@@ -4,12 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#24 Implement Web Socket">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/ChatRoom.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/RoomChatHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/RoomRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/WebSocketConfig.java" afterDir="false" />
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#24 백엔드 웹소켓 설정 (기능 api 미구현)">
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/ChatRoom.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/ChatRoomText.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/ChatRoomRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/ChatRoomTextRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/ChatRoomService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/ChatRoomTextService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/ChatRoom.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/RoomChatHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/RoomChatHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/RoomRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/constants/Theme.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/constants/Theme.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyFavorite.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyFavorite.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -477,7 +495,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763096274861</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="#24 백엔드 웹소켓 설정 (기능 api 미구현)">
+      <option name="closed" value="true" />
+      <created>1763098822827</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1763098822827</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -505,7 +531,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#7 주석 수정" />
     <MESSAGE value="#7 Update Posts Dto" />
     <MESSAGE value="#7 검색 및 페이지네이션 기능 구현" />
     <MESSAGE value="#14 Create myPage function + 내 게시판, 본 게시글 저장, 수정 내역 저장" />
@@ -530,6 +555,7 @@
     <MESSAGE value="#22 비밀번호 재설정 페이지, axios 최대 대기 가능 시간 증가(이메일 보내는게 오래걸림), 디자인 수정" />
     <MESSAGE value="#22 비밀번호 재설정 페이지" />
     <MESSAGE value="#24 Implement Web Socket" />
-    <option name="LAST_COMMIT_MESSAGE" value="#24 Implement Web Socket" />
+    <MESSAGE value="#24 백엔드 웹소켓 설정 (기능 api 미구현)" />
+    <option name="LAST_COMMIT_MESSAGE" value="#24 백엔드 웹소켓 설정 (기능 api 미구현)" />
   </component>
 </project>
