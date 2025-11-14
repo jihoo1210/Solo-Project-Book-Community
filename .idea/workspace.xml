@@ -4,27 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#22 이메일 인증 api 연결">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/TempController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/temp/PasswordResetRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/TempService.java" afterDir="false" />
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#22 비밀번호 재설정 페이지, axios 최대 대기 가능 시간 증가(이메일 보내는게 오래걸림), 디자인 수정">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/CustomUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/CustomUserDetails.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/EmailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/utilities/TiptabEditor.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/utilities/TiptabEditor.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,20 +50,41 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {}
-}</component>
-  <component name="GitHubPullRequestState">{
-  &quot;prStates&quot;: [
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "history": [
     {
-      &quot;id&quot;: {
-        &quot;id&quot;: &quot;PR_kwDOQNkMH86yeLIg&quot;,
-        &quot;number&quot;: 20
+      "state": "OPEN"
+    }
+  ],
+  "lastFilter": {
+    "state": "OPEN"
+  }
+}]]></component>
+  <component name="GitHubPullRequestState"><![CDATA[{
+  "prStates": [
+    {
+      "id": {
+        "id": "PR_kwDOQNkMH86yeLIg",
+        "number": 20
       },
-      &quot;lastSeen&quot;: 1762820567061
+      "lastSeen": 1762820567061
+    },
+    {
+      "id": {
+        "id": "PR_kwDOQNkMH86y4VgO",
+        "number": 21
+      },
+      "lastSeen": 1763095962768
+    },
+    {
+      "id": {
+        "id": "PR_kwDOQNkMH86zXhAW",
+        "number": 23
+      },
+      "lastSeen": 1763095971801
     }
   ]
-}</component>
+}]]></component>
   <component name="GitRewordedCommitMessages">
     <option name="commitMessagesMapping">
       <RewordedCommitMessageMapping>
@@ -439,7 +442,23 @@
       <option name="project" value="LOCAL" />
       <updated>1762920483376</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="#22 이메일 인증 후 권한 TEMP -&gt; 비밀번호 재설정 로직에 TEMP 권한을 가진 사용자만 접근할 수 있도록 설정">
+      <option name="closed" value="true" />
+      <created>1763095820140</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1763095820140</updated>
+    </task>
+    <task id="LOCAL-00035" summary="#22 비밀번호 재설정 페이지, axios 최대 대기 가능 시간 증가(이메일 보내는게 오래걸림), 디자인 수정">
+      <option name="closed" value="true" />
+      <created>1763095897235</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1763095897235</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -467,8 +486,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#5 Posts Entity" />
-    <MESSAGE value="#5 Posts Controller and Dto" />
     <MESSAGE value="#5 Posts Service and Repository" />
     <MESSAGE value="#7 Posts CRUD Page" />
     <MESSAGE value="#7 주석 수정" />
@@ -492,6 +509,8 @@
     <MESSAGE value="#22 약간의 오류 수정" />
     <MESSAGE value="#22 이메일 인증 컨트롤러 및 이메일 의존성 추가" />
     <MESSAGE value="#22 이메일 인증 api 연결" />
-    <option name="LAST_COMMIT_MESSAGE" value="#22 이메일 인증 api 연결" />
+    <MESSAGE value="#22 이메일 인증 후 권한 TEMP -&gt; 비밀번호 재설정 로직에 TEMP 권한을 가진 사용자만 접근할 수 있도록 설정" />
+    <MESSAGE value="#22 비밀번호 재설정 페이지, axios 최대 대기 가능 시간 증가(이메일 보내는게 오래걸림), 디자인 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="#22 비밀번호 재설정 페이지, axios 최대 대기 가능 시간 증가(이메일 보내는게 오래걸림), 디자인 수정" />
   </component>
 </project>
