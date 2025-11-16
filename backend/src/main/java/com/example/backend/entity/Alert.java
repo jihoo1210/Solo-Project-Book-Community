@@ -3,7 +3,12 @@ package com.example.backend.entity;
 import com.example.backend.entity.utilities.AlertSubject;
 import com.example.backend.entity.utilities.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Builder
 @NoArgsConstructor
@@ -31,4 +36,8 @@ public class Alert extends BaseEntity {
 
     @Column
     private String content;
+
+    // 외래키
+    @OneToMany(mappedBy = "alert", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AlertViewed> alertViewedList;
 }

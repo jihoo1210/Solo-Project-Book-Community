@@ -60,6 +60,7 @@ public class RecruitService {
         // 커뮤니티 로직 추가 예정
     }
 
+    @Transactional
     public void reject(Long alertId, AlertRejectRequest dto) {
         Alert target = alertRepository.findById(alertId).orElseThrow(() -> new IllegalArgumentException("해당 알림이 존재하지 않습니다."));
         User me = target.getUser();

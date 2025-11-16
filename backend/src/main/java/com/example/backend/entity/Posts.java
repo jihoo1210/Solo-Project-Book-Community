@@ -85,4 +85,10 @@ public class Posts extends BaseEntity {
     public void increaseViewCount() {
         this.viewCount = getViewCount() + 1;
     }
+
+    // 외래키
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostsViewed> postsViewedList;
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Alert> alertList;
 }

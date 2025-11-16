@@ -9,7 +9,6 @@ package com.example.backend.security;
 import com.example.backend.entity.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +22,6 @@ import static com.example.backend.entity.utilities.Role.ROLE_USER;
 
 @RequiredArgsConstructor
 @Getter
-@ToString
 public class CustomUserDetails implements UserDetails {
 
     // 데이터베이스에서 조회된 실제 사용자 엔티티 객체

@@ -17,10 +17,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update # validate
-    show-sql: true
+#    show-sql: true
     properties:
       hibernate:
-        format_sql: true
+#        format_sql: true
 
   # Redis config
   data:

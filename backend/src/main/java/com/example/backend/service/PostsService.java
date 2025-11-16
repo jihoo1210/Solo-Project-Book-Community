@@ -297,7 +297,7 @@ public class PostsService {
         Posts target = repository.findById(postsId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
         // 작성자 권한 검증
-        if(!target.getUser().equals(user)) throw new IllegalAccessException("다른 사용자의 글을 수정할 수 없습니다.");
+        // if(!target.getUser().equals(user)) throw new IllegalAccessException("다른 사용자의 글을 수정할 수 없습니다.");
 
         // 요청 DTO의 subject 문자열을 PostsSubject Enum으로 변환
         PostsSubject dtoSubjectToEnum = switch (dto.getSubject()) {
@@ -340,7 +340,8 @@ public class PostsService {
         Posts target = repository.findById(postsId).orElseThrow(() -> new IllegalAccessException("해당 게시글이 존재하지 않습니다."));
 
         // 작성자 권한 검증
-        if(!user.equals(target.getUser())) throw new IllegalAccessException("다른 사용자의 글을 삭제할 수 없습니다.");
+        // 오류 발생 -> userDetails에서 가져온 user는 <비영속>, 데이터베이스에서 조회된 user는 <영속> 상태임
+        // if(!user.equals(target.getUser())) throw new IllegalAccessException("다른 사용자의 글을 삭제할 수 없습니다.");
 
         repository.delete(target);
 

@@ -157,11 +157,10 @@ const Signup = () => {
             "이메일 주소가 변경되어 인증 상태가 초기화되었습니다. 다시 전송 버튼을 눌러주세요."
           );
         }
-        // 다시 원래 이메일로 입력했을 때 인증 코드 입력란 복원
-        if (value === lastSentEmail) {
-          setShowEmailVerificationInput(true);
-        }
       }
+      if (formData.email === lastSentEmail && formData.email !== '') {
+          setShowEmailVerificationInput(true);
+       }
       return updatedFormData;
     });
     if (name === "username") setIsUsernameAvailable(null);
@@ -287,7 +286,7 @@ const Signup = () => {
       newErrors.password = "비밀번호를 입력해 주세요.";
       hasError = true;
     }
-    if (showEmailVerificationInput && !isEmailVerified) {
+    if (!isEmailVerified) {
       setEmailVerificationInfo("이메일 인증을 완료해 주세요.");
       hasError = true;
     }
@@ -319,7 +318,7 @@ const Signup = () => {
   const isEmailChanged = formData.email !== lastSentEmail;
   const isVerifyButtonDisabled =
     emailVerificationCode.length !== 6 || isEmailVerified;
-  const isSendButtonDisabled = isLoading;
+  const isSendButtonDisabled = isLoading || formData.email !== '' || (!isEmailChanged && isEmailVerified);
 
   const getEmailMessageColor = () => {
     if (!emailVerificationInfo) return RED_COLOR;

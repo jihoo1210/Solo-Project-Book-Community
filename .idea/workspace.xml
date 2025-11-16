@@ -5,29 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#24 백엔드 웹소켓 설정 (기능 api 미구현)">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/ChatRoom.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/ChatRoomText.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/ChatRoomRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/ChatRoomTextRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/ChatRoomService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/ChatRoomTextService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Alert.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Alert.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/CustomUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/CustomUserDetails.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/ChatRoom.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/RoomChatHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/RoomChatHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/RoomRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/constants/Theme.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/constants/Theme.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyFavorite.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyFavorite.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/RecruitService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/RecruitService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +34,12 @@
       <state>
         <projects_view>
           <tree_state>
-            <expand />
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="backend" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
             <select />
           </tree_state>
         </projects_view>
@@ -66,46 +58,46 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="dev" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "history": [
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;history&quot;: [
     {
-      "state": "OPEN"
+      &quot;state&quot;: &quot;OPEN&quot;
     }
   ],
-  "lastFilter": {
-    "state": "OPEN"
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;
   }
-}]]></component>
-  <component name="GitHubPullRequestState"><![CDATA[{
-  "prStates": [
+}</component>
+  <component name="GitHubPullRequestState">{
+  &quot;prStates&quot;: [
     {
-      "id": {
-        "id": "PR_kwDOQNkMH86yeLIg",
-        "number": 20
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOQNkMH86yeLIg&quot;,
+        &quot;number&quot;: 20
       },
-      "lastSeen": 1762820567061
+      &quot;lastSeen&quot;: 1762820567061
     },
     {
-      "id": {
-        "id": "PR_kwDOQNkMH86y4VgO",
-        "number": 21
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOQNkMH86y4VgO&quot;,
+        &quot;number&quot;: 21
       },
-      "lastSeen": 1763095962768
+      &quot;lastSeen&quot;: 1763095962768
     },
     {
-      "id": {
-        "id": "PR_kwDOQNkMH86zXhAW",
-        "number": 23
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOQNkMH86zXhAW&quot;,
+        &quot;number&quot;: 23
       },
-      "lastSeen": 1763095971801
+      &quot;lastSeen&quot;: 1763095971801
     }
   ]
-}]]></component>
+}</component>
   <component name="GitRewordedCommitMessages">
     <option name="commitMessagesMapping">
       <RewordedCommitMessageMapping>
