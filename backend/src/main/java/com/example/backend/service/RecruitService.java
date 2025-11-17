@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.example.backend.entity.utilities.AlertSubject.APPROVAL;
 import static com.example.backend.entity.utilities.AlertSubject.REJECTED;
 
@@ -23,6 +26,7 @@ public class RecruitService {
 
     private final AlertRepository alertRepository;
     private final AlertViewedRepository alertViewedRepository;
+    private final ChatRoomService chatRoomService;
 
     @Transactional
     public void accept(Long alertId, AlertAcceptRequest dto) throws IllegalAccessException {
@@ -50,14 +54,17 @@ public class RecruitService {
         } else if(posts.getMaxUserNumber() > posts.getCurrentUserNumber()) {
             posts.setCurrentUserNumber(posts.getCurrentUserNumber() + 1);
         } else  {
-            throw new IllegalAccessException("현재 회원수가 설정된 최대 회원수입니다.");
+            throw new IllegalAccessException("최대 회원수보다 더 많은 회원이 초대될 수 없습니다. 게시글에서 최대 회원 수를 수정해주세요.");
         }
         log.info("posts: {}", posts);
 
         // 수락 했으니 알림 삭제
-        deleteAlert(target);
+            deleteAlert(target);
 
         // 커뮤니티 로직 추가 예정
+        List<Long> invitedUserIds = new ArrayList<>();
+        invitedUserIds.add(sender.getId());
+        chatRoomService.inviteUser(posts.getChatRoom().getId(), invitedUserIds);
     }
 
     @Transactional

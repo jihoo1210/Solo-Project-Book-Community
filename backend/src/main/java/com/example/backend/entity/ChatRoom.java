@@ -25,19 +25,30 @@ public class ChatRoom {
     @ManyToOne
     private User creator;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "chat_room_invited_users",
+            joinColumns = @JoinColumn(name = "chat_room_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private List<User> invitedUsers;
 
     // DB에 저장하지 않고 관리
+/*    @Builder.Default
     @Transient
-    private List<User> connectedUsers;
+    private List<User> connectedUsers = new ArrayList<>();*/
 
-    @OneToMany
+    @OneToOne
+    private Posts posts;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoomText> chatRoomTexts;
 
+    @Builder.Default
     @Column
-    private Integer maxUserNumber;
+    private Integer maxUserNumber = 0;
 
+    @Builder.Default
     @Column
-    private Integer currentUserNumber;
+    private Integer currentUserNumber = 0;
 }

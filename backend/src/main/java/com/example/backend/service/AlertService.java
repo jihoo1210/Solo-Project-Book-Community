@@ -63,7 +63,7 @@ public class AlertService {
 
     public CheckNewAlertResponse checkNewAlert(User user) {
         // 알림이 존재하고, 읽지 않은 알림이 있을 때
-        boolean isExistsNewAlert = alertRepository.findAll().stream().anyMatch(item -> !alertViewedRepository.existsByAlert(item));
+        boolean isExistsNewAlert = alertRepository.findAllByUser(user).stream().anyMatch(item -> !alertViewedRepository.existsByAlert(item));
         return CheckNewAlertResponse.builder().haveNew(isExistsNewAlert).build();
     }
 }

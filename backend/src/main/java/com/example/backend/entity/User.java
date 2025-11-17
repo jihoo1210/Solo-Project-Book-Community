@@ -42,6 +42,8 @@ public class User {
 
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ChatRoom> chatRoomList;
+    @ManyToMany(mappedBy = "invitedUsers", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    private List<ChatRoom> invitedUsersInChatRooms;
     @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ChatRoomText> chatRoomTextList;
 

@@ -9,7 +9,8 @@ public enum AlertSubject {
     ADOPTED("채택"),
     APPLICATION("신청"),
     APPROVAL("승인"),
-    REJECTED("거절");
+    REJECTED("거절"),
+    DEADLINE("마감");
 
     @Getter
     private final String subject;
