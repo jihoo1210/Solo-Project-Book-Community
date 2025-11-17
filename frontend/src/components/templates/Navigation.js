@@ -236,7 +236,6 @@ const Navigation = () => {
                         </Button>
                     </Grid>
                     <Grid size={{ xs: 6 }} sx={{ p: '0 !important' }}>
-                        {/* 💡 수정: Badge 컴포넌트 다시 추가 및 invisible={!haveNewAlert} 적용 */}
                         <Button
                             component={Link}
                             to="/chat/list"
@@ -250,16 +249,9 @@ const Navigation = () => {
                                 border: `1px solid ${TEXT_COLOR}`,
                                 // border: 'none', // 테두리 제거 (요청에 따라)
                                 '& .MuiButton-startIcon': { m: 0 } // 아이콘만 남기기 위해 텍스트 제거
-                            }}
-                            startIcon={
-                                <Badge
-                                    color="error"
-                                    variant="dot"
-                                    invisible={!haveNewAlert} // haveNewAlert가 false일 때 숨김
-                                >
-                                    <ForumOutlined sx={{ fontSize: '1.5rem' }} />
-                                </Badge>}
+                            }}   
                         >
+                            <ForumOutlined sx={{ fontSize: '1.5rem' }} />
                         </Button>
                     </Grid>
                 </Grid>

@@ -217,12 +217,13 @@ const PostsDetail = () => {
             try {
                 const postResponse = await apiClient.get(`/posts/${id}`);
                 const postData = postResponse.data.result;
+                console.log(postData)
 
                 if (postData) {
                     setPost(postData);
                     setPostLikes(postData.likes || 0);
                     setSavedInPostLikes(postData.savedInLikes || false);
-                    setRecruitmentResult(postData.recruitmentResult)
+                    setRecruitmentResult((postData.maxUserNumber > postData.currentUserNumber || postData.recruitmentResult != null) ? postData.recruitmentResult : "마감")
                     setInitialComments(postData.comments || [])
                 } else {
                     setError("게시글 데이터를 찾을 수 없습니다.");
@@ -283,6 +284,7 @@ const PostsDetail = () => {
                 }
                 navigate(backToPath) 
             } catch (err) {
+                console.log('err', err)
                 console.error('에러 발생:', err.response?.data?.message || '예상하지 못한 에러.');
                 setError('게시글 삭제 중 오류가 발생했습니다.');
             }

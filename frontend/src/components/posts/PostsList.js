@@ -65,7 +65,7 @@ const ActionButton = styled(Button)(({ theme }) => ({
 const CustomSearchField = styled(TextField)(({ theme }) => ({
     minWidth: 150,
     color: `${LIGHT_TEXT_COLOR} !important`,
-    '& .MuiInputLabel-root': { color: LIGHT_TEXT_COLOR },
+    '& .MuiInputLabel-root': { color: `${LIGHT_TEXT_COLOR} !important` },
     '& .MuiOutlinedInput-root': {
         '& fieldset': { borderColor: TEXT_COLOR },
         '&:hover fieldset': { borderColor: TEXT_COLOR },

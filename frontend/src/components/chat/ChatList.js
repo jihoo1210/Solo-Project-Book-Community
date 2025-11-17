@@ -34,8 +34,6 @@ import {
   BG_COLOR,
   TEXT_COLOR,
   LIGHT_TEXT_COLOR,
-  VIEW_SAVED_COLOR,
-  NEW_COLOR,
   HEADER_HEIGHT,
 } from "../constants/Theme";
 
@@ -61,7 +59,7 @@ const CustomTab = styled(Tab)(({ theme }) => ({
   flexShrink: 1,
   minWidth: "80px",
   padding: "12px 16px",
-  [theme.breakpoints.down("sm")]: { minWidth: "25%", padding: 0 },
+  [theme.breakpoints.down("sm")]: { minWidth: "33.33%", padding: 0 },
 }));
 
 const ActionButton = styled(Button)(({ theme }) => ({
@@ -119,7 +117,7 @@ const ChatList = () => {
   const [totalPosts, setTotalPosts] = useState(0);
 
   // 필터링, 정렬, 페이지네이션 상태
-  const [selectedTab, setSelectedTab] = useState(0); // 0: 전체, 1: 커뮤니티, 2: 관리자, 3: 참가자
+  const [selectedTab, setSelectedTab] = useState(0); // 0: 전체, 1: 관리자, 2: 참가자
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [pendingSearchTerm, setPendingSearchTerm] = useState("");
@@ -152,7 +150,7 @@ const ChatList = () => {
       const tabParam = currentTab > 0 ? `&tab=${currentTab}` : '';
 
       // API 엔드포인트를 커뮤니티 목록 경로인 '/chats'로 가정합니다.
-      const baseUrl = '/chats'; 
+      const baseUrl = '/chatroom'; 
 
       const url = `${baseUrl}?page=${pageNumberForBackend}&size=${currentRowsPerPage}&sort=${sortParam}&${searchFieldParam}&${searchTermParam}${tabParam}`;
       
@@ -163,6 +161,7 @@ const ChatList = () => {
         if (result && result.content && Array.isArray(result.content)) {
           // Spring Page 객체 구조 처리
           setPosts(result.content);
+          console.log('result.content', result.content)
           setTotalPosts(result.totalElements || 0);
         } else {
           setPosts([]);
@@ -181,7 +180,7 @@ const ChatList = () => {
     };
 
     // 상태가 변경될 때마다 API 호출
-    // fetchPosts(page, selectedTab, sortOrder, rowsPerPage, searchField, searchTerm);
+    fetchPosts(page, selectedTab, sortOrder, rowsPerPage, searchField, searchTerm);
 
   }, [page, selectedTab, sortOrder, searchField, searchTerm, rowsPerPage]);
 
@@ -229,7 +228,7 @@ const ChatList = () => {
   // TableRow 클릭 핸들러: 채팅방 상세 페이지로 이동 가정
   const handleRowClick = (chatRoomId) => {
     // 채팅방 상세 페이지 경로를 '/chat/{id}'로 가정합니다.
-    navigate(`/chat/${chatRoomId}`);
+    navigate(`/chat/room/${chatRoomId}`);
   };
 
   // 전체 게시글 수와 페이지당 행 수를 기반으로 페이지 수 계산
@@ -293,9 +292,8 @@ const ChatList = () => {
                     }}
                 >
                     <CustomTab label="전체" value={0} />
-                    <CustomTab label="커뮤니티" value={1} />
-                    <CustomTab label="관리자" value={2} />
-                    <CustomTab label="참가자" value={3} />
+                    <CustomTab label="관리자" value={1} />
+                    <CustomTab label="참가자" value={2} />
                 </Tabs>
             </Box>
 
@@ -385,9 +383,9 @@ const ChatList = () => {
                     }}
                   >
                     {/* 커뮤니티 목록에 맞는 검색 필드: 관리자(채팅방 이름), 관리자 */}
-                    <MenuItem onClick={() => handleFilterOptionSelect('커뮤니티')}>커뮤니티</MenuItem>
-                    <MenuItem onClick={() => handleFilterOptionSelect('관리자')}>관리자</MenuItem>
-                    <MenuItem onClick={() => handleFilterOptionSelect('참가자')}>참가자</MenuItem>
+                    <MenuItem onClick={() => handleFilterOptionSelect('커뮤니티')}>커뮤니티 명</MenuItem>
+                    <MenuItem onClick={() => handleFilterOptionSelect('관리자')}>관리자 명</MenuItem>
+                    <MenuItem onClick={() => handleFilterOptionSelect('참가자')}>참가자 명</MenuItem>
                   </Menu>
                 </Box>
 
@@ -426,7 +424,6 @@ const ChatList = () => {
                     variant="outlined"
                     onClick={handlePerPageClick}
                     aria-controls={openPerPageMenu ? 'per-page-menu' : undefined}
-                    aria-haspopup="true"
                     aria-expanded={openPerPageMenu ? 'true' : undefined}
                     sx={{ width: { xs: '100%', md: '100px' } }}
                 >
@@ -526,13 +523,10 @@ const ChatList = () => {
                 ) : (
                   posts.map((post) => {
                     // ChatList.js의 원래 매핑 로직 유지 (속성명은 PostsList.js와 동일하게 가정)
-                    const viewColor = post.savedInViews
-                      ? VIEW_SAVED_COLOR
-                      : LIGHT_TEXT_COLOR;
-                    const communityName = post.title; // 채팅방 이름을 title로 사용
-                    const admin = post.username; // 관리자를 username으로 사용
-                    const memberCount = post.likes || 0; // 인원을 likes로 사용 가정
-                    const onlineCount = post.viewCount || 0; // 접속 중 인원을 viewCount로 사용 가정
+                    const communityName = post.roomName; // 채팅방 이름을 title로 사용
+                    const admin = post.creator; // 관리자를 username으로 사용
+                    const memberCount = post.currentUserNumber || 0; // 인원을 likes로 사용 가정
+                    const onlineCount = post.connectedUserNumber || 0; // 접속 중 인원을 viewCount로 사용 가정
 
                     return (
                       <TableRow
@@ -549,9 +543,8 @@ const ChatList = () => {
                             borderBottom: "none",
                           },
                           // PostsList.js의 새 글 표시 로직을 채팅방 입장 여부로 사용
-                          backgroundColor: post.savedInViews
-                            ? BG_COLOR
-                            : alpha(NEW_COLOR, 0.1),
+                          backgroundColor: BG_COLOR,
+
                           "&:hover": {
                             backgroundColor: alpha(TEXT_COLOR, 0.05),
                             cursor: "pointer",
@@ -586,7 +579,7 @@ const ChatList = () => {
                             color: TEXT_COLOR, fontWeight: 600,
                             [theme.breakpoints.down('sm')]: {
                                 display: 'flex',
-                                justifyContent: 'space-between',
+                                justifyContent: 'flex-start',
                                 alignItems: 'flex-start',
                                 fontSize: '1rem',
                                 padding: theme.spacing(1, 2, 0.5, 2),
@@ -628,7 +621,7 @@ const ChatList = () => {
                         </TableCell>
                         {/* 접속중 (조회수) */}
                         <TableCell sx={(theme) => ({
-                            color: viewColor, fontWeight: 600,
+                            color: TEXT_COLOR, fontWeight: 600,
                             [theme.breakpoints.down('sm')]: {
                                 display: 'flex',
                                 justifyContent: 'flex-start',

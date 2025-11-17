@@ -59,7 +59,7 @@ function App() {
                   <Route path="alerts" element={<MyAlert />} />
                 </Route>
                 <Route path="/chat">
-                  <Route path="room" element={<ChatRoom />} />
+                  <Route path="room/:roomId" element={<ChatRoom />} />
                   <Route path="list" element={<ChatList />} />
                 </Route>
                 <Route path="*" element={<PostsList />} />
