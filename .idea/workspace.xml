@@ -5,14 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#26 Implement S3">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/S3FileController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/s3/S3FileDeleteResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/s3/S3FileGetResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/s3/S3FileUploadResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/S3ImageService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/web/AwsConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsCreate.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/utilities/AlertContext.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/utilities/AlertContext.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/utilities/TiptabEditor.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/utilities/TiptabEditor.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -62,46 +60,46 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "history": [
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;history&quot;: [
     {
-      "state": "OPEN"
+      &quot;state&quot;: &quot;OPEN&quot;
     }
   ],
-  "lastFilter": {}
-}]]></component>
-  <component name="GitHubPullRequestState"><![CDATA[{
-  "prStates": [
+  &quot;lastFilter&quot;: {}
+}</component>
+  <component name="GitHubPullRequestState">{
+  &quot;prStates&quot;: [
     {
-      "id": {
-        "id": "PR_kwDOQNkMH86yeLIg",
-        "number": 20
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOQNkMH86yeLIg&quot;,
+        &quot;number&quot;: 20
       },
-      "lastSeen": 1762820567061
+      &quot;lastSeen&quot;: 1762820567061
     },
     {
-      "id": {
-        "id": "PR_kwDOQNkMH86y4VgO",
-        "number": 21
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOQNkMH86y4VgO&quot;,
+        &quot;number&quot;: 21
       },
-      "lastSeen": 1763095962768
+      &quot;lastSeen&quot;: 1763095962768
     },
     {
-      "id": {
-        "id": "PR_kwDOQNkMH86zXhAW",
-        "number": 23
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOQNkMH86zXhAW&quot;,
+        &quot;number&quot;: 23
       },
-      "lastSeen": 1763095971801
+      &quot;lastSeen&quot;: 1763095971801
     },
     {
-      "id": {
-        "id": "PR_kwDOQNkMH86z-b_F",
-        "number": 25
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOQNkMH86z-b_F&quot;,
+        &quot;number&quot;: 25
       },
-      "lastSeen": 1763425295140
+      &quot;lastSeen&quot;: 1763425295140
     }
   ]
-}]]></component>
+}</component>
   <component name="GitRewordedCommitMessages">
     <option name="commitMessagesMapping">
       <RewordedCommitMessageMapping>

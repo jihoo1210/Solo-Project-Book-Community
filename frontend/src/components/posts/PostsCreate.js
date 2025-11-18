@@ -18,19 +18,17 @@ import { styled, alpha } from "@mui/material/styles";
 import { Link, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-// 🚀 Tiptap Editor Import로 교체
-import TiptapEditor from "../utilities/TiptabEditor"; // TiptapEditor 컴포넌트를 이 파일에 추가하거나 별도 파일에서 import
-
+import TiptapEditor from "../utilities/TiptabEditor";
 import { useAuth } from "../auth/AuthContext";
 import apiClient from "../../api/Api-Service";
+
+import { sanitizeContentImages, extractImageKeys } from "../utilities/EditorUtils";
+import { deleteFiles } from "../utilities/FileApi";
 
 const BG_COLOR = "#FFFFFF";
 const TEXT_COLOR = "#000000";
 const LIGHT_TEXT_COLOR = "#555555";
 const HEADER_HEIGHT = "64px";
-
-// (CreateWrapper, CreateCard, CustomTextField, ActionButton, DisabledTextField 스타일 정의는 동일하게 유지)
-// ... (기존 스타일 코드)
 
 const CreateWrapper = styled(Box)(({ theme }) => ({
   marginTop: HEADER_HEIGHT,
@@ -78,7 +76,6 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputLabel-root.Mui-disabled": {
     color: `${LIGHT_TEXT_COLOR} !important`,
   },
-  // 에러 상태일 때 label 색상 변경
   "& .MuiInputLabel-root.Mui-error": {
     color: `${theme.palette.error.main} !important`,
   },
@@ -95,7 +92,7 @@ const ActionButton = styled(Button)(({ theme }) => ({
 
 const DisabledTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-root.Mui-disabled": {
-    backgroundColor: alpha(LIGHT_TEXT_COLOR, 0.1), // 배경색 흐리게
+    backgroundColor: alpha(LIGHT_TEXT_COLOR, 0.1),
     color: TEXT_COLOR,
   },
 }));
@@ -104,13 +101,11 @@ const PostsCreate = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // 유효성 검사 에러 상태 추가
   const [fieldErrors, setFieldErrors] = useState({});
+  const [uploadedKeys, setUploadedKeys] = useState([]);
 
   useEffect(() => {
-    return () => {
-      // (필요 시 언마운트 시점에 필요한 정리 코드를 여기에 추가)
-    };
+    return () => {};
   }, []);
 
   const getCurrentDateTime = () => {
@@ -131,16 +126,13 @@ const PostsCreate = () => {
     pageNumber: "",
     region: "",
     dayInput: "",
-    maxUserNumber: "", // <<<<<<< 모집 인원수 필드 추가
+    maxUserNumber: "",
   });
 
-  // 🚀 Tiptap Editor는 HTML 문자열로 콘텐츠를 관리합니다.
   const [contentHtml, setContentHtml] = useState("");
 
-  // Editor 내용 변경 핸들러
   const onContentChange = (newHtml) => {
     setContentHtml(newHtml);
-    // 내용이 입력되면 에러를 바로 해제 (HTML 태그 제거 후 빈 문자열인지 확인)
     const strippedContent = newHtml.replace(/(<([^>]+)>)/gi, "").trim();
     if (strippedContent !== "") {
       setFieldErrors((prev) => ({ ...prev, content: undefined }));
@@ -152,44 +144,33 @@ const PostsCreate = () => {
 
   const handleChange = (e) => {
     let { name, value } = e.target;
-
-    // ❌ pageNumber와 maxUserNumber에 숫자만 허용하도록 수정
     if (name === "pageNumber" || name === "maxUserNumber") {
       value = value.replace(/[^0-9]/g, "");
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    // 값이 입력되면 에러를 바로 해제
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (value.trim() !== "") {
       setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     let errors = {};
     let hasError = false;
 
-    // 유효성 검사 시작 (required 속성 대체)
-
-    // 1. 제목 (Title)
     if (formData.title.trim() === "") {
       errors.title = "게시글 제목을 입력해야 합니다.";
       hasError = true;
     }
 
-    // 2. 내용 (Content - Tiptap Editor)
     const strippedContent = contentHtml.replace(/(<([^>]+)>)/gi, "").trim();
     if (!strippedContent) {
       errors.content = "내용을 입력해야 합니다.";
       hasError = true;
     }
 
-    // 3. 질문 필드 유효성 검사
     if (showQuestionFields) {
       if (formData.bookTitle.trim() === "") {
         errors.bookTitle = "책 제목을 입력해야 합니다.";
@@ -201,7 +182,6 @@ const PostsCreate = () => {
       }
     }
 
-    // 4. 모집 필드 유효성 검사
     if (showRecruitmentFields) {
       if (formData.region.trim() === "") {
         errors.region = "모임 지역을 입력해야 합니다.";
@@ -211,27 +191,31 @@ const PostsCreate = () => {
         errors.dayInput = "모임 일정을 입력해야 합니다.";
         hasError = true;
       }
-      // ❌ 모집 인원수 유효성 검사 추가
-      if (
-        formData.maxUserNumber.trim() === "" ||
-        parseInt(formData.maxUserNumber) <= 0
-      ) {
+      if (formData.maxUserNumber.trim() === "" || parseInt(formData.maxUserNumber) <= 0) {
         errors.maxUserNumber = "모집 인원수를 1명 이상 입력해야 합니다.";
         hasError = true;
       }
     }
 
-    // 에러 상태 업데이트
     setFieldErrors(errors);
+    if (hasError) return;
 
-    if (hasError) {
-      return; // 에러가 있으면 제출 방지
+    // 현재 에디터에 남아있는 data-key 목록
+    const currentKeys = extractImageKeys(contentHtml);
+    // 업로드된 키 중 에디터에 없는 키들 제거
+    const unusedKeys = uploadedKeys.filter((k) => !currentKeys.includes(k));
+
+    if (unusedKeys.length > 0) {
+      try {
+        await deleteFiles(unusedKeys);
+      } catch (err) {
+        console.error('불필요 이미지 삭제 실패:', err);
+      }
     }
-    // 유효성 검사 끝
 
     const dataToSubmit = {
       title: formData.title,
-      content: contentHtml,
+      content: sanitizeContentImages(contentHtml),
       subject: formData.subject,
       ...(showQuestionFields && {
         bookTitle: formData.bookTitle,
@@ -240,25 +224,20 @@ const PostsCreate = () => {
       ...(showRecruitmentFields && {
         region: formData.region,
         meetingInfo: formData.dayInput,
-        maxUserNumber: formData.maxUserNumber, // <<<<<<< 모집 인원수 데이터 추가
+        maxUserNumber: formData.maxUserNumber,
       }),
     };
 
-    apiClient
-      .post("/posts", dataToSubmit)
-      .then((response) => {
-        navigate("/");
-      })
-      .catch((error) => {
-        console.log("error.response.data.message", error);
-        if (error.response.data.message) {
-          alert(error.response.data.message);
-          return;
-        }
-      });
+    try {
+      await apiClient.post("/posts", dataToSubmit);
+      navigate("/");
+    } catch (error) {
+      console.log("error.response.data.message", error);
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      }
+    }
   };
-
-  // (AuthorAndSubjectGrid, TitleGrid, QuestionFields 컴포넌트는 동일하게 유지)
 
   const AuthorAndSubjectGrid = (
     <>
@@ -276,13 +255,8 @@ const PostsCreate = () => {
             label="게시판"
             sx={{
               "& .MuiOutlinedInput-notchedOutline": { borderColor: TEXT_COLOR },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: TEXT_COLOR,
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: TEXT_COLOR,
-                borderWidth: "1px",
-              },
+              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: TEXT_COLOR },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: TEXT_COLOR, borderWidth: "1px" },
               color: TEXT_COLOR,
             }}
           >
@@ -314,9 +288,8 @@ const PostsCreate = () => {
         value={formData.title}
         onChange={handleChange}
         variant="outlined"
-        // ❌ required 제거
-        error={!!fieldErrors.title} // 에러 상태 바인딩
-        helperText={fieldErrors.title} // 에러 메시지 바인딩
+        error={!!fieldErrors.title}
+        helperText={fieldErrors.title}
       />
     </Grid>
   );
@@ -332,9 +305,8 @@ const PostsCreate = () => {
             value={formData.bookTitle}
             onChange={handleChange}
             variant="outlined"
-            // ❌ required 제거
-            error={!!fieldErrors.bookTitle} // 에러 상태 바인딩
-            helperText={fieldErrors.bookTitle} // 에러 메시지 바인딩
+            error={!!fieldErrors.bookTitle}
+            helperText={fieldErrors.bookTitle}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
@@ -345,9 +317,8 @@ const PostsCreate = () => {
             value={formData.pageNumber}
             onChange={handleChange}
             variant="outlined"
-            // ❌ required 제거
-            error={!!fieldErrors.pageNumber} // 에러 상태 바인딩
-            helperText={fieldErrors.pageNumber} // 에러 메시지 바인딩
+            error={!!fieldErrors.pageNumber}
+            helperText={fieldErrors.pageNumber}
           />
         </Grid>
       </Grid>
@@ -365,13 +336,11 @@ const PostsCreate = () => {
             value={formData.region}
             onChange={handleChange}
             variant="outlined"
-            // ❌ required 제거
-            error={!!fieldErrors.region} // 에러 상태 바인딩
-            helperText={fieldErrors.region} // 에러 메시지 바인딩
+            error={!!fieldErrors.region}
+            helperText={fieldErrors.region}
           />
         </Grid>
 
-        {/* ❌ 모임 일정 Grid size 수정 */}
         <Grid size={{ xs: 12, sm: 9 }}>
           <CustomTextField
             fullWidth
@@ -380,13 +349,11 @@ const PostsCreate = () => {
             value={formData.dayInput}
             onChange={handleChange}
             variant="outlined"
-            // ❌ required 제거
-            error={!!fieldErrors.dayInput} // 에러 상태 바인딩
-            helperText={fieldErrors.dayInput} // 에러 메시지 바인딩
+            error={!!fieldErrors.dayInput}
+            helperText={fieldErrors.dayInput}
           />
         </Grid>
 
-        {/* ❌ 모집 인원수 필드 추가 */}
         <Grid size={{ xs: 12, sm: 3 }}>
           <CustomTextField
             fullWidth
@@ -395,14 +362,9 @@ const PostsCreate = () => {
             value={formData.maxUserNumber}
             onChange={handleChange}
             variant="outlined"
-            slotProps={{
-              input: {
-                inputMode: "numeric",
-                pattern: "[0-9]*",
-              },
-            }} // 숫자만 입력되도록 힌트 추가
-            error={!!fieldErrors.maxUserNumber} // 에러 상태 바인딩
-            helperText={fieldErrors.maxUserNumber} // 에러 메시지 바인딩
+            slotProps={{ input: { inputMode: "numeric", pattern: "[0-9]*" } }}
+            error={!!fieldErrors.maxUserNumber}
+            helperText={fieldErrors.maxUserNumber}
           />
         </Grid>
       </Grid>
@@ -428,10 +390,7 @@ const PostsCreate = () => {
             component={Link}
             to={"/"}
             startIcon={<ArrowBackIcon />}
-            sx={{
-              color: TEXT_COLOR,
-              "&:hover": { backgroundColor: alpha(TEXT_COLOR, 0.05) },
-            }}
+            sx={{ color: TEXT_COLOR, "&:hover": { backgroundColor: alpha(TEXT_COLOR, 0.05) } }}
           >
             목록으로
           </Button>
@@ -450,10 +409,7 @@ const PostsCreate = () => {
               <Grid size={{ xs: 12 }}>
                 <InputLabel
                   sx={{
-                    // 에러 상태에 따라 텍스트 색상 변경
-                    color: fieldErrors.content
-                      ? "error.main"
-                      : LIGHT_TEXT_COLOR,
+                    color: fieldErrors.content ? "error.main" : LIGHT_TEXT_COLOR,
                     position: "relative",
                     transform: "none",
                     marginBottom: "8px",
@@ -464,22 +420,18 @@ const PostsCreate = () => {
                   내용
                 </InputLabel>
 
-                {/* 🚀 TiptapEditor 컴포넌트로 교체 */}
                 <TiptapEditor
                   initialContent={contentHtml}
                   onContentChange={onContentChange}
                   placeholderText="내용을 입력하세요..."
-                  error={!!fieldErrors.content} // 에러 상태 전달
+                  error={!!fieldErrors.content}
+                  onUploadedKeysChange={(updater) =>
+                    setUploadedKeys((prev) => (typeof updater === 'function' ? updater(prev) : updater))
+                  }
                 />
 
-                {/* 에디터 에러 메시지 표시 */}
                 {fieldErrors.content && (
-                  <Typography
-                    color="error"
-                    variant="caption"
-                    display="block"
-                    sx={{ mt: 0.5 }}
-                  >
+                  <Typography color="error" variant="caption" display="block" sx={{ mt: 0.5 }}>
                     {fieldErrors.content}
                   </Typography>
                 )}
@@ -488,25 +440,14 @@ const PostsCreate = () => {
                   variant="caption"
                   align="right"
                   display="block"
-                  sx={{
-                    mt: 0.5,
-                    color: LIGHT_TEXT_COLOR,
-                    fontSize: "0.75rem",
-                  }}
+                  sx={{ mt: 0.5, color: LIGHT_TEXT_COLOR, fontSize: "0.75rem" }}
                 >
                   {currentDateTimeText}
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 12 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    gap: 2,
-                    mt: 2,
-                  }}
-                >
+                <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}>
                   <ActionButton type="submit" variant="contained">
                     작성 완료
                   </ActionButton>

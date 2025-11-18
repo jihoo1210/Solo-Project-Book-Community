@@ -3,17 +3,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-
-// Tiptap 확장 기능
 import TextAlign from '@tiptap/extension-text-align';
 import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import Strike from '@tiptap/extension-strike';
-// Highlight multicolor: true로 설정하고, Color처럼 색상을 지정할 수 있게 변경
 import Highlight from '@tiptap/extension-highlight';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
-
 import {
   Box,
   IconButton,
@@ -23,7 +19,7 @@ import {
   Popover,
   Grid,
   Typography,
-  Button
+  Button,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
@@ -47,72 +43,25 @@ import {
   ImageSearch,
   FormatColorText,
   FormatColorFill,
-  Delete as DeleteIcon // 이미지 삭제 아이콘 추가
 } from '@mui/icons-material';
 import { ResizableImage } from 'tiptap-extension-resizable-image';
 
-// Api-Service.js에서 가져온 apiClient 사용
-import apiClient from '../../api/Api-Service';
+// 공용 API 유틸
+import { getPresignedUpload, getFileUrl } from '../utilities/FileApi';
 
 // ----------------------------------------------------------------------
-// S3 파일 처리 API 함수 (apiClient 사용)
-// ----------------------------------------------------------------------
-
-/** * 업로드용 Presigned URL 발급
- * @param {string} filename - 파일 이름
- * @param {string} contentType - Content-Type (MIME Type)
- * @returns {Promise<{key: string, uploadUrl: string}>} S3 키와 PUT URL
- */
-async function getPresignedUpload(filename, contentType) {
-    const res = await apiClient.post(`/api/files/presign-upload`, null, {
-        params: {
-            filename: filename,
-            contentType: contentType
-        }
-    });
-    return res.data;
-}
-
-/** * 조회용 Presigned GET URL 발급 (Optional: 백엔드에서 직접 처리하는 경우)
- * TiptapEditor2.js를 참고하여 구현
- * @param {string} key - S3 파일 키
- * @returns {Promise<{url: string}>} 조회용 GET URL
- */
-async function getFileUrl(key) {
-    const res = await apiClient.get(`/api/files/${encodeURIComponent(key)}/url`);
-    return res.data;
-}
-
-/** * 파일 삭제 (Optional: 백엔드에서 직접 처리하는 경우)
- * TiptapEditor2.js를 참고하여 구현
- * @param {string} key - S3 파일 키
- * @returns {Promise<any>} 삭제 응답
- */
-async function deleteFile(key) {
-    const res = await apiClient.delete(`/api/files/${encodeURIComponent(key)}`);
-    return res.data;
-}
-
-// ----------------------------------------------------------------------
-// 색상 팔레트 및 버튼 컴포넌트 (변경 없음)
+// 색상 팔레트 및 버튼 컴포넌트
 // ----------------------------------------------------------------------
 
 const PALETTE_COLORS = [
-  // 1열: 기본
   '#000000', '#FFFFFF', '#C00000', '#FFC000', '#FFFF00', '#92D050', '#00B050', '#00B0F0', '#0070C0', '#7030A0',
-  // 2열: 밝은 색
   '#444444', '#F2F2F2', '#F4CCCC', '#FFF2CC', '#FFF7A9', '#D9EAD3', '#C6E0B4', '#A2C4C9', '#9FC5E8', '#B4A7D6',
-  // 3열: 중간 색
   '#666666', '#D9D9D9', '#EA9999', '#FFD966', '#FFEE7A', '#B6D7A8', '#93C47D', '#76A5AD', '#6FA8DC', '#8E7CC3',
-  // 4열: 어두운 색
-  '#999999', '#BFBFBF', '#CC0000', '#E69138', '#F1C232', '#6AA84F', '#38761D', '#3C78D8', '#1C4587', '#5B0F76'
+  '#999999', '#BFBFBF', '#CC0000', '#E69138', '#F1C232', '#6AA84F', '#38761D', '#3C78D8', '#1C4587', '#5B0F76',
 ];
 
-// 범용 색상 피커 팝오버 컴포넌트
 const CustomColorPopover = ({ editor, anchorEl, handleClose, attribute }) => {
-
   const setColor = (color) => {
-    // 텍스트 색상 (textStyle) 또는 하이라이트 (highlight)에 따라 다른 명령 실행
     if (attribute === 'textStyle') {
       editor.chain().focus().setColor(color).run();
     } else if (attribute === 'highlight') {
@@ -133,7 +82,6 @@ const CustomColorPopover = ({ editor, anchorEl, handleClose, attribute }) => {
   const title = attribute === 'textStyle' ? '텍스트 색상' : '하이라이트 색상';
   const unsetTitle = attribute === 'textStyle' ? '색상 해제' : '하이라이트 해제';
 
-
   return (
     <Popover
       open={Boolean(anchorEl)}
@@ -146,8 +94,7 @@ const CustomColorPopover = ({ editor, anchorEl, handleClose, attribute }) => {
         <Typography variant="caption" sx={{ display: 'block', mb: 1 }}>{title}</Typography>
         <Grid container spacing={0.5}>
           {PALETTE_COLORS.map((color) => (
-            // Grid size를 xs로 변경하여 GridItem 컴포넌트 역할 수행
-            <Grid item xs={1.5} key={color}> 
+            <Grid item xs={1.5} key={color}>
               <IconButton
                 onClick={() => setColor(color)}
                 sx={{
@@ -156,9 +103,9 @@ const CustomColorPopover = ({ editor, anchorEl, handleClose, attribute }) => {
                   border: `1px solid ${color === '#FFFFFF' ? '#ccc' : 'transparent'}`,
                   transition: 'box-shadow 0.2s',
                   '&:hover': {
-                    backgroundColor: color, // 배경색 유지
-                    boxShadow:`0 0 0 2px ${color}, 0 0 0 4px rgba(0,0,0,0.5)`,
-                  }
+                    backgroundColor: color,
+                    boxShadow: `0 0 0 2px ${color}, 0 0 0 4px rgba(0,0,0,0.5)`,
+                  },
                 }}
                 title={color}
               />
@@ -174,115 +121,81 @@ const CustomColorPopover = ({ editor, anchorEl, handleClose, attribute }) => {
   );
 };
 
-/**
- * 💡 색상 밝기 분석 함수 (간단한 RGB 평균 기반)
- * @param {string} hex - HEX 색상 코드 (#RRGGBB)
- * @returns {boolean} - 밝은 색이면 true (흰색이나 F2F2F2같은 밝은 회색 포함)
- */
 const isLightColor = (hex) => {
-  if (!hex || hex.toLowerCase() === 'inherit') return false; 
-  const color = hex.substring(1); 
+  if (!hex || hex.toLowerCase() === 'inherit') return false;
+  const color = hex.substring(1);
   const r = parseInt(color.substring(0, 2), 16);
   const g = parseInt(color.substring(2, 4), 16);
   const b = parseInt(color.substring(4, 6), 16);
-  // 간이 밝기 계산 (0~255): 180 이상이면 밝다고 판단
-  return (r * 0.299 + g * 0.587 + b * 0.114) > 180; 
+  return (r * 0.299 + g * 0.587 + b * 0.114) > 180;
 };
 
-
-// 텍스트 색상 버튼
 const ColorButton = ({ editor }) => {
   const [anchorEl, setAnchorEl] = useState(null);
-
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
   const currentColor = editor.getAttributes('textStyle').color || 'inherit';
-
-  // 1. 텍스트 색상 아이콘 수정: 아이콘 색을 currentColor로 직접 지정
-  // 2. 가독성 개선: 흰색 또는 밝은 색일 경우 배경색을 연한 검은색으로 변경
   const needsDarkBg = currentColor.toLowerCase() === '#ffffff' || isLightColor(currentColor);
 
   return (
     <>
-      <IconButton
-        onClick={handleClick}
-        disabled={!editor.isEditable}
-        size="small"
-        title="텍스트 색상"
-      >
-        <FormatColorText 
-          fontSize="inherit" 
-          sx={{ 
-            color: currentColor === 'inherit' ? 'text.primary' : currentColor, // 아이콘 색을 현재 색상으로
-            // 밝거나 흰색일 경우 배경색 추가
+      <IconButton onClick={handleClick} disabled={!editor.isEditable} size="small" title="텍스트 색상">
+        <FormatColorText
+          fontSize="inherit"
+          sx={{
+            color: currentColor === 'inherit' ? 'text.primary' : currentColor,
             backgroundColor: needsDarkBg ? 'rgba(0,0,0,0.9)' : 'transparent',
-            borderRadius: '2px', // 배경색이 있을 때를 위해
+            borderRadius: '2px',
             p: '2px',
-          }} 
+          }}
         />
       </IconButton>
-      <CustomColorPopover 
-        editor={editor} 
-        anchorEl={anchorEl} 
-        handleClose={handleClose} 
-        attribute="textStyle"
-        IconComponent={FormatColorText}
-      />
+      <CustomColorPopover editor={editor} anchorEl={anchorEl} handleClose={handleClose} attribute="textStyle" />
     </>
   );
 };
 
-// 하이라이트 색상 버튼
 const HighlightButton = ({ editor }) => {
   const [anchorEl, setAnchorEl] = useState(null);
-
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
-  const currentHighlightColor = editor.getAttributes('highlight').color || 'transparent'; // 하이라이트 기본값은 'transparent'로 처리
-
-  // 1. 하이라이트 아이콘 수정: 아이콘 색을 currentHighlightColor로 직접 지정
-  // 2. 가독성 개선: 'transparent'가 아니면서 흰색 또는 밝은 색일 경우 배경색을 연한 검은색으로 변경
+  const currentHighlightColor = editor.getAttributes('highlight').color || 'transparent';
   const isUnset = currentHighlightColor.toLowerCase() === 'transparent';
   const needsDarkBg = !isUnset && (currentHighlightColor.toLowerCase() === '#ffffff' || isLightColor(currentHighlightColor));
 
   return (
     <>
-      <IconButton
-        onClick={handleClick}
-        disabled={!editor.isEditable}
-        size="small"
-        title="텍스트 하이라이트"
-      >
-        <FormatColorFill 
-          fontSize="inherit" 
-          sx={{ 
-            color: isUnset ? 'text.primary' : currentHighlightColor, // 아이콘 색을 현재 하이라이트 색상으로
-            // 밝거나 흰색일 경우 배경색 추가
+      <IconButton onClick={handleClick} disabled={!editor.isEditable} size="small" title="텍스트 하이라이트">
+        <FormatColorFill
+          fontSize="inherit"
+          sx={{
+            color: isUnset ? 'text.primary' : currentHighlightColor,
             backgroundColor: needsDarkBg ? 'rgba(0,0,0,0.9)' : 'transparent',
-            borderRadius: '2px', // 배경색이 있을 때를 위해
+            borderRadius: '2px',
             p: '2px',
-          }} 
+          }}
         />
       </IconButton>
-      <CustomColorPopover 
-        editor={editor} 
-        anchorEl={anchorEl} 
-        handleClose={handleClose} 
-        attribute="highlight"
-        IconComponent={FormatColorFill}
-      />
+      <CustomColorPopover editor={editor} anchorEl={anchorEl} handleClose={handleClose} attribute="highlight" />
     </>
   );
 };
 
 // ----------------------------------------------------------------------
-// 메뉴바 컴포넌트 (이미지/파일 업로드, 삭제 기능 구현)
+// 메뉴바
 // ----------------------------------------------------------------------
 
-const MenuBar = ({ editor }) => {
+const MenuBar = ({ editor, onUploadedKeysChange }) => {
   if (!editor) return null;
+
+  const addImageByUrl = async () => {
+    const url = window.prompt('이미지 URL을 입력하세요');
+    if (!url) return;
+    // URL로 삽입 시 data-key는 없음
+    editor.chain().focus().setResizableImage({ src: url }).run();
+  };
 
   const setLink = () => {
     const previousUrl = editor.getAttributes('link').href;
@@ -292,50 +205,40 @@ const MenuBar = ({ editor }) => {
       editor.chain().focus().extendMarkRange('link').unsetLink().run();
       return;
     }
-    // URL 앞에 '/'를 제거하고 완전한 URL (https:// 포함)이 저장되도록 수정
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
   };
 
-  const addImageByUrl = () => {
-    const url = window.prompt('이미지 URL을 입력하세요');
-    if (url) editor.chain().focus().setResizableImage({ src: url }).run();
-  };
-
-  /**
-   * 로컬 파일 선택 및 S3 업로드 처리
-   * TiptapEditor2.js 로직을 참고하여 apiClient를 사용하도록 구현
-   */
   const handleFileSelect = async (e, isImage) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (isImage) {
       try {
-        // 1) Presigned PUT URL 발급
         const { key, uploadUrl } = await getPresignedUpload(file.name, file.type);
 
-        // 2) 브라우저에서 S3로 직접 업로드 (axios 대신 fetch 사용)
-        const putRes = await fetch(uploadUrl, {
-            method: 'PUT',
+        // fetch → apiClient 기반으로 PUT (절대 URL이면 baseURL 무시됨)
+        // withCredentials가 붙을 수 있지만 대부분 문제없이 동작함
+        await import('../../api/Api-Service').then(async ({ default: apiClient }) => {
+          await apiClient.put(uploadUrl, file, {
             headers: { 'Content-Type': file.type },
-            body: file,
+          });
         });
-        
-        if (!putRes.ok) throw new Error('S3 업로드 실패');
 
-        // 3) 조회용 Presigned GET URL 발급
         const { url } = await getFileUrl(key);
 
-        // 4) 에디터에 이미지 삽입
-        editor.chain().focus().setResizableImage({ src: url, 'data-key': key }).run(); 
-        // 💡 key를 'data-key' 속성에 저장하여 삭제 시 사용
-        
+        editor.chain().focus().setResizableImage({ src: url, 'data-key': key }).run();
+
+        // 업로드된 key를 상위로 전달하여 추적
+        onUploadedKeysChange?.((prevKeys) => {
+          const next = new Set(prevKeys || []);
+          next.add(key);
+          return Array.from(next);
+        });
       } catch (err) {
-        console.error('Upload failed:', err);
+        console.error('이미지 업로드 실패:', err);
         alert('이미지 업로드에 실패했습니다.');
       }
     } else {
-      // 일반 파일 첨부 (로컬 파일 경로 삽입) - S3에 업로드하는 로직은 구현하지 않음
       const filePath = `[파일] ${file.name}`;
       editor.chain().focus().insertContent(filePath).run();
     }
@@ -390,7 +293,6 @@ const MenuBar = ({ editor }) => {
         borderRadius: '4px 4px 0 0',
       }}
     >
-      {/* 기본 스타일 */}
       <ButtonGroup variant="text" size="small">
         <TiptapButton icon={FormatBold} onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive('bold')} tooltip="볼드체" />
         <TiptapButton icon={FormatItalic} onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor.isActive('italic')} tooltip="이탤릭체" />
@@ -408,7 +310,6 @@ const MenuBar = ({ editor }) => {
 
       <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
 
-      {/* 정렬 */}
       <ButtonGroup variant="text" size="small">
         <TiptapButton icon={FormatAlignLeft} onClick={() => editor.chain().focus().setTextAlign('left').run()} isActive={editor.isActive({ textAlign: 'left' })} tooltip="왼쪽 정렬" />
         <TiptapButton icon={FormatAlignCenter} onClick={() => editor.chain().focus().setTextAlign('center').run()} isActive={editor.isActive({ textAlign: 'center' })} tooltip="가운데 정렬" />
@@ -418,7 +319,6 @@ const MenuBar = ({ editor }) => {
 
       <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
 
-      {/* 미디어 업로드 및 삭제 버튼 추가 */}
       <ButtonGroup variant="text" size="small">
         <TiptapButton icon={ImageSearch} onClick={addImageByUrl} tooltip="이미지 URL 삽입" />
         <FileUploadButton icon={ImageIcon} tooltip="로컬 이미지 선택 (업로드)" accept="image/*" isImage={true} />
@@ -427,7 +327,6 @@ const MenuBar = ({ editor }) => {
 
       <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
 
-      {/* 헤딩/목록 */}
       <ButtonGroup variant="text" size="small">
         <TiptapButton icon={LooksOne} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} isActive={editor.isActive('heading', { level: 1 })} tooltip="제목 (H1)" />
         <TiptapButton icon={LooksTwo} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} isActive={editor.isActive('heading', { level: 2 })} tooltip="부제목 (H2)" />
@@ -437,7 +336,6 @@ const MenuBar = ({ editor }) => {
 
       <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
 
-      {/* 링크/전체 스타일 해제 */}
       <ButtonGroup variant="text" size="small">
         <TiptapButton icon={LinkIcon} onClick={setLink} isActive={editor.isActive('link')} tooltip="링크 추가/수정" />
         <TiptapButton icon={FormatClear} onClick={() => editor.chain().focus().unsetAllMarks().run()} tooltip="모든 스타일 해제" />
@@ -447,7 +345,7 @@ const MenuBar = ({ editor }) => {
 };
 
 // ----------------------------------------------------------------------
-// 에디터 스타일 (변경 없음)
+// 에디터 스타일
 // ----------------------------------------------------------------------
 
 const EditorWrapper = styled(Box)(({ theme }) => ({
@@ -467,8 +365,7 @@ const EditorWrapper = styled(Box)(({ theme }) => ({
       },
     },
     '& mark': {
-      // 하이라이트 색상 설정 부분 수정: color 속성을 활용하도록 수정
-      backgroundColor: 'var(--color)', // Tiptap Highlight 확장 기능이 이 변수를 사용
+      backgroundColor: 'var(--color)',
       color: 'inherit',
       padding: '2px 0',
       borderRadius: '2px',
@@ -488,17 +385,32 @@ const EditorWrapper = styled(Box)(({ theme }) => ({
     '& p': { ...theme.typography.body1, margin: 0 },
     '& ul, ol': { paddingLeft: theme.spacing(4) },
     '& li': { ...theme.typography.body1 },
-    // a 태그에 target="_blank" 속성이 적용되도록 CSS 수정 (React/Tiptap이 HTML 속성을 제어)
     '& a': { color: theme.palette.primary.main, textDecoration: 'underline', cursor: 'pointer' },
-    // 주석 추가: 실제 target="_blank" 적용은 Link.configure의 HTMLAttributes에서 처리됩니다.
   },
 }));
 
 // ----------------------------------------------------------------------
-// 메인 컴포넌트 (변경 없음)
+// 메인 컴포넌트
 // ----------------------------------------------------------------------
 
-const TiptapEditor = ({ initialContent, onContentChange, error }) => {
+const TiptapEditor = ({ initialContent, onContentChange, error, onUploadedKeysChange, placeholderText }) => {
+
+  const CustomResizableImage = ResizableImage.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      'data-key': {
+        default: null,
+        parseHTML: element => element.getAttribute('data-key'),
+        renderHTML: attributes => {
+          if (!attributes['data-key']) return {};
+          return { 'data-key': attributes['data-key'] };
+        },
+      },
+    };
+  },
+});
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -507,35 +419,30 @@ const TiptapEditor = ({ initialContent, onContentChange, error }) => {
         heading: { levels: [1, 2] },
         strike: false,
         underline: false,
-        link: false, // StarterKit에 포함된 Link 확장 기능을 비활성화하여 중복 제거
+        link: false,
       }),
       Underline,
       Strike,
-      Link.configure({ 
-        openOnClick: false, 
-        autolink: true, 
+      Link.configure({
+        openOnClick: false,
+        autolink: true,
         linkOnPaste: true,
-        // 링크를 새 탭에서 열도록 HTML 속성 추가
         HTMLAttributes: {
-          target: '_blank', 
-          rel: 'noopener noreferrer nofollow', // 보안 및 성능 권장 사항
+          target: '_blank',
+          rel: 'noopener noreferrer nofollow',
         },
       }),
-      ResizableImage.configure({ 
+      CustomResizableImage.configure({
         enabled: true,
-        inline: true, // 이미지 노드를 인라인으로 설정 (기존 설정 유지)
-        allowBase64: true, // Base64 인코딩 이미지 허용 (로컬 이미지 미리보기를 위해)
-        // 기타 ResizableImage 옵션 (예: minWidth, maxWidth 등을 여기에 추가 가능)
+        inline: true,
+        allowBase64: true,
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph', 'image'],
         alignments: ['left', 'center', 'right', 'justify'],
         defaultAlignment: 'left',
       }),
-      // Highlight multicolor: true로 설정하여 여러 색상 사용 활성화
-      Highlight.configure({
-        multicolor: true,
-      }),
+      Highlight.configure({ multicolor: true }),
       TextStyle,
       Color,
     ],
@@ -547,6 +454,7 @@ const TiptapEditor = ({ initialContent, onContentChange, error }) => {
     editorProps: {
       attributes: {
         class: `ProseMirror focus:outline-none`,
+        'data-placeholder': placeholderText || '',
       },
     },
   });
@@ -566,7 +474,7 @@ const TiptapEditor = ({ initialContent, onContentChange, error }) => {
         borderColor: error ? 'error.main' : 'inherit',
       }}
     >
-      <MenuBar editor={editor} />
+      <MenuBar editor={editor} onUploadedKeysChange={onUploadedKeysChange} />
       <EditorWrapper>
         <EditorContent editor={editor} />
       </EditorWrapper>
