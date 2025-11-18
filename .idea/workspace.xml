@@ -4,15 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#24 약간의 오류 수정 및 정리">
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#26 Implement S3">
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/S3FileController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/s3/S3FileDeleteResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/s3/S3FileGetResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/s3/S3FileUploadResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/S3ImageService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/web/AwsConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/CommentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/CommentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Alert.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Alert.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Comment.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Comment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/CommentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/CommentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/utilities/TiptabEditor.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/utilities/TiptabEditor.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -156,11 +157,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.example.backend.dto.s3" />
       <recent name="com.example.backend.dto.chat" />
       <recent name="com.example.backend.dto.chat.text" />
       <recent name="com.example.backend.service" />
       <recent name="com.example.backend.dto.auth.verify" />
-      <recent name="com.example.backend.dto.alert" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.example.backend.dto.posts.show" />
@@ -506,7 +507,23 @@
       <option name="project" value="LOCAL" />
       <updated>1763301615295</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="#26 댓글 삭제 -&gt; 알림 삭제, 채택 댓글 오류 수정">
+      <option name="closed" value="true" />
+      <created>1763430169924</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1763430169924</updated>
+    </task>
+    <task id="LOCAL-00041" summary="#26 Implement S3">
+      <option name="closed" value="true" />
+      <created>1763430216114</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1763430216114</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -534,8 +551,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#7 검색 및 페이지네이션 기능 구현" />
-    <MESSAGE value="#14 Create myPage function + 내 게시판, 본 게시글 저장, 수정 내역 저장" />
     <MESSAGE value="#19 Create Favorite and My Actives Function" />
     <MESSAGE value="#19 Create Favorite and My Actives Pages and delete alert" />
     <MESSAGE value="#20 알림 읽음 상태 로직 비활성화(오류 발생: 추가 후에 바로 삭제하면 안됨)" />
@@ -559,6 +574,8 @@
     <MESSAGE value="#24 Implement Web Socket" />
     <MESSAGE value="#24 백엔드 웹소켓 설정 (기능 api 미구현)" />
     <MESSAGE value="#24 약간의 오류 수정 및 정리" />
-    <option name="LAST_COMMIT_MESSAGE" value="#24 약간의 오류 수정 및 정리" />
+    <MESSAGE value="#26 댓글 삭제 -&gt; 알림 삭제, 채택 댓글 오류 수정" />
+    <MESSAGE value="#26 Implement S3" />
+    <option name="LAST_COMMIT_MESSAGE" value="#26 Implement S3" />
   </component>
 </project>
