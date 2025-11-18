@@ -9,7 +9,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import Strike from '@tiptap/extension-strike';
-// 🌟 Highlight multicolor: true로 설정하고, Color처럼 색상을 지정할 수 있게 변경
+// Highlight multicolor: true로 설정하고, Color처럼 색상을 지정할 수 있게 변경
 import Highlight from '@tiptap/extension-highlight';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
@@ -46,12 +46,55 @@ import {
   AttachFile,
   ImageSearch,
   FormatColorText,
-  FormatColorFill
+  FormatColorFill,
+  Delete as DeleteIcon // 이미지 삭제 아이콘 추가
 } from '@mui/icons-material';
 import { ResizableImage } from 'tiptap-extension-resizable-image';
 
+// Api-Service.js에서 가져온 apiClient 사용
+import apiClient from '../../api/Api-Service';
+
 // ----------------------------------------------------------------------
-// 색상 팔레트 및 버튼 컴포넌트
+// S3 파일 처리 API 함수 (apiClient 사용)
+// ----------------------------------------------------------------------
+
+/** * 업로드용 Presigned URL 발급
+ * @param {string} filename - 파일 이름
+ * @param {string} contentType - Content-Type (MIME Type)
+ * @returns {Promise<{key: string, uploadUrl: string}>} S3 키와 PUT URL
+ */
+async function getPresignedUpload(filename, contentType) {
+    const res = await apiClient.post(`/api/files/presign-upload`, null, {
+        params: {
+            filename: filename,
+            contentType: contentType
+        }
+    });
+    return res.data;
+}
+
+/** * 조회용 Presigned GET URL 발급 (Optional: 백엔드에서 직접 처리하는 경우)
+ * TiptapEditor2.js를 참고하여 구현
+ * @param {string} key - S3 파일 키
+ * @returns {Promise<{url: string}>} 조회용 GET URL
+ */
+async function getFileUrl(key) {
+    const res = await apiClient.get(`/api/files/${encodeURIComponent(key)}/url`);
+    return res.data;
+}
+
+/** * 파일 삭제 (Optional: 백엔드에서 직접 처리하는 경우)
+ * TiptapEditor2.js를 참고하여 구현
+ * @param {string} key - S3 파일 키
+ * @returns {Promise<any>} 삭제 응답
+ */
+async function deleteFile(key) {
+    const res = await apiClient.delete(`/api/files/${encodeURIComponent(key)}`);
+    return res.data;
+}
+
+// ----------------------------------------------------------------------
+// 색상 팔레트 및 버튼 컴포넌트 (변경 없음)
 // ----------------------------------------------------------------------
 
 const PALETTE_COLORS = [
@@ -103,7 +146,8 @@ const CustomColorPopover = ({ editor, anchorEl, handleClose, attribute }) => {
         <Typography variant="caption" sx={{ display: 'block', mb: 1 }}>{title}</Typography>
         <Grid container spacing={0.5}>
           {PALETTE_COLORS.map((color) => (
-            <Grid size={{xs:1.2}} key={color}>
+            // Grid size를 xs로 변경하여 GridItem 컴포넌트 역할 수행
+            <Grid item xs={1.5} key={color}> 
               <IconButton
                 onClick={() => setColor(color)}
                 sx={{
@@ -189,7 +233,7 @@ const ColorButton = ({ editor }) => {
   );
 };
 
-// 🌟 하이라이트 색상 버튼
+// 하이라이트 색상 버튼
 const HighlightButton = ({ editor }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -234,7 +278,7 @@ const HighlightButton = ({ editor }) => {
 };
 
 // ----------------------------------------------------------------------
-// 메뉴바 컴포넌트
+// 메뉴바 컴포넌트 (이미지/파일 업로드, 삭제 기능 구현)
 // ----------------------------------------------------------------------
 
 const MenuBar = ({ editor }) => {
@@ -248,30 +292,50 @@ const MenuBar = ({ editor }) => {
       editor.chain().focus().extendMarkRange('link').unsetLink().run();
       return;
     }
-    // 💡 수정됨: URL 앞에 '/'를 제거하고 완전한 URL (https:// 포함)이 저장되도록 수정
-    // Tiptap의 setLink는 유효한 URL 문자열을 인자로 받습니다.
+    // URL 앞에 '/'를 제거하고 완전한 URL (https:// 포함)이 저장되도록 수정
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
   };
 
   const addImageByUrl = () => {
     const url = window.prompt('이미지 URL을 입력하세요');
-    // 후에 S3와 연동해야 함
     if (url) editor.chain().focus().setResizableImage({ src: url }).run();
   };
 
-  const handleFileSelect = (e, isImage) => {
+  /**
+   * 로컬 파일 선택 및 S3 업로드 처리
+   * TiptapEditor2.js 로직을 참고하여 apiClient를 사용하도록 구현
+   */
+  const handleFileSelect = async (e, isImage) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (isImage) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        // 후에 S3와 연동해야 함
-        // S3 api 호출한 후 반환받은 url을 src에 추가
-        editor.chain().focus().setResizableImage({ src: reader.result }).run();
-      };
-      reader.readAsDataURL(file);
+      try {
+        // 1) Presigned PUT URL 발급
+        const { key, uploadUrl } = await getPresignedUpload(file.name, file.type);
+
+        // 2) 브라우저에서 S3로 직접 업로드 (axios 대신 fetch 사용)
+        const putRes = await fetch(uploadUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': file.type },
+            body: file,
+        });
+        
+        if (!putRes.ok) throw new Error('S3 업로드 실패');
+
+        // 3) 조회용 Presigned GET URL 발급
+        const { url } = await getFileUrl(key);
+
+        // 4) 에디터에 이미지 삽입
+        editor.chain().focus().setResizableImage({ src: url, 'data-key': key }).run(); 
+        // 💡 key를 'data-key' 속성에 저장하여 삭제 시 사용
+        
+      } catch (err) {
+        console.error('Upload failed:', err);
+        alert('이미지 업로드에 실패했습니다.');
+      }
     } else {
+      // 일반 파일 첨부 (로컬 파일 경로 삽입) - S3에 업로드하는 로직은 구현하지 않음
       const filePath = `[파일] ${file.name}`;
       editor.chain().focus().insertContent(filePath).run();
     }
@@ -300,10 +364,10 @@ const MenuBar = ({ editor }) => {
     );
   };
 
-  const TiptapButton = ({ icon: Icon, onClick, isActive, tooltip }) => (
+  const TiptapButton = ({ icon: Icon, onClick, isActive, tooltip, disabled = false }) => (
     <IconButton
       onClick={onClick}
-      disabled={!editor.isEditable}
+      disabled={!editor.isEditable || disabled}
       color={isActive ? 'primary' : 'default'}
       size="small"
       title={tooltip}
@@ -339,7 +403,7 @@ const MenuBar = ({ editor }) => {
       <ButtonGroup variant="text" size="small">
         <TiptapButton icon={Code} onClick={() => editor.chain().focus().toggleCode().run()} isActive={editor.isActive('code')} tooltip="코드" />
         <ColorButton editor={editor} />
-        <HighlightButton editor={editor} /> {/* 🌟 HighlightButton으로 변경 */}
+        <HighlightButton editor={editor} />
       </ButtonGroup>
 
       <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
@@ -354,10 +418,10 @@ const MenuBar = ({ editor }) => {
 
       <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
 
-      {/* 미디어 업로드 */}
+      {/* 미디어 업로드 및 삭제 버튼 추가 */}
       <ButtonGroup variant="text" size="small">
         <TiptapButton icon={ImageSearch} onClick={addImageByUrl} tooltip="이미지 URL 삽입" />
-        <FileUploadButton icon={ImageIcon} tooltip="로컬 이미지 선택" accept="image/*" isImage={true} />
+        <FileUploadButton icon={ImageIcon} tooltip="로컬 이미지 선택 (업로드)" accept="image/*" isImage={true} />
         <FileUploadButton icon={AttachFile} tooltip="일반 파일 첨부" accept="*" isImage={false} />
       </ButtonGroup>
 
@@ -383,7 +447,7 @@ const MenuBar = ({ editor }) => {
 };
 
 // ----------------------------------------------------------------------
-// 에디터 스타일
+// 에디터 스타일 (변경 없음)
 // ----------------------------------------------------------------------
 
 const EditorWrapper = styled(Box)(({ theme }) => ({
@@ -403,7 +467,7 @@ const EditorWrapper = styled(Box)(({ theme }) => ({
       },
     },
     '& mark': {
-      // 🌟 하이라이트 색상 설정 부분 수정: color 속성을 활용하도록 수정
+      // 하이라이트 색상 설정 부분 수정: color 속성을 활용하도록 수정
       backgroundColor: 'var(--color)', // Tiptap Highlight 확장 기능이 이 변수를 사용
       color: 'inherit',
       padding: '2px 0',
@@ -424,14 +488,14 @@ const EditorWrapper = styled(Box)(({ theme }) => ({
     '& p': { ...theme.typography.body1, margin: 0 },
     '& ul, ol': { paddingLeft: theme.spacing(4) },
     '& li': { ...theme.typography.body1 },
-    // 💡 수정됨: a 태그에 target="_blank" 속성이 적용되도록 CSS 수정 (React/Tiptap이 HTML 속성을 제어)
+    // a 태그에 target="_blank" 속성이 적용되도록 CSS 수정 (React/Tiptap이 HTML 속성을 제어)
     '& a': { color: theme.palette.primary.main, textDecoration: 'underline', cursor: 'pointer' },
-    // 💡 주석 추가: 실제 target="_blank" 적용은 Link.configure의 HTMLAttributes에서 처리됩니다.
+    // 주석 추가: 실제 target="_blank" 적용은 Link.configure의 HTMLAttributes에서 처리됩니다.
   },
 }));
 
 // ----------------------------------------------------------------------
-// 메인 컴포넌트
+// 메인 컴포넌트 (변경 없음)
 // ----------------------------------------------------------------------
 
 const TiptapEditor = ({ initialContent, onContentChange, error }) => {
@@ -443,7 +507,7 @@ const TiptapEditor = ({ initialContent, onContentChange, error }) => {
         heading: { levels: [1, 2] },
         strike: false,
         underline: false,
-        link: false, // 💡 수정됨: StarterKit에 포함된 Link 확장 기능을 비활성화하여 중복 제거
+        link: false, // StarterKit에 포함된 Link 확장 기능을 비활성화하여 중복 제거
       }),
       Underline,
       Strike,
@@ -451,7 +515,7 @@ const TiptapEditor = ({ initialContent, onContentChange, error }) => {
         openOnClick: false, 
         autolink: true, 
         linkOnPaste: true,
-        // 💡 수정됨: 링크를 새 탭에서 열도록 HTML 속성 추가
+        // 링크를 새 탭에서 열도록 HTML 속성 추가
         HTMLAttributes: {
           target: '_blank', 
           rel: 'noopener noreferrer nofollow', // 보안 및 성능 권장 사항
@@ -468,7 +532,7 @@ const TiptapEditor = ({ initialContent, onContentChange, error }) => {
         alignments: ['left', 'center', 'right', 'justify'],
         defaultAlignment: 'left',
       }),
-      // 🌟 Highlight multicolor: true로 설정하여 여러 색상 사용 활성화
+      // Highlight multicolor: true로 설정하여 여러 색상 사용 활성화
       Highlight.configure({
         multicolor: true,
       }),
