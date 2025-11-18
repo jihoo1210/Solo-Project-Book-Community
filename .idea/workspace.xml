@@ -4,38 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#24 약간의 오류 수정 및 정리">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/ChatRoomController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/ChatRoomTextController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/chat/ChatRoomIndexResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/chat/ChatRoomShowResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/chat/UsernameAndIsConnectedResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/chat/text/ChatRoomTextResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/ChatRoomSpec.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/web/DataInitializer.java" afterDir="false" />
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#24 Real-time community Page">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/ChatRoom.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/ChatRoom.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/utilities/AlertSubject.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/utilities/AlertSubject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/AlertRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/AlertRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/ChatRoomRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/ChatRoomRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/ChatRoomTextRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/ChatRoomTextRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/AlertService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/AlertService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/ChatRoomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/ChatRoomService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/ChatRoomTextService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/ChatRoomTextService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/RecruitService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/RecruitService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/RoomChatHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/socket/RoomChatHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application-dev.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/chat/ChatList.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/chat/ChatList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/chat/ChatRoom.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/chat/ChatRoom.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/comment/CommentSection.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/comment/CommentSection.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyPage.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -524,7 +494,23 @@
       <option name="project" value="LOCAL" />
       <updated>1763301615295</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="#24 Real-time community function, 게시글 삭제 오류 있음">
+      <option name="closed" value="true" />
+      <created>1763367270345</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1763367270345</updated>
+    </task>
+    <task id="LOCAL-00041" summary="#24 Real-time community Page">
+      <option name="closed" value="true" />
+      <created>1763367278202</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1763367278202</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -552,8 +538,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#7 검색 및 페이지네이션 기능 구현" />
-    <MESSAGE value="#14 Create myPage function + 내 게시판, 본 게시글 저장, 수정 내역 저장" />
     <MESSAGE value="#19 Create Favorite and My Actives Function" />
     <MESSAGE value="#19 Create Favorite and My Actives Pages and delete alert" />
     <MESSAGE value="#20 알림 읽음 상태 로직 비활성화(오류 발생: 추가 후에 바로 삭제하면 안됨)" />
@@ -577,6 +561,8 @@
     <MESSAGE value="#24 Implement Web Socket" />
     <MESSAGE value="#24 백엔드 웹소켓 설정 (기능 api 미구현)" />
     <MESSAGE value="#24 약간의 오류 수정 및 정리" />
-    <option name="LAST_COMMIT_MESSAGE" value="#24 약간의 오류 수정 및 정리" />
+    <MESSAGE value="#24 Real-time community function, 게시글 삭제 오류 있음" />
+    <MESSAGE value="#24 Real-time community Page" />
+    <option name="LAST_COMMIT_MESSAGE" value="#24 Real-time community Page" />
   </component>
 </project>
