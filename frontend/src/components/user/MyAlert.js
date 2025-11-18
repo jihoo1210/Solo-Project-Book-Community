@@ -504,10 +504,10 @@ const MyAlert = () => {
                                     {/* PC 뷰 컬럼 사이즈 정의 */}
                                     <CustomTableCell sx={{ width: '5%' }}>ID</CustomTableCell>
                                     <CustomTableCell sx={{ width: '8%' }}>유형</CustomTableCell>
-                                    <CustomTableCell sx={{ width: '30%' }}>게시글 제목</CustomTableCell>
+                                    <CustomTableCell sx={{ width: '35%' }}>게시글 제목</CustomTableCell>
                                     <CustomTableCell sx={{ width: '30%' }}>알림 내용</CustomTableCell>
                                     <CustomTableCell sx={{ width: '12%' }}>작성자</CustomTableCell>
-                                    <CustomTableCell sx={{ width: '15%' }}>작성일</CustomTableCell>
+                                    <CustomTableCell sx={{ width: '10%' }}>작성일</CustomTableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -623,6 +623,7 @@ const MyAlert = () => {
                                                     <TableCell
                                                         sx={(theme) => ({
                                                             fontWeight: 600, color: rowColor,
+                                                            maxWidth: {xs: '100%', sm: '300px' },
                                                             [theme.breakpoints.down('sm')]: {
                                                                 display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
                                                                 fontSize: '1rem', order: idxTitle,
@@ -654,7 +655,7 @@ const MyAlert = () => {
                                                                 flexGrow: 1, 
                                                                 minWidth: 0, 
                                                                 display: 'block',
-                                                                width: {xs: '100%', sm: 'auto'},
+                                                                maxWidth: {xs: '100%', sm: '300px'},
                                                                 whiteSpace: 'nowrap',
                                                                 overflow: 'hidden',
                                                                 textOverflow: 'ellipsis',

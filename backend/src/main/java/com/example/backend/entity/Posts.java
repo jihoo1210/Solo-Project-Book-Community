@@ -79,10 +79,21 @@ public class Posts extends BaseEntity {
     // 질문 게시글 댓글
     // 한 게시글에 하나의 채택 댓글, 채택 댓글당 하나의 게시글
     @Setter
-    @OneToOne
+    @OneToOne(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
     private Comment adoptedComment;
 
     public void increaseViewCount() {
         this.viewCount = getViewCount() + 1;
     }
+
+    // 외래키
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Alert> alertList;
+
+    @OneToOne(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ChatRoom chatRoom;
+
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostsViewed> postsViewedList;
+
 }

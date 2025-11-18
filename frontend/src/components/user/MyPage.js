@@ -246,6 +246,7 @@ const MyPage = () => {
   };
 
   const handleCancellation = async () => {
+    if(window.confirm("정말 회원을 탈퇴하시겠습니까?")) {
         apiClient.delete("/user/my/cancellation").then(res => {
             logout()
         }).catch(err => {
@@ -253,7 +254,7 @@ const MyPage = () => {
             const error = err.response.data.message || '처리되지 않은 예외'
             alert(error)
         })
-
+      }
   }
 
   return (

@@ -16,11 +16,11 @@ spring:
   # jpa config
   jpa:
     hibernate:
-      ddl-auto: update # validate
-    show-sql: true
+      ddl-auto: update # update | validate
+#    show-sql: true
     properties:
       hibernate:
-        format_sql: true
+#        format_sql: true
 
   # Redis config
   data:

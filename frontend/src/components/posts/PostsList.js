@@ -64,7 +64,8 @@ const ActionButton = styled(Button)(({ theme }) => ({
 
 const CustomSearchField = styled(TextField)(({ theme }) => ({
     minWidth: 150,
-    '& .MuiInputLabel-root': { color: LIGHT_TEXT_COLOR },
+    color: `${LIGHT_TEXT_COLOR} !important`,
+    '& .MuiInputLabel-root': { color: `${LIGHT_TEXT_COLOR} !important` },
     '& .MuiOutlinedInput-root': {
         '& fieldset': { borderColor: TEXT_COLOR },
         '&:hover fieldset': { borderColor: TEXT_COLOR },
@@ -120,9 +121,6 @@ const StyledChip = styled(Chip)(({ theme, subject }) => {
 const PostsList = () => {
     const navigate = useNavigate();
     const location = useLocation();
-
-    // 내가 쓴 글 보기 모드인지 확인
-    const isMyPostsMode = location.pathname === '/my-posts';
 
     // API 연동 및 데이터 관련 상태
     const [posts, setPosts] = useState([]);
@@ -259,7 +257,7 @@ const PostsList = () => {
                     gutterBottom
                     sx={{ fontWeight: 700, mb: 4, color: TEXT_COLOR, fontSize: { xs: '2rem', md: '2.5rem' }, textAlign: {xs: 'center', md: 'left'} }}
                 >
-                    {isMyPostsMode ? '내 게시판' : '게시판'}
+                    게시판
                 </Typography>
                 <PostsCard elevation={0}>
                     <Box
@@ -484,7 +482,13 @@ const PostsList = () => {
                         <Table aria-label="게시글 목록">
                             <TableHead>
                                 <TableRow>
-                                    <CustomTableCell sx={{ width: '5%' }}>ID</CustomTableCell><CustomTableCell sx={{ width: '8%' }}>주제</CustomTableCell><CustomTableCell sx={{ width: '35%' }}>제목</CustomTableCell><CustomTableCell sx={{ width: '15%' }}>작성자</CustomTableCell><CustomTableCell sx={{ width: '10%' }}>좋아요</CustomTableCell><CustomTableCell sx={{ width: '10%' }}>조회수</CustomTableCell><CustomTableCell sx={{ width: '17%' }}>작성일</CustomTableCell>
+                                    <CustomTableCell sx={{ width: '5%' }}>ID</CustomTableCell>
+                                    <CustomTableCell sx={{ width: '8%' }}>주제</CustomTableCell>
+                                    <CustomTableCell sx={{ width: '42%' }}>제목</CustomTableCell>
+                                    <CustomTableCell sx={{ width: '15%' }}>작성자</CustomTableCell>
+                                    <CustomTableCell sx={{ width: '10%' }}>좋아요</CustomTableCell>
+                                    <CustomTableCell sx={{ width: '10%' }}>조회수</CustomTableCell>
+                                    <CustomTableCell sx={{ width: '10%' }}>작성일</CustomTableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>

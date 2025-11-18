@@ -18,7 +18,8 @@ import {
     BG_COLOR, TEXT_COLOR, LIGHT_TEXT_COLOR, 
     RED_COLOR, PURPLE_COLOR, DARK_PURPLE_COLOR, MODIFIED_COLOR, AQUA_BLUE, DARK_AQUA_BLUE,
     RECRUIT_ACCENT_COLOR, RECRUIT_DARK_COLOR, RECRUIT_LIGHT_BG,
-    RECRUIT_APPROVE_COLOR
+    RECRUIT_APPROVE_COLOR,
+    NEW_COLOR
 } from '../../constants/Theme'; 
 import { getPostDateInfo } from '../../utilities/DateUtiles'; 
 
@@ -42,8 +43,8 @@ const ApplicationWrapper = styled(Box)(({ theme }) => ({
 
 const ApplicationCompleteMessage = styled(ApplicationWrapper)(({ theme, statusType }) => ({
     // 승인/신청: RECRUIT_ACCENT_COLOR 기반 / 거절: RED_COLOR 기반
-    backgroundColor: alpha(statusType === '거절' ? RED_COLOR : statusType === "승인" ? RECRUIT_APPROVE_COLOR : RECRUIT_ACCENT_COLOR, 0.1), 
-    border: `1px solid ${statusType === '거절' ? RED_COLOR : statusType === "승인" ? RECRUIT_APPROVE_COLOR : RECRUIT_ACCENT_COLOR}`, 
+    backgroundColor: alpha((statusType === '거절' || statusType === '마감') ? RED_COLOR : statusType === "승인" ? RECRUIT_APPROVE_COLOR : RECRUIT_ACCENT_COLOR, 0.1), 
+    border: `1px solid ${(statusType === '거절' || statusType === '마감') ? RED_COLOR : statusType === "승인" ? RECRUIT_APPROVE_COLOR : RECRUIT_ACCENT_COLOR}`, 
     textAlign: 'center',
     display: 'flex',
     flexDirection: 'column',
@@ -355,6 +356,12 @@ const CommentsSection = ({
                 icon = <CancelOutlinedIcon />;
                 color = RED_COLOR;
                 break;
+            case '마감':
+                message = '마감되었습니다.';
+                subMessage = '해당 모집은 마감되었습니다.';
+                icon = <CancelOutlinedIcon />;
+                color = RED_COLOR;
+                break;
             default:
                 // 다른 알 수 없는 상태는 폼으로 대체
                 return null;
@@ -396,6 +403,23 @@ const CommentsSection = ({
                         sx={{ 
                             mt: 1, 
                             color: RED_COLOR, 
+                            fontSize: '0.8rem', 
+                            p: 0, 
+                            minWidth: 'auto' 
+                        }}
+                    >
+                        알림 보관함으로 이동
+                    </Button>
+                )}
+                {recruitmentResult === '승인' && (
+                                        <Button 
+                        variant="text" 
+                        size="small"
+                        component={Link} 
+                        to={`/chat/list`} 
+                        sx={{ 
+                            mt: 1, 
+                            color: NEW_COLOR, 
                             fontSize: '0.8rem', 
                             p: 0, 
                             minWidth: 'auto' 
