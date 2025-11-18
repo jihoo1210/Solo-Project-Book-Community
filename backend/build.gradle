@@ -48,6 +48,9 @@ dependencies {
 
     // Web Socket Dependency
     implementation ('org.springframework.boot:spring-boot-starter-websocket')
+
+    // aws S3 database
+    implementation ('software.amazon.awssdk:s3:2.20.0')
 }
 
 tasks.named('test') {
