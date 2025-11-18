@@ -37,6 +37,10 @@ public class Alert extends BaseEntity {
     @Column
     private String content;
 
+    @ManyToOne
+    @JoinColumn(name = "comment_id")
+    private Comment comment;
+
     // 외래키
     @OneToMany(mappedBy = "alert", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlertViewed> alertViewedList;

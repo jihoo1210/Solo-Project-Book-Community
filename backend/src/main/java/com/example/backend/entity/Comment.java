@@ -35,4 +35,8 @@ public class Comment extends BaseEntity {
     @Setter
     @Column
     private LocalDateTime modifiedDate;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Alert> alertList = new ArrayList<>();
 }

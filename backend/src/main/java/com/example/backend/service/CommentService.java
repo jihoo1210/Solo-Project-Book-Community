@@ -57,6 +57,7 @@ public class CommentService {
                 .sender(user)
                 .posts(posts)
                 .content(target.getContent())
+                .comment(target)
                 .build();
         alertRepository.save(alert);
 
@@ -102,7 +103,7 @@ public class CommentService {
     @Transactional
     public CommentUpdateResponse update(User user, Long commentId, CommentUpdateRequest dto) throws IllegalAccessException {
         Comment target = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
-        if(!user.equals(target.getUser())) throw new IllegalAccessException("다른 사용자의 댓글을 수정할 수 없습니다");
+        if(!user.getId().equals(target.getUser().getId())) throw new IllegalAccessException("다른 사용자의 댓글을 수정할 수 없습니다");
 
         if(StringUtils.hasText(dto.getContent())) target.setContent(dto.getContent());
 
@@ -127,7 +128,7 @@ public class CommentService {
                 .username(item.getUser().getUsername())
                 .modifiedDate(item.getModifiedDate())
                 .createdDate(item.getCreatedDate())
-                .commentNumber(item.getPosts().getComments().size())
+                .commentNumber(item.getPosts().getCommentList().size())
                 .likes(item.getLikes().size())
                 .savedInLikes(commentLikesRepository.existsByUserAndComment(user, item))
                 .build());
@@ -136,7 +137,7 @@ public class CommentService {
     @Transactional
     public CommentDeleteResponse delete(User user, Long commentId) throws IllegalAccessException {
         Comment target = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
-        if(!user.equals(target.getUser())) throw new IllegalAccessException("다른 사용자의 댓글을 삭제할 수 없습니다");
+        if(!user.getId().equals(target.getUser().getId())) throw new IllegalAccessException("다른 사용자의 댓글을 삭제할 수 없습니다");
 
         commentRepository.delete(target);
 
@@ -159,7 +160,7 @@ public class CommentService {
                 .username(item.getUser().getUsername())
                 .modifiedDate(item.getComment().getModifiedDate())
                 .createdDate(item.getComment().getCreatedDate())
-                .commentNumber(item.getPosts().getComments().size())
+                .commentNumber(item.getPosts().getCommentList().size())
                 .likes(item.getComment().getLikes().size())
                 .savedInLikes(true)
                 .build());
