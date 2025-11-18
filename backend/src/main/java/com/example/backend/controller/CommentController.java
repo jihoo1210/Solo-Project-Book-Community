@@ -38,7 +38,6 @@ public class CommentController {
                                     @Valid @RequestBody CommentCreateRequest dto,
                                     BindingResult bindingResult) {
         try {
-            log.info("CustomUserDetails: {}", userDetails);
             log.info("postsId: {}", postsId);
             log.info("CommentCreateRequest: {}", dto);
 
@@ -60,7 +59,6 @@ public class CommentController {
                                               @Valid @RequestBody CommentCreateRequest dto,
                                               BindingResult bindingResult) {
         try {
-            log.info("CustomUserDetails: {}", userDetails);
             log.info("postsId: {}", postsId);
             log.info("CommentCreateRequest: {}", dto);
 
@@ -83,7 +81,6 @@ public class CommentController {
                                          @RequestParam(required = false, defaultValue = "") String searchTerm,
                                          @RequestParam(required = false, defaultValue = "0") Integer tab) {
         try {
-            log.info("CustomUserDetails: {}", userDetails);
             log.info("Pageable: {}", pageable);
             log.info("searchField: {}", searchField);
             log.info("searchTerm: {}", searchTerm);
@@ -101,7 +98,6 @@ public class CommentController {
                                                  @RequestParam(required = false, defaultValue = "") String searchField,
                                                  @RequestParam(required = false, defaultValue = "") String searchTerm,
                                                  @RequestParam(required = false, defaultValue = "0") Integer tab) {
-        log.info("CustomUserDetails: {}", userDetails);
         log.info("Pageable: {}", pageable);
         log.info("searchField: {}", searchField);
         log.info("searchTerm: {}", searchTerm);
@@ -114,7 +110,6 @@ public class CommentController {
     @GetMapping("/{commentId}/handle-likes")
     public ResponseEntity<?> handleLikes(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long commentId) {
         try {
-            log.info("CustomUserDetails: {}", userDetails);
             log.info("commentId: {}", commentId);
 
             User user = userDetails.getUser();
@@ -144,7 +139,6 @@ public class CommentController {
     @PatchMapping("/{commentId}")
     public ResponseEntity<?> update(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long commentId, @RequestBody CommentUpdateRequest dto, BindingResult bindingResult) {
         try {
-            log.info("CustomUserDetails: {}", userDetails);
             log.info("commentId: {}", commentId);
             log.info("CommentUpdateRequest: {}", dto);
             if(bindingResult.hasErrors()) throw new IllegalArgumentException("유효하지 않은 형식입니다");
@@ -161,7 +155,6 @@ public class CommentController {
     @DeleteMapping("/{commentId}")
     public ResponseEntity<?> delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long commentId) {
         try {
-            log.info("CustomUserDetails: {}", userDetails);
             log.info("commentId: {}", commentId);
 
             User user = userDetails.getUser();
