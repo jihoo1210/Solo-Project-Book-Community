@@ -168,7 +168,7 @@ public class PostsService {
             postsViewedRepository.save(postsViewed);
         }
         // 알림 가져오기 - 알림 상태를 통해 게시글 신청 여부 표시 | user = 받은 사람
-        Alert alertToRecruitmentResult = alertRepository.findByPostsAndUserAndSubject(target, user, APPLICATION)
+        Alert alertToRecruitmentResult = alertRepository.findByPostsAndUserAndSenderAndSubject(target, target.getUser(), user, APPLICATION)
                 .orElse(alertRepository.findByPostsAndUserAndSubject(target, user, APPROVAL)
                         .orElse(alertRepository.findByPostsAndUserAndSubject(target, user, REJECTED)
                                 .orElse(null)));

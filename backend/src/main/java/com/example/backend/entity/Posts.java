@@ -36,8 +36,7 @@ public class Posts extends BaseEntity {
 
     // 좋아요
     @Builder.Default
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "likes")
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostsLikes> likes = new ArrayList<>();
 
     // 조회수
@@ -84,6 +83,10 @@ public class Posts extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "adopted_comment_id")
     private Comment adoptedComment;
+
+    // 신고
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> report;
 
     // 외래키
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)

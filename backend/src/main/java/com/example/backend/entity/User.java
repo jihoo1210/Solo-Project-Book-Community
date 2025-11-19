@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.example.backend.entity.utilities.BaseEntity;
 import com.example.backend.entity.utilities.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +14,7 @@ import java.util.List;
 @Setter
 
 @Entity(name = "USERS")
-public class User {
+public class User extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -56,4 +57,7 @@ public class User {
     private List<PostsLikes> postsLikesList;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<PostsViewed> postsViewedList;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> reportList;
 }

@@ -39,4 +39,8 @@ public class Comment extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Alert> alertList = new ArrayList<>();
+
+    // 신고
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> report;
 }

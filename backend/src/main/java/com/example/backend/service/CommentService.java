@@ -8,6 +8,7 @@ import com.example.backend.dto.comment.update.CommentUpdateRequest;
 import com.example.backend.dto.comment.update.CommentUpdateResponse;
 import com.example.backend.dto.likes.LikesResponse;
 import com.example.backend.entity.*;
+import com.example.backend.entity.utilities.Role;
 import com.example.backend.repository.*;
 import com.example.backend.service.utilities.CommentLikesSearchSpec;
 import com.example.backend.service.utilities.CommentSearchSpec;
@@ -137,7 +138,7 @@ public class CommentService {
     @Transactional
     public CommentDeleteResponse delete(User user, Long commentId) throws IllegalAccessException {
         Comment target = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
-        if(!user.getId().equals(target.getUser().getId())) throw new IllegalAccessException("다른 사용자의 댓글을 삭제할 수 없습니다");
+        if(!user.getId().equals(target.getUser().getId()) || !user.getAuthority().equals(Role.ROLE_ADMIN)) throw new IllegalAccessException("다른 사용자의 댓글을 삭제할 수 없습니다");
 
         commentRepository.delete(target);
 

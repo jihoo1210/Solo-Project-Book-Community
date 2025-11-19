@@ -6,10 +6,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.controller.utilities.ResponseController;
-import com.example.backend.dto.auth.CheckEmailRequest;
-import com.example.backend.dto.auth.CheckEmailResponse;
-import com.example.backend.dto.auth.CheckUsernameResponse;
-import com.example.backend.dto.auth.UsernameResponse;
+import com.example.backend.dto.auth.*;
 import com.example.backend.dto.auth.signin.SigninRequest;
 import com.example.backend.dto.auth.signin.SigninResponse;
 import com.example.backend.dto.auth.signup.SignupRequest;
@@ -108,6 +105,8 @@ public class AuthController {
             // 5. 화면 표시용 username 가져오기
             String username = customUserDetails.getUser().getUsername();
 
+            String role = customUserDetails.getUser().getAuthority().getRole();
+
             // 6. JWT를 HttpOnly 쿠키로 설정 (가장 중요)
             long maxAgeSeconds = tokenProvider.getExpiration() / 1000; // 밀리초를 초로 변환
 
@@ -121,6 +120,7 @@ public class AuthController {
 
             SigninResponse responseDto = SigninResponse.builder()
                     .username(username)
+                    .role(role)
                     .build();
 
             return ResponseController.success(responseDto);
@@ -285,8 +285,9 @@ public class AuthController {
         if(userDetails == null) return ResponseController.fail("인증 정보가 유효하지 않습니다.");
 
         String username = userDetails.getUser().getUsername();
+        String role = userDetails.getUser().getAuthority().getRole();
 
-        UsernameResponse userResponse = new UsernameResponse(username);
+        UsernameAndRoleResponse userResponse = UsernameAndRoleResponse.builder().username(username).role(role).build();
 
         return ResponseController.success(userResponse); // 응답 본문에 닉네임만 전달
     }
