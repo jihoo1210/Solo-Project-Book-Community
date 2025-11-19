@@ -4,9 +4,9 @@
  */
 package com.example.backend.service;
 
+import com.example.backend.dto.auth.UsernameResponse;
 import com.example.backend.dto.auth.CheckEmailResponse;
 import com.example.backend.dto.auth.CheckUsernameResponse;
-import com.example.backend.dto.auth.UsernameResponse;
 import com.example.backend.dto.auth.signup.SignupRequest;
 import com.example.backend.dto.auth.signup.SignupResponse;
 import com.example.backend.dto.auth.verify.VerifyCodeRequest;
@@ -106,7 +106,8 @@ public class UserService {
      */
     @Transactional
     public void deleteUser(User user) {
-        repository.delete(user);
+        User target = repository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+        repository.delete(target);
     }
 
     /**

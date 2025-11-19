@@ -25,10 +25,12 @@ public class Alert extends BaseEntity {
 
     // 게시글 작성자
     @ManyToOne
+    @JoinColumn(name = "receiver_id")
     private User user;
 
     // 답변 작성자
     @ManyToOne
+    @JoinColumn(name = "sender_id")
     private User sender;
 
     @ManyToOne
@@ -36,6 +38,10 @@ public class Alert extends BaseEntity {
 
     @Column
     private String content;
+
+    @ManyToOne
+    @JoinColumn(name = "comment_id")
+    private Comment comment;
 
     // 외래키
     @OneToMany(mappedBy = "alert", cascade = CascadeType.ALL, orphanRemoval = true)

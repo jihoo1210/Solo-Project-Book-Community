@@ -1,5 +1,3 @@
-// src/components/ChatList.js (PostsList.js의 UI/기능을 반영)
-
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -37,7 +35,6 @@ import {
   HEADER_HEIGHT,
 } from "../constants/Theme";
 
-// 스타일 컴포넌트 정의 (PostsList.js와 동일)
 const PostsListWrapper = styled(Box)(({ theme }) => ({
   marginTop: HEADER_HEIGHT,
   backgroundColor: BG_COLOR,
@@ -103,12 +100,8 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: { display: "none" },
 }));
 
-// PostsList.js와 달리 커뮤니티 목록에 불필요한 StyledChip은 제거
-
 const ChatList = () => {
   const navigate = useNavigate();
-  // useLocation은 필요하나, isMyPostsMode 로직은 ChatList 컨텍스트에 맞지 않아 제거
-  const location = useLocation();
 
   // API 연동 및 데이터 관련 상태
   const [posts, setPosts] = useState([]); // 게시글 대신 채팅방 목록 저장
@@ -145,11 +138,8 @@ const ChatList = () => {
       const sortParam = `id,${currentSortOrder}`; // ID 기준 정렬 유지
       const searchFieldParam = `searchField=${currentSearchField}`;
       const searchTermParam = `searchTerm=${currentSearchTerm}`;
-      // 탭 필터링: selectedTab에 따라 다른 엔드포인트나 쿼리 파라미터 사용 가정
-      // 여기서는 탭 상태를 쿼리 파라미터로 전달하도록 수정합니다. (PostsList 로직 유지)
       const tabParam = currentTab > 0 ? `&tab=${currentTab}` : '';
 
-      // API 엔드포인트를 커뮤니티 목록 경로인 '/chats'로 가정합니다.
       const baseUrl = '/chatroom'; 
 
       const url = `${baseUrl}?page=${pageNumberForBackend}&size=${currentRowsPerPage}&sort=${sortParam}&${searchFieldParam}&${searchTermParam}${tabParam}`;
@@ -159,9 +149,7 @@ const ChatList = () => {
         const result = response.data.result;
 
         if (result && result.content && Array.isArray(result.content)) {
-          // Spring Page 객체 구조 처리
           setPosts(result.content);
-          console.log('result.content', result.content)
           setTotalPosts(result.totalElements || 0);
         } else {
           setPosts([]);
@@ -184,7 +172,7 @@ const ChatList = () => {
 
   }, [page, selectedTab, sortOrder, searchField, searchTerm, rowsPerPage]);
 
-  // 이벤트 핸들러 (PostsList.js와 유사하게 유지)
+  // 이벤트 핸들러
   const handleSortClick = (event) => { setSortAnchorEl(event.currentTarget); };
   const handleSortClose = () => { setSortAnchorEl(null); };
   const handleSortOptionSelect = (order) => {
@@ -522,11 +510,10 @@ const ChatList = () => {
                   </TableRow>
                 ) : (
                   posts.map((post) => {
-                    // ChatList.js의 원래 매핑 로직 유지 (속성명은 PostsList.js와 동일하게 가정)
                     const communityName = post.roomName; // 채팅방 이름을 title로 사용
-                    const admin = post.creator; // 관리자를 username으로 사용
-                    const memberCount = post.currentUserNumber || 0; // 인원을 likes로 사용 가정
-                    const onlineCount = post.connectedUserNumber || 0; // 접속 중 인원을 viewCount로 사용 가정
+                    const admin = post.creator;
+                    const memberCount = post.currentUserNumber || 0;
+                    const onlineCount = post.connectedUserNumber || 0;
 
                     return (
                       <TableRow
@@ -542,14 +529,12 @@ const ChatList = () => {
                           "&:last-child > .MuiTableCell-root": {
                             borderBottom: "none",
                           },
-                          // PostsList.js의 새 글 표시 로직을 채팅방 입장 여부로 사용
                           backgroundColor: BG_COLOR,
 
                           "&:hover": {
                             backgroundColor: alpha(TEXT_COLOR, 0.05),
                             cursor: "pointer",
                           },
-                          // 모바일 뷰 스타일 반영 (PostsList.js와 유사하게)
                           [theme.breakpoints.down("sm")]: {
                             display: "block",
                             borderBottom: `1px solid ${TEXT_COLOR} !important`,

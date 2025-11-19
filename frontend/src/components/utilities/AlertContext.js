@@ -23,7 +23,7 @@ export const AlertProvider = ({ children }) => {
 
   // API 호출 함수: useCallback으로 메모이제이션
   const checkNewAlertAPI = useCallback(async () => {
-    console.log("API: Checking for new alerts...");
+    // console.log("API: Checking for new alerts...");
     if(user != null) {
       try {
         const response = await apiClient.get("/alert/check-new-alert");

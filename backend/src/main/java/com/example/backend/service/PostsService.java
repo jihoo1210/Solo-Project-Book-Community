@@ -70,7 +70,7 @@ public class PostsService {
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
                 .likes(post.getLikes().size())
-                .commentNumber(post.getComments().size())
+                .commentNumber(post.getCommentList().size())
                 // 현재 사용자의 게시글 좋아요 여부를 확인하여 포함
                 .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, post))
                 .viewCount(post.getViewCount())
@@ -105,7 +105,7 @@ public class PostsService {
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
                 .likes(post.getLikes().size())
-                .commentNumber(post.getComments().size())
+                .commentNumber(post.getCommentList().size())
                 // 현재 사용자의 게시글 좋아요 여부를 확인하여 포함
                 .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, post))
                 .viewCount(post.getViewCount())
@@ -126,7 +126,7 @@ public class PostsService {
                 .createdDate(postsLikes.getPosts().getCreatedDate())
                 .modifiedDate(postsLikes.getPosts().getModifiedDate())
                 .likes(postsLikes.getPosts().getLikes().size())
-                .commentNumber(postsLikes.getPosts().getComments().size())
+                .commentNumber(postsLikes.getPosts().getCommentList().size())
                 // 현재 사용자의 게시글 좋아요 여부를 확인하여 포함
                 .savedInLikes(postsLikesRepository.existsByUserAndPosts(user, postsLikes.getPosts()))
                 .viewCount(postsLikes.getPosts().getViewCount())
@@ -150,7 +150,7 @@ public class PostsService {
         target.setViewCount(target.getViewCount() + 1);
 
         // 댓글 목록을 DTO로 변환하고, 각 댓글의 좋아요 여부를 확인
-        List<CommentResponse> comments = target.getComments().stream().map(comment -> CommentResponse.builder()
+        List<CommentResponse> comments = target.getCommentList().stream().map(comment -> CommentResponse.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
                 .username(comment.getUser().getUsername())
@@ -168,7 +168,7 @@ public class PostsService {
             postsViewedRepository.save(postsViewed);
         }
         // 알림 가져오기 - 알림 상태를 통해 게시글 신청 여부 표시 | user = 받은 사람
-        Alert alertToRecruitmentResult = alertRepository.findByPostsAndUserAndSubject(target, user, APPLICATION)
+        Alert alertToRecruitmentResult = alertRepository.findByPostsAndUserAndSenderAndSubject(target, target.getUser(), user, APPLICATION)
                 .orElse(alertRepository.findByPostsAndUserAndSubject(target, user, APPROVAL)
                         .orElse(alertRepository.findByPostsAndUserAndSubject(target, user, REJECTED)
                                 .orElse(null)));

@@ -1,4 +1,4 @@
-package com.example.backend.dto.auth.signin;
+package com.example.backend.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class SigninResponse {
+public class UsernameAndRoleResponse {
     private String username;
     private String role;
 }

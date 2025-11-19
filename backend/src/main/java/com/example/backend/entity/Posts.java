@@ -47,7 +47,7 @@ public class Posts extends BaseEntity {
     // 댓글
     @Builder.Default
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments = new ArrayList<>();
+    private List<Comment> commentList = new ArrayList<>();
 
     // 수정됨
     @Column
@@ -78,13 +78,15 @@ public class Posts extends BaseEntity {
 
     // 질문 게시글 댓글
     // 한 게시글에 하나의 채택 댓글, 채택 댓글당 하나의 게시글
+    // comment_list와 분리
     @Setter
-    @OneToOne(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "adopted_comment_id")
     private Comment adoptedComment;
 
-    public void increaseViewCount() {
-        this.viewCount = getViewCount() + 1;
-    }
+    // 신고
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> report;
 
     // 외래키
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)

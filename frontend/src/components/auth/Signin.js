@@ -116,7 +116,8 @@ const SignIn = () => {
             return;
         }
         apiClient.post("/auth/signin", formData).then(response => {
-            login(response.data.result.username);
+            const signinData = response.data.result
+            login(signinData.username, signinData.role);
             navigate("/");
         }).catch(error => {
             const errorMessage = error.response?.data?.message || '예상하지 못한 에러가 발생했습니다.';

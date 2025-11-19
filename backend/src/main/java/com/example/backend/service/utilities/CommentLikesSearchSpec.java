@@ -58,6 +58,14 @@ public class CommentLikesSearchSpec {
                             builder.literal("")
                     );
                     predicates.add(builder.like(nonSpacedLowerTitle, pattern));
+                } else if ("작성자".equals(searchField)) {
+                    Expression<String> nonSpacedLowerTitle = builder.function(
+                            "REPLACE", String.class,
+                            builder.lower(root.get("user").get("username")),
+                            builder.literal(" "),
+                            builder.literal("")
+                    );
+                    predicates.add(builder.like(nonSpacedLowerTitle, pattern));
                 }
             }
 

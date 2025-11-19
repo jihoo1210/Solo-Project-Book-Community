@@ -126,7 +126,7 @@ const labelStyles = { fontWeight: 'bold', color: TEXT_COLOR, minWidth: '60px', m
 // 게시판 (activityType === 0) 모바일 레이블
 const postMobileLabels = ['ID', '주제', '제목', '작성자', '좋아요', '조회수', '작성일'];
 // 댓글 (activityType === 1) 모바일 레이블 (요청에 따라 [ID, 주제, 제목, 내용, 작성자, 좋아요, 작성일]로 변경)
-const commentMobileLabels = ['ID', '주제', '제목', '내용', '작성자', '좋아요', '작성일'];
+const commentMobileLabels = ['ID', '주제', '제목', '댓글 내용', '작성자', '좋아요', '작성일'];
 
 
 // --- '내 활동' 컴포넌트 시작 ---
@@ -297,10 +297,10 @@ const MyActivities = () => {
             <TableRow>
                 <CustomTableCell sx={{ width: '5%' }}>ID</CustomTableCell>
                 <CustomTableCell sx={{ width: '8%' }}>주제</CustomTableCell>
-                <CustomTableCell sx={{ width: '42%' }}>제목</CustomTableCell>
+                {activityType === 0 ? <CustomTableCell sx={{ width: '42%' }}>제목</CustomTableCell> : <CustomTableCell sx={{ width: '32%' }}>제목</CustomTableCell>}
                 
                 {/* 댓글 모드일 때만 '내용' 표시. 크기는 Post의 '작성자' 필드 크기(15%)와 동일하게 맞춤 */}
-                {activityType === 1 && <CustomTableCell sx={{ width: '10%' }}>내용</CustomTableCell>} 
+                {activityType === 1 && <CustomTableCell sx={{ width: '20%' }}>댓글 내용</CustomTableCell>} 
                 
                 {/* 작성자 필드 크기를 Post 모드와 동일한 15%로 통일 */}
                 <CustomTableCell sx={{ width: '15%' }}>작성자</CustomTableCell> 
