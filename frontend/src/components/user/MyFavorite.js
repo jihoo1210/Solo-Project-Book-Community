@@ -1,5 +1,3 @@
-// src/components/MyFavorite.js
-
 import React, { useState, useEffect, useMemo } from 'react';
 import {
     Box, Container, Typography, Button, Table, TableBody,
@@ -143,10 +141,9 @@ const MyFavorite = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [pendingSearchTerm, setPendingSearchTerm] = useState('');
     const [sortOrder, setSortOrder] = useState('desc');
-    const [searchField, setSearchField] = useState('제목'); // 게시판일 때만 '제목', '내용' 사용
+    const [searchField, setSearchField] = useState('제목');
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    // 메뉴 Anchor 상태 (PostsList와 동일)
     const [sortAnchorEl, setSortAnchorEl] = useState(null);
     const openSortMenu = Boolean(sortAnchorEl);
     const [filterAnchorEl, setFilterAnchorEl] = useState(null);
@@ -173,18 +170,15 @@ const MyFavorite = () => {
                 // 탭 필터링 (0은 '전체'이므로 필터링하지 않음)
                 const tabParam = selectedTab > 0 ? `&tab=${selectedTab}` : '';
                 
-                // 가정: 내가 즐겨찾기한 게시글을 가져오는 API 엔드포인트
                 url = `/posts/my/favorite?page=${pageNumberForBackend}&${sizeParam}&sort=${sortParam}&${searchFieldParam}&${searchTermParam}${tabParam}`;
             } 
             // 2. 댓글 (내가 즐겨찾기한 댓글)
             else { 
-                // 댓글도 게시글과 동일하게 [제목, 내용] 검색 및 탭 필터링을 사용하도록 MyActives.js와 일관성을 유지합니다.
                 const searchFieldParam = `searchField=${searchField}`; 
                 const searchTermParam = `searchTerm=${searchTerm}`;
                 // 탭 필터링 (0은 '전체'이므로 필터링하지 않음)
                 const tabParam = selectedTab > 0 ? `&tab=${selectedTab}` : '';
                 
-                // 가정: 내가 즐겨찾기한 댓글을 가져오는 API 엔드포인트
                 url = `/comment/my/favorite?page=${pageNumberForBackend}&${sizeParam}&sort=${sortParam}&${searchFieldParam}&${searchTermParam}${tabParam}`;
             }
 
@@ -227,7 +221,7 @@ const MyFavorite = () => {
         setSearchField('제목'); // 기본 검색 필드로 초기화
     };
 
-    // 게시글 주제 탭 전환 핸들러 (게시판/댓글 모두에서 사용)
+    // 게시글 주제 탭 전환 핸들러
     const handleSubjectTabChange = (event, newValue) => {
         setSelectedTab(newValue);
         setPage(1);
@@ -241,7 +235,7 @@ const MyFavorite = () => {
         setSortAnchorEl(null);
     };
 
-    // 검색 필드 선택 핸들러 (activityType이 '게시판'일 때만 '제목', '내용', '작성자' 사용 가능)
+    // 검색 필드 선택 핸들러
     const handleFilterClick = (event) => { setFilterAnchorEl(event.currentTarget); };
     const handleFilterClose = () => { setFilterAnchorEl(null); };
     const handleFilterOptionSelect = (field) => {
@@ -250,7 +244,7 @@ const MyFavorite = () => {
         setFilterAnchorEl(null);
     };
 
-    // 페이지당 항목 수 메뉴 핸들러 (PostsList와 동일)
+    // 페이지당 항목 수 메뉴 핸들러
     const handlePerPageClick = (event) => { setPerPageAnchorEl(event.currentTarget); };
     const handlePerPageClose = () => { setPerPageAnchorEl(null); };
     const handlePerPageSelect = (value) => {
@@ -286,7 +280,6 @@ const MyFavorite = () => {
         if (activityType === 0) { // 게시판 (즐겨찾기한 글)
             return (
                 <TableRow>
-                    {/* PostsList.js와 동일한 컬럼 너비/개수 */}
                     <CustomTableCell sx={{ width: '5%' }}>ID</CustomTableCell>
                     <CustomTableCell sx={{ width: '8%' }}>주제</CustomTableCell>
                     <CustomTableCell sx={{ width: '42%' }}>제목</CustomTableCell>
@@ -297,8 +290,6 @@ const MyFavorite = () => {
                 </TableRow>
             );
         } else { // 댓글 (즐겨찾기한 댓글)
-            // MyActives.js의 댓글 리스트와 동일하게 7개 컬럼 및 너비 설정
-            // (ID: 5%, 주제: 8%, 제목: 30%, 내용: 15%, 작성자: 15%, 좋아요: 10%, 작성일: 17%)
             return (
                 <TableRow>
                     <CustomTableCell sx={{ width: '5%' }}>ID</CustomTableCell>
@@ -321,7 +312,7 @@ const MyFavorite = () => {
                 <MenuItem key="post-content" onClick={() => handleFilterOptionSelect('내용')}>내용</MenuItem>,
                 <MenuItem key="post-author" onClick={() => handleFilterOptionSelect('작성자')}>작성자</MenuItem>,
             ];
-        } else { // 댓글 - MyActives.js와 동일하게 제목, 내용 검색 허용
+        } else { // 댓글
             return [
                 <MenuItem key="comment-title" onClick={() => handleFilterOptionSelect('제목')}>제목</MenuItem>,
                 <MenuItem key="comment-content" onClick={() => handleFilterOptionSelect('내용')}>내용</MenuItem>,
@@ -333,8 +324,7 @@ const MyFavorite = () => {
 
     // 3. 테이블 바디 렌더링 (게시글/댓글 구분)
     const renderTableBody = () => {
-        // 총 컬럼 수는 activityType에 따라 7개 또는 7개
-        const colSpan = activityType === 0 ? 7 : 7; 
+        const colSpan = 7; 
 
         if (isLoading) {
             return (
@@ -371,7 +361,6 @@ const MyFavorite = () => {
         }
 
         return items.map((item) => {
-            // item.modifiedDate와 item.createdDate가 Post와 Comment 모두 있다고 가정
             const { dateDisplay, isModified } = getPostDateInfo(item.modifiedDate, item.createdDate);
 
             // 공통 TableRow 스타일 정의
@@ -383,7 +372,6 @@ const MyFavorite = () => {
                     backgroundColor: alpha(TEXT_COLOR, 0.05),
                     cursor: 'pointer'
                 },
-                // PostsList의 반응형 디자인 적용
                 [theme.breakpoints.down('sm')]: {
                     display: 'block',
                     borderBottom: `1px solid ${TEXT_COLOR} !important`,
@@ -394,7 +382,7 @@ const MyFavorite = () => {
 
             const isCommentMode = activityType === 1;
             
-            // 3-1. 게시판 (즐겨찾기한 글) 렌더링 (기존 로직 유지)
+            // 3-1. 게시판 (즐겨찾기한 글) 렌더링
             if (activityType === 0) { 
                 const viewColor = item.savedInViews ? VIEW_SAVED_COLOR : LIGHT_TEXT_COLOR;
                 const viewFontWeight = item.savedInViews ? 700 : 400;
@@ -479,7 +467,6 @@ const MyFavorite = () => {
             } 
             // 3-2. 댓글 (즐겨찾기한 댓글) 렌더링
             else { 
-                // 가정: item은 { id(댓글 ID), postId, postTitle, content, createdDate, modifiedDate, subject, username, likes, commentNumber } 구조
                 return (
                     <TableRow key={item.id} onClick={() => handleRowClick(item)} sx={rowSx}>
                         {/* ID (댓글 ID) - 5% */}
@@ -488,7 +475,7 @@ const MyFavorite = () => {
                                 [theme.breakpoints.down('sm')]: {
                                     display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: LIGHT_TEXT_COLOR,
                                     padding: theme.spacing(0, 2, 0.5, 2), order: 7, 
-                                    '&::before': { content: `'${commentMobileLabels[0]}: '`, ...labelStyles } // ID
+                                    '&::before': { content: `'${commentMobileLabels[0]}: '`, ...labelStyles }
                                 }
                             })}
                         >{item.id}</TableCell> 
@@ -510,7 +497,7 @@ const MyFavorite = () => {
                                 display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
                                 fontSize: '1rem', padding: theme.spacing(1, 2, 0.5, 2), order: 1,
                                 whiteSpace: 'normal', wordBreak: 'break-word',
-                                '&::before': { content: `'${commentMobileLabels[2]}: '`, ...labelStyles } // 제목
+                                '&::before': { content: `'${commentMobileLabels[2]}: '`, ...labelStyles }
                             }
                         })}>
                             <Box component="span" sx={{ flexGrow: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>
@@ -525,7 +512,7 @@ const MyFavorite = () => {
                             [theme.breakpoints.down('sm')]: {
                                 display: 'flex', justifyContent: 'flex-start',
                                 fontSize: '0.85rem', padding: theme.spacing(0.5, 2, 0.5, 2), order: 3,
-                                '&::before': { content: `'${commentMobileLabels[3]}: '`, ...labelStyles } // 내용
+                                '&::before': { content: `'${commentMobileLabels[3]}: '`, ...labelStyles }
                             }
                         })}>
                             <ForumIcon sx={{ fontSize: '1rem', verticalAlign: 'middle', color: TEXT_COLOR, mr: 0.5 }} />
@@ -537,7 +524,7 @@ const MyFavorite = () => {
                             [theme.breakpoints.down('sm')]: { 
                                 display: 'flex', justifyContent: 'flex-start',
                                 fontSize: '0.85rem', padding: theme.spacing(0.5, 2, 0.5, 2), order: 4,
-                                '&::before': { content: `'${commentMobileLabels[4]}: '`, ...labelStyles } // 작성자
+                                '&::before': { content: `'${commentMobileLabels[4]}: '`, ...labelStyles }
                             }
                         })}>{item.username}</TableCell>
                         {/* 좋아요 수 - 10% */}
@@ -545,9 +532,9 @@ const MyFavorite = () => {
                             color: item.savedInLikes ? PURPLE_COLOR : RED_COLOR, fontWeight: 600,
                             [theme.breakpoints.down('sm')]: {
                                 display: 'flex', justifyContent: 'flex-start', alignItems: 'center',
-                                fontSize: '0.85rem', padding: theme.spacing(0.5, 2, 0.5, 2), order: 6, // 순서 조정
+                                fontSize: '0.85rem', padding: theme.spacing(0.5, 2, 0.5, 2), order: 6,
                                 color: LIGHT_TEXT_COLOR, fontWeight: 400, 
-                                '&::before': { content: `'${commentMobileLabels[5]}: '`, ...labelStyles } // 좋아요
+                                '&::before': { content: `'${commentMobileLabels[5]}: '`, ...labelStyles }
                             }
                         })}>
                             <FavoriteIcon sx={{ fontSize: '1rem', verticalAlign: 'middle', color: item.savedInLikes ? PURPLE_COLOR : RED_COLOR, mr: 0.5 }} />{item.likes || 0}
@@ -557,8 +544,8 @@ const MyFavorite = () => {
                             color: LIGHT_TEXT_COLOR,
                             [theme.breakpoints.down('sm')]: {
                                 display: 'flex', justifyContent: 'flex-start',
-                                fontSize: '0.85rem', padding: theme.spacing(0.5, 2, 0.5, 2), order: 5, // 순서 조정
-                                '&::before': { content: `'${commentMobileLabels[6]}: '`, ...labelStyles } // 작성일
+                                fontSize: '0.85rem', padding: theme.spacing(0.5, 2, 0.5, 2), order: 5,
+                                '&::before': { content: `'${commentMobileLabels[6]}: '`, ...labelStyles }
                             }
                         })}>
                             <Box component="span" sx={{ whiteSpace: 'nowrap' }}>
@@ -572,7 +559,7 @@ const MyFavorite = () => {
         });
     };
     
-    // 4. 게시글 주제 탭 렌더링 (게시판/댓글 모드 모두 표시되도록 수정)
+    // 4. 게시글 주제 탭 렌더링
     const renderSubjectTabs = () => {
         return (
             <Box sx={{
@@ -681,7 +668,7 @@ const MyFavorite = () => {
                                         <MenuItem onClick={() => handleSortOptionSelect('asc')}>오름차순 (오래된순)</MenuItem>
                                     </Menu>
 
-                                    {/* 검색 필드 선택 버튼 (댓글 모드에서는 '제목'/'내용' 선택 가능) */}
+                                    {/* 검색 필드 선택 버튼 */}
                                     <FilterButton
                                         variant="outlined"
                                         endIcon={<SortIcon />}

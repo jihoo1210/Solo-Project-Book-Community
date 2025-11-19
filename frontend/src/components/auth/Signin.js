@@ -1,5 +1,3 @@
-// src/components/Signin.js
-
 import React, { useEffect, useState } from 'react';
 import {
     Box, Container, Typography, TextField, Button, Grid, Paper,
@@ -89,6 +87,7 @@ const SignIn = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        if(name === "password") value.toLowerCase();
         const newValue = value.replace(/\s/g, '');
         setFormData((prev) => ({ ...prev, [name]: newValue }));
         setSigninInfos((prev) => ({ ...prev, [name]: '', submit: '' }));

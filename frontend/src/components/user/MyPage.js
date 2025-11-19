@@ -9,14 +9,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import apiClient from '../../api/Api-Service';
 import { useAuth } from '../auth/AuthContext';
-
-// 색상 정의
-const BG_COLOR = '#FFFFFF';
-const TEXT_COLOR = '#000000';
-const LIGHT_TEXT_COLOR = '#555555';
-const ERROR_COLOR = '#f44336'; // 붉은색 추가
-
-const HEADER_HEIGHT = '64px';
+import { BG_COLOR, HEADER_HEIGHT, LIGHT_TEXT_COLOR, RED_COLOR, TEXT_COLOR } from '../constants/Theme';
 
 // 레이아웃 래퍼
 const MyPageWrapper = styled(Box)(({ theme }) => ({
@@ -57,7 +50,7 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
-// 액션 버튼 (수정 완료)
+// 액션 버튼
 const ActionButton = styled(Button)(({ theme }) => ({
   color: BG_COLOR,
   backgroundColor: TEXT_COLOR,
@@ -66,7 +59,7 @@ const ActionButton = styled(Button)(({ theme }) => ({
   '&:hover': { backgroundColor: LIGHT_TEXT_COLOR },
 }));
 
-// 취소 버튼 (새로 추가)
+// 취소 버튼
 const CancelButton = styled(Button)(({ theme }) => ({
   color: TEXT_COLOR,
   borderColor: TEXT_COLOR,
@@ -136,12 +129,12 @@ const MyPage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    // 띄어쓰기 방지 로직 적용
+    if(name === "password") value.toLowerCase();
     const newValue = value.replace(/\s/g, '');
 
     setFormData((prev) => ({ ...prev, [name]: newValue }));
     
-    // 회원명 변경 시 중복 상태 초기화 (수정된 newValue 사용)
+    // 회원명 변경 시 중복 상태 초기화
     if (name === 'username' && newValue !== initialUsername) {
       setIsUsernameAvailable(null);
     }
@@ -165,9 +158,8 @@ const MyPage = () => {
     setIsUsernameAvailable(null);
   }
 
-  // 회원명 중복 체크 메서드 (로직 유지)
+  // 회원명 중복 체크 메서드
   const handleDuplicateCheck = () => {
-    // formData.username은 이미 handleChange에서 띄어쓰기가 제거됨
     const currentUsername = formData.username; 
     if (!currentUsername) {
       alert('회원명을 입력해 주세요.');
@@ -224,7 +216,7 @@ const MyPage = () => {
     };
     
     
-    // API 호출 (PUT 또는 PATCH 메서드 사용 권장)
+    // API 호출
     apiClient.patch('/user/my/change-userInfo', updateData) 
       .then(response => {
         alert('회원 정보가 성공적으로 수정되었습니다.');
@@ -235,7 +227,7 @@ const MyPage = () => {
             password: '',
             passwordConfirm: '',
         }));
-        setInitialUsername(formData.username); // 실제 이름 업데이트 로직 필요
+        setInitialUsername(formData.username);
         login(formData.username)
       })
       .catch(error => {
@@ -310,7 +302,7 @@ const MyPage = () => {
                     required
                     disabled={!isEditMode}
                   />
-                  {/* 검사 버튼 (수정 모드일 때만 표시) */}
+                  {/* 검사 버튼 */}
                   {isEditMode && (
                     <DuplicateCheckButton
                       variant="outlined"
@@ -321,7 +313,7 @@ const MyPage = () => {
                     </DuplicateCheckButton>
                   )}
                 </Box>
-                {/* 중복 검사 결과 메시지 (수정 모드일 때만 표시) */}
+                {/* 중복 검사 결과 메시지 */}
                 {isEditMode && isUsernameAvailable !== null && (
                   <Typography
                     variant="caption"
@@ -340,7 +332,7 @@ const MyPage = () => {
                 )}
               </Grid>
 
-              {/* 비밀번호 입력 필드 (수정 모드일 때만 표시) */}
+              {/* 비밀번호 입력 필드 */}
               {isEditMode && (
                 <>
                   <Grid size={{xs:12}}>
@@ -405,12 +397,10 @@ const MyPage = () => {
               {/* 액션 버튼 그룹 */}
               <Grid size={{xs:12}}>
                 {!isEditMode ? (
-                  // 수정 모드 아닐 때: 회원 정보 수정 버튼 (전체 너비 유지)
                   <ActionButton type="submit" fullWidth variant="contained">
                     회원 정보 수정
                   </ActionButton>
                 ) : (
-                  // 수정 모드일 때: 수정 완료(왼쪽), 취소(오른쪽) 버튼
                   <Grid container spacing={1}>
                     <Grid size={{xs:6}}>
                       <ActionButton type="submit" fullWidth variant="contained">
@@ -449,7 +439,7 @@ const MyPage = () => {
             <Typography variant="body2" sx={{ color: LIGHT_TEXT_COLOR }}>|</Typography>
               <Typography
                 variant="body2"
-                sx={{ color: ERROR_COLOR, fontWeight: 500, '&:hover': { color: '#FF6666' } }} // 붉은색 적용
+                sx={{ color: RED_COLOR, fontWeight: 500, '&:hover': { color: '#FF6666' } }} // 붉은색 적용
                 onClick={handleCancellation}
               >
                 회원 탈퇴

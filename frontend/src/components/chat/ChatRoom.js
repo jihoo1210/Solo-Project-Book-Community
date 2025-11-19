@@ -89,10 +89,10 @@ const MessageBubble = styled(Box)(({ theme, isCurrentUser }) => ({
     width: 0,
     height: 0,
     border: "8px solid transparent",
-    borderBottomColor: isCurrentUser ? LIGHT_TEXT_COLOR : TEXT_COLOR, // isCurrentUser가 아닐 땐 border 색상으로 설정
+    borderBottomColor: isCurrentUser ? LIGHT_TEXT_COLOR : TEXT_COLOR,
     borderTop: 0,
-    borderRight: isCurrentUser ? "none" : "8px solid transparent", // ✅ isCurrentUser가 아닐 때 오른쪽 border 제거
-    borderLeft: isCurrentUser ? "8px solid transparent" : "none", // ✅ 꼬리 크기를 8px로 통일
+    borderRight: isCurrentUser ? "none" : "8px solid transparent",
+    borderLeft: isCurrentUser ? "8px solid transparent" : "none",
     right: isCurrentUser ? "-7px" : "auto",
     left: isCurrentUser ? "auto" : "-7px",
     transform: "translateY(50%)",
@@ -113,7 +113,7 @@ const MessageInputArea = styled(Box)(({ theme }) => ({
 
 const ChatRoom = () => {
   const { roomId } = useParams();
-  const { user } = useAuth(); // user.username 사용
+  const { user } = useAuth()
   const ws = useRef(null);
   const navigate = useNavigate();
 
@@ -158,7 +158,6 @@ const ChatRoom = () => {
 
     ws.current.onmessage = (event) => {
 
-      // 서버 메시지 형식: "username: message"
       const [sender, ...rest] = event.data.split(":");
       const text = rest.join(":").trim();
 
@@ -174,7 +173,7 @@ const ChatRoom = () => {
 
     ws.current.onclose = () => {
       console.log("WebSocket 연결 종료");
-      // navigate("/")
+      navigate("/")
     };
 
     return () => {
@@ -182,7 +181,7 @@ const ChatRoom = () => {
         ws.current.close();
       }
     };
-  }, [roomId, user]);
+  }, [roomId, user, navigate]);
 
   const sendMessage = (e) => {
     e.preventDefault();

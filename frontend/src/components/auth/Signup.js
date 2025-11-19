@@ -1,5 +1,3 @@
-// src/components/Signup.js
-
 import React, { useState } from "react";
 import {
   Box,
@@ -55,7 +53,7 @@ const SignupCard = styled(Paper)(({ theme }) => ({
 
 // 텍스트 필드 스타일 (오류 시 붉은색 테두리 유지)
 const CustomTextField = styled(TextField)(({ theme }) => ({
-  "& .MuiInputLabel-root": { color: LIGHT_TEXT_COLOR },
+  "& .MuiInputLabel-root": { color: `${LIGHT_TEXT_COLOR} !important` },
   "& .MuiOutlinedInput-root": {
     "& fieldset": { borderColor: TEXT_COLOR },
     "&:hover fieldset": { borderColor: TEXT_COLOR },
@@ -135,6 +133,7 @@ const Signup = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if(name === "password") value.toLowerCase();
     let newValue = value.replace(/\s/g, "");
     if (name === "emailVerificationCode") {
       newValue = value

@@ -22,7 +22,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import SortIcon from "@mui/icons-material/Sort";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
@@ -57,14 +57,6 @@ const CustomTab = styled(Tab)(({ theme }) => ({
   minWidth: "80px",
   padding: "12px 16px",
   [theme.breakpoints.down("sm")]: { minWidth: "33.33%", padding: 0 },
-}));
-
-const ActionButton = styled(Button)(({ theme }) => ({
-  color: BG_COLOR,
-  backgroundColor: TEXT_COLOR,
-  fontWeight: 600,
-  padding: theme.spacing(1, 3),
-  "&:hover": { backgroundColor: LIGHT_TEXT_COLOR },
 }));
 
 const CustomSearchField = styled(TextField)(({ theme }) => ({
@@ -135,7 +127,7 @@ const ChatList = () => {
       setError(null);
 
       const pageNumberForBackend = currentPage - 1;
-      const sortParam = `id,${currentSortOrder}`; // ID 기준 정렬 유지
+      const sortParam = `id,${currentSortOrder}`;
       const searchFieldParam = `searchField=${currentSearchField}`;
       const searchTermParam = `searchTerm=${currentSearchTerm}`;
       const tabParam = currentTab > 0 ? `&tab=${currentTab}` : '';
@@ -215,7 +207,6 @@ const ChatList = () => {
 
   // TableRow 클릭 핸들러: 채팅방 상세 페이지로 이동 가정
   const handleRowClick = (chatRoomId) => {
-    // 채팅방 상세 페이지 경로를 '/chat/{id}'로 가정합니다.
     navigate(`/chat/room/${chatRoomId}`);
   };
 
@@ -641,7 +632,7 @@ const ChatList = () => {
                             '&:hover': { backgroundColor: LIGHT_TEXT_COLOR }
                         },
                         '& .MuiPaginationItem-root': { color: TEXT_COLOR }
-                    }}메ㅑ
+                    }}
                 />
             </Box>
           )}

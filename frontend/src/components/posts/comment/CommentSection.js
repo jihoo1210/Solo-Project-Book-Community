@@ -1,5 +1,3 @@
-// src/components/CommentsSection.js
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
     Box, Typography, Paper, Button, Divider,
@@ -8,29 +6,29 @@ import {
 import { styled, alpha } from '@mui/material/styles';
 import { Favorite, CheckCircle, Edit, Delete, Flag } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'; 
-import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined'; 
-import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'; 
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 
 import { useAuth } from '../../auth/AuthContext';
-import apiClient from '../../../api/Api-Service'; 
-import { 
-    BG_COLOR, TEXT_COLOR, LIGHT_TEXT_COLOR, 
+import apiClient from '../../../api/Api-Service';
+import {
+    BG_COLOR, TEXT_COLOR, LIGHT_TEXT_COLOR,
     RED_COLOR, PURPLE_COLOR, DARK_PURPLE_COLOR, MODIFIED_COLOR, AQUA_BLUE, DARK_AQUA_BLUE,
     RECRUIT_ACCENT_COLOR, RECRUIT_DARK_COLOR, RECRUIT_LIGHT_BG,
     RECRUIT_APPROVE_COLOR,
     NEW_COLOR
-} from '../../constants/Theme'; 
-import { getPostDateInfo } from '../../utilities/DateUtiles'; 
+} from '../../constants/Theme';
+import { getPostDateInfo } from '../../utilities/DateUtiles';
 
 
 const AdoptedCommentWrapper = styled(Paper)(({ theme }) => ({
-    backgroundColor: AQUA_BLUE, 
-    color: BG_COLOR, 
+    backgroundColor: AQUA_BLUE,
+    color: BG_COLOR,
     padding: theme.spacing(2, 3),
     borderRadius: (theme.shape?.borderRadius || 4) * 2,
     boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-    marginBottom: theme.spacing(3), 
+    marginBottom: theme.spacing(3),
 }));
 
 const ApplicationWrapper = styled(Box)(({ theme }) => ({
@@ -42,9 +40,8 @@ const ApplicationWrapper = styled(Box)(({ theme }) => ({
 }));
 
 const ApplicationCompleteMessage = styled(ApplicationWrapper)(({ theme, statusType }) => ({
-    // 승인/신청: RECRUIT_ACCENT_COLOR 기반 / 거절: RED_COLOR 기반
-    backgroundColor: alpha((statusType === '거절' || statusType === '마감') ? RED_COLOR : statusType === "승인" ? RECRUIT_APPROVE_COLOR : RECRUIT_ACCENT_COLOR, 0.1), 
-    border: `1px solid ${(statusType === '거절' || statusType === '마감') ? RED_COLOR : statusType === "승인" ? RECRUIT_APPROVE_COLOR : RECRUIT_ACCENT_COLOR}`, 
+    backgroundColor: alpha((statusType === '거절' || statusType === '마감') ? RED_COLOR : statusType === "승인" ? RECRUIT_APPROVE_COLOR : RECRUIT_ACCENT_COLOR, 0.1),
+    border: `1px solid ${(statusType === '거절' || statusType === '마감') ? RED_COLOR : statusType === "승인" ? RECRUIT_APPROVE_COLOR : RECRUIT_ACCENT_COLOR}`,
     textAlign: 'center',
     display: 'flex',
     flexDirection: 'column',
@@ -62,24 +59,24 @@ const ApplicationCompleteMessage = styled(ApplicationWrapper)(({ theme, statusTy
  * @param {number | null} props.adoptedCommentId - 채택된 댓글의 ID
  * @param {function} props.setPostAdoptedId - 부모 상태(post)의 adoptedCommentId를 업데이트하는 함수
  * @param {Array<object>} props.initialComments - API에서 받은 초기 댓글 목록
- * @param {string | null} props.recruitmentResultProp - 현재 사용자의 모임 신청 결과 (null/신청/승인/거절)
+ * @param {string | null} props.recruitmentResultProp - 현재 사용자의 모임 신청 결과 (null/마감/신청/승인/거절)
  */
-const CommentsSection = ({ 
-    postId, 
+const CommentsSection = ({
+    postId,
     postSubject,
-    postAuthorUsername, 
+    postAuthorUsername,
     adoptedCommentId,
     setPostAdoptedId,
     initialComments,
-    recruitmentResultProp // Prop 이름 변경
+    recruitmentResultProp
 }) => {
-    
+
     const { user } = useAuth();
     const commentsListRef = useRef(null);
 
     const [comments, setComments] = useState(initialComments);
     const [newCommentText, setNewCommentText] = useState('');
-    
+
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editingCommentContent, setEditingCommentContent] = useState('');
 
@@ -99,13 +96,13 @@ const CommentsSection = ({
     const handleCommentEditCancel = useCallback(() => {
         setEditingCommentId(null);
         setEditingCommentContent('');
-    }, []); 
+    }, []);
 
     const handleOutsideClick = useCallback((event) => {
         if (editingCommentId && commentsListRef.current && !commentsListRef.current.contains(event.target)) {
             handleCommentEditCancel();
         }
-    }, [editingCommentId, handleCommentEditCancel]); 
+    }, [editingCommentId, handleCommentEditCancel]);
 
     useEffect(() => {
         const handleEscapeKey = (event) => {
@@ -115,13 +112,13 @@ const CommentsSection = ({
         };
 
         document.addEventListener('keydown', handleEscapeKey);
-        document.addEventListener('mousedown', handleOutsideClick); 
+        document.addEventListener('mousedown', handleOutsideClick);
 
         return () => {
             document.removeEventListener('keydown', handleEscapeKey);
             document.removeEventListener('mousedown', handleOutsideClick);
         };
-    }, [editingCommentId, handleOutsideClick, handleCommentEditCancel]); 
+    }, [editingCommentId, handleOutsideClick, handleCommentEditCancel]);
 
     const handleCommentLike = async (commentId) => {
         try {
@@ -155,7 +152,7 @@ const CommentsSection = ({
 
     const handleCommentEditToggle = (commentId, content) => {
         if (editingCommentId === commentId) {
-            handleCommentEditCancel(); 
+            handleCommentEditCancel();
         } else {
             setEditingCommentId(commentId);
             setEditingCommentContent(content);
@@ -169,19 +166,19 @@ const CommentsSection = ({
         }
 
         try {
-            const response = await apiClient.patch(`/comment/${commentId}`, {content: editingCommentContent})
-            const { content: newContent, modifiedDate: newModifiedDate } = response.data.result; 
-            
+            const response = await apiClient.patch(`/comment/${commentId}`, { content: editingCommentContent })
+            const { content: newContent, modifiedDate: newModifiedDate } = response.data.result;
+
             if (newContent) {
                 setComments(prevComments => prevComments.map(comment =>
-                    comment.id === commentId ? { 
-                        ...comment, 
-                        content: newContent, 
-                        modifiedDate: newModifiedDate 
+                    comment.id === commentId ? {
+                        ...comment,
+                        content: newContent,
+                        modifiedDate: newModifiedDate
                     } : comment
                 ));
             }
-        } catch(err) {
+        } catch (err) {
             console.error("댓글 수정 오류:", err.response?.data?.message || err.message);
             alert("댓글 수정 중 오류가 발생했습니다.");
         } finally {
@@ -207,12 +204,12 @@ const CommentsSection = ({
                     id: commentData.id,
                     content: commentData.content,
                     username: commentData.username,
-                    createdDate: commentData.createdDate, 
+                    createdDate: commentData.createdDate,
                     modifiedDate: commentData.modifiedDate,
                     likes: commentData.likes || 0,
-                    savedInLikes: false 
+                    savedInLikes: false
                 }
-                setComments(prev => [newComment, ...prev]) 
+                setComments(prev => [newComment, ...prev])
                 setNewCommentText('');
             }
         } catch (err) {
@@ -243,16 +240,16 @@ const CommentsSection = ({
         }
 
         if (adoptedCommentId) {
-             alert('이미 댓글이 채택되었습니다.');
-             return;
+            alert('이미 댓글이 채택되었습니다.');
+            return;
         }
 
         if (window.confirm('이 댓글을 채택하시겠습니까? 채택된 댓글은 취소가 불가능할 수 있습니다.')) {
             try {
                 await apiClient.post(`/comment/${commentId}/adopt`);
-                
+
                 setPostAdoptedId(commentId);
-                
+
             } catch (err) {
                 console.error("댓글 채택 오류:", err.response?.data?.message || err.message);
                 alert("댓글 채택 중 오류가 발생했습니다: " + (err.response?.data?.message || '알 수 없는 오류'));
@@ -267,10 +264,10 @@ const CommentsSection = ({
         }
 
         try {
-            await apiClient.post(`/comment/${postId}/apply-recruitment`, {content: applicationText})
+            await apiClient.post(`/comment/${postId}/apply-recruitment`, { content: applicationText })
 
             setApplicationText('');
-            setRecruitmentResult('신청') // 요청 1: 신청 상태로 업데이트
+            setRecruitmentResult('신청')
         } catch (err) {
             console.error("모임 신청 오류:", err.response?.data?.message || err.message);
             alert("모임 신청 중 오류가 발생했습니다.");
@@ -283,18 +280,18 @@ const CommentsSection = ({
 
     const isQuestionPostAuthor = postSubject === '질문' && user?.username === postAuthorUsername;
     const isSolved = !!adoptedCommentId;
-    
+
     const isRecruitPost = postSubject === '모집';
 
     const renderApplicationStatus = () => {
-        // Case 4: recruitmentResult === null (신청 폼)
+        // recruitmentResult === null (신청 폼)
         if (!recruitmentResult) {
             return (
                 <ApplicationWrapper>
-                    <Typography 
-                        variant="subtitle1" 
-                        sx={{ 
-                            fontWeight: 700, 
+                    <Typography
+                        variant="subtitle1"
+                        sx={{
+                            fontWeight: 700,
                             color: RECRUIT_ACCENT_COLOR,
                             mb: 1.5,
                             display: 'flex',
@@ -313,9 +310,9 @@ const CommentsSection = ({
                         onChange={(e) => setApplicationText(e.target.value)}
                         sx={{
                             '& .MuiOutlinedInput-root': {
-                                '& fieldset': { borderColor: alpha(RECRUIT_ACCENT_COLOR, 0.6) }, 
+                                '& fieldset': { borderColor: alpha(RECRUIT_ACCENT_COLOR, 0.6) },
                                 '&:hover fieldset': { borderColor: RECRUIT_ACCENT_COLOR },
-                                '&.Mui-focused fieldset': { borderColor: RECRUIT_ACCENT_COLOR, borderWidth: '2px' }, 
+                                '&.Mui-focused fieldset': { borderColor: RECRUIT_ACCENT_COLOR, borderWidth: '2px' },
                             },
                             mb: 1
                         }}
@@ -339,24 +336,24 @@ const CommentsSection = ({
                 </ApplicationWrapper>
             )
         }
-        
-        // Case 1, 2, 3: 신청, 승인, 거절 상태 표시
+
+        // 마감, 신청, 승인, 거절 상태 표시
         let message, subMessage, icon, color;
 
         switch (recruitmentResult) {
-            case '신청': // 요청 1
+            case '신청':
                 message = '신청되었습니다.';
                 subMessage = '신청 내용은 작성자에게 전달되었으며, 승인을 기다리고 있습니다.';
                 icon = <CheckCircleOutlineIcon />;
                 color = RECRUIT_ACCENT_COLOR;
                 break;
-            case '승인': // 요청 2
+            case '승인':
                 message = '승인되었습니다.';
                 subMessage = '모임 참여가 확정되었습니다.';
                 icon = <ThumbUpOutlinedIcon />;
                 color = RECRUIT_APPROVE_COLOR;
                 break;
-            case '거절': // 요청 3
+            case '거절':
                 message = '거절되었습니다.';
                 subMessage = '자세한 정보를 알고 싶다면 알림 보관함으로 이동하세요.';
                 icon = <CancelOutlinedIcon />;
@@ -375,60 +372,60 @@ const CommentsSection = ({
 
         return (
             <ApplicationCompleteMessage statusType={recruitmentResult}>
-                {React.cloneElement(icon, { 
-                    sx: { 
-                        fontSize: 48, 
-                        color: color, 
-                        mb: 1.5 
-                    } 
+                {React.cloneElement(icon, {
+                    sx: {
+                        fontSize: 48,
+                        color: color,
+                        mb: 1.5
+                    }
                 })}
-                <Typography 
-                    variant="h6" 
-                    sx={{ 
-                        fontWeight: 700, 
-                        color: color 
+                <Typography
+                    variant="h6"
+                    sx={{
+                        fontWeight: 700,
+                        color: color
                     }}
                 >
                     {message}
                 </Typography>
-                <Typography 
-                    variant="body2" 
-                    sx={{ 
-                        mt: 1, 
-                        color: alpha(color, 0.8) 
+                <Typography
+                    variant="body2"
+                    sx={{
+                        mt: 1,
+                        color: alpha(color, 0.8)
                     }}
                 >
                     {subMessage}
                 </Typography>
                 {recruitmentResult === '거절' && (
-                    <Button 
-                        variant="text" 
+                    <Button
+                        variant="text"
                         size="small"
-                        component={Link} 
-                        to="/my/alerts" 
-                        sx={{ 
-                            mt: 1, 
-                            color: RED_COLOR, 
-                            fontSize: '0.8rem', 
-                            p: 0, 
-                            minWidth: 'auto' 
+                        component={Link}
+                        to="/my/alerts"
+                        sx={{
+                            mt: 1,
+                            color: RED_COLOR,
+                            fontSize: '0.8rem',
+                            p: 0,
+                            minWidth: 'auto'
                         }}
                     >
                         알림 보관함으로 이동
                     </Button>
                 )}
                 {recruitmentResult === '승인' && (
-                                        <Button 
-                        variant="text" 
+                    <Button
+                        variant="text"
                         size="small"
-                        component={Link} 
-                        to={`/chat/list`} 
-                        sx={{ 
-                            mt: 1, 
-                            color: NEW_COLOR, 
-                            fontSize: '0.8rem', 
-                            p: 0, 
-                            minWidth: 'auto' 
+                        component={Link}
+                        to={`/chat/list`}
+                        sx={{
+                            mt: 1,
+                            color: NEW_COLOR,
+                            fontSize: '0.8rem',
+                            p: 0,
+                            minWidth: 'auto'
                         }}
                     >
                         알림 보관함으로 이동
@@ -532,233 +529,234 @@ const CommentsSection = ({
                     borderRadius: 1,
                     p: 0,
                     [theme.breakpoints.down('sm')]: {
-                        marginX: theme.spacing(2), 
+                        marginX: theme.spacing(2),
                     },
                 })}>
                 {filteredComments
                     .filter(comment => comment)
                     .map((comment, index, arr) => {
                         const commentDateInfo = getPostDateInfo(comment.modifiedDate, comment.createdDate);
-                        
+
                         return (
-                        <ListItem
-                            key={comment.id}
-                            disableGutters
-                            sx={{
-                                borderBottom: index !== arr.length - 1 ? `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` : 'none',
-                                py: 1.5,
-                                px: 2,
-                                flexDirection: 'column',
-                                alignItems: 'flex-start',
-                            }}
-                        >
-                            <ListItemText
-                                primary={
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5, width: '100%' }}>
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: TEXT_COLOR }}>{comment.username}</Typography>
-                                        <Typography variant="caption" color={LIGHT_TEXT_COLOR}>
-                                            작성일:
-                                            <Box component="span" sx={{ ml: 0.5, whiteSpace: 'nowrap' }}>
-                                                {commentDateInfo.dateDisplay}
-                                                {commentDateInfo.isModified && (
-                                                    <Typography
-                                                        component="span"
-                                                        sx={{
-                                                            ml: 0.5,
-                                                            fontWeight: 600,
-                                                            color: MODIFIED_COLOR,
-                                                            fontSize: '0.8rem',
-                                                            flexShrink: 0,
-                                                            whiteSpace: 'nowrap',
-                                                        }}
-                                                    >
-                                                        [수정됨]
-                                                    </Typography>
-                                                )}
-                                            </Box>
-                                        </Typography>
-                                    </Box>
-                                }
-                                secondary={
-                                    <Box sx={{ width: '100%' }}>
-                                        {editingCommentId === comment.id ? (
-                                            <TextField
-                                                fullWidth
-                                                multiline
-                                                rows={3}
-                                                value={editingCommentContent}
-                                                onChange={(e) => setEditingCommentContent(e.target.value)}
-                                                id={`comment-edit-${comment.id}`}
-                                                sx={{ mb: 1 }}
-                                            />
-                                        ) : (
-                                            <Typography
-                                                variant="body2"
-                                                color={TEXT_COLOR}
-                                                sx={{ mb: 1, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
-                                            >
-                                                {comment.content}
-                                            </Typography>
-                                        )}
-
-                                        <Box
-                                            sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, alignItems: 'center', mt: 1 }}
-                                        >
-                                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                                                <Button
-                                                    size="small"
-                                                    onClick={() => handleCommentLike(comment.id)}
-                                                    disabled={editingCommentId === comment.id}
-                                                    startIcon={<Favorite fontSize="small" />}
-                                                    sx={{
-                                                        color: BG_COLOR,
-                                                        '&.Mui-disabled': {
-                                                            color: comment.savedInLikes ? '#ecc8f3 !important' : `${LIGHT_TEXT_COLOR} !important`
-                                                        },
-                                                        backgroundColor: comment.savedInLikes ? PURPLE_COLOR : TEXT_COLOR,
-                                                        '&:hover': {
-                                                            backgroundColor: comment.savedInLikes ? DARK_PURPLE_COLOR : LIGHT_TEXT_COLOR
-                                                        },
-                                                        border: '1px solid transparent',
-                                                        fontWeight: 600,
-                                                        minWidth: 'auto',
-                                                        padding: '4px 8px',
-                                                        height: '32px',
-                                                        fontSize: '0.8rem',
-                                                    }}
-                                                >
-                                                    ({comment.likes})
-                                                </Button>
-
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => handleReport('댓글', comment.id)}
-                                                    disabled={editingCommentId === comment.id}
-                                                    sx={{
-                                                        color: LIGHT_TEXT_COLOR,
-                                                        '&:hover': { color: TEXT_COLOR },
-                                                        border: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.7)}`,
-                                                        borderRadius: 1,
-                                                        padding: '6px',
-                                                        height: '32px',
-                                                        width: '32px',
-                                                    }}
-                                                >
-                                                    <Flag fontSize="inherit" />
-                                                </IconButton>
-                                            </Box>
-
-                                            {comment.username === user?.username && (
-                                                <Box
-                                                    sx={{ display: 'flex', gap: 1, alignItems: 'center', ml: 2, pl: 2, borderLeft: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` }}
-                                                >
-                                                    {editingCommentId === comment.id ? (
-                                                        <>
-                                                            <Button
-                                                                variant="contained"
-                                                                size="small"
-                                                                onClick={() => handleCommentEditSave(comment.id)}
-                                                                sx={{ 
-                                                                    minWidth: '50px', 
-                                                                    p: '4px 8px', 
-                                                                    height: '32px',
-                                                                    color: BG_COLOR,
-                                                                    backgroundColor: TEXT_COLOR,
-                                                                    fontWeight: 600,
-                                                                    '&:hover': { backgroundColor: LIGHT_TEXT_COLOR }
-                                                                }}
-                                                            >
-                                                                저장
-                                                            </Button>
-                                                            <Button
-                                                                variant="outlined"
-                                                                size="small"
-                                                                onClick={handleCommentEditCancel}
-                                                                sx={{ minWidth: '50px', p: '4px 8px', height: '32px', color: TEXT_COLOR, borderColor: TEXT_COLOR }}
-                                                            >
-                                                                취소
-                                                            </Button>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <IconButton
-                                                                size="small"
-                                                                onClick={() => handleCommentEditToggle(comment.id, comment.content)}
-                                                                sx={{
-                                                                    color: LIGHT_TEXT_COLOR,
-                                                                    '&:hover': { color: TEXT_COLOR },
-                                                                    border: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.7)}`,
-                                                                    borderRadius: 1,
-                                                                    padding: '6px',
-                                                                    height: '32px',
-                                                                    width: '32px',
-                                                                }}
-                                                            >
-                                                                <Edit fontSize="inherit" />
-                                                            </IconButton>
-
-                                                            <Button
-                                                                variant="contained"
-                                                                size="small"
-                                                                onClick={() => handleCommentDelete(comment.id)}
-                                                                sx={{
-                                                                    backgroundColor: RED_COLOR,
-                                                                    color: BG_COLOR,
-                                                                    '&:hover': {
-                                                                        backgroundColor: alpha(RED_COLOR, 0.9),
-                                                                    },
-                                                                    border: `1px solid ${RED_COLOR}`,
-                                                                    minWidth: 'auto',
-                                                                    padding: '6px',
-                                                                    height: '32px',
-                                                                    width: '32px',
-                                                                    fontSize: '0.8rem',
-                                                                }}
-                                                            >
-                                                                <Delete fontSize='small' />
-                                                            </Button>
-                                                        </>
+                            <ListItem
+                                key={comment.id}
+                                disableGutters
+                                sx={{
+                                    borderBottom: index !== arr.length - 1 ? `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` : 'none',
+                                    py: 1.5,
+                                    px: 2,
+                                    flexDirection: 'column',
+                                    alignItems: 'flex-start',
+                                }}
+                            >
+                                <ListItemText
+                                    primary={
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5, width: '100%' }}>
+                                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: TEXT_COLOR }}>{comment.username}</Typography>
+                                            <Typography variant="caption" color={LIGHT_TEXT_COLOR}>
+                                                작성일:
+                                                <Box component="span" sx={{ ml: 0.5, whiteSpace: 'nowrap' }}>
+                                                    {commentDateInfo.dateDisplay}
+                                                    {commentDateInfo.isModified && (
+                                                        <Typography
+                                                            component="span"
+                                                            sx={{
+                                                                ml: 0.5,
+                                                                fontWeight: 600,
+                                                                color: MODIFIED_COLOR,
+                                                                fontSize: '0.8rem',
+                                                                flexShrink: 0,
+                                                                whiteSpace: 'nowrap',
+                                                            }}
+                                                        >
+                                                            [수정됨]
+                                                        </Typography>
                                                     )}
                                                 </Box>
+                                            </Typography>
+                                        </Box>
+                                    }
+                                    secondary={
+                                        <Box sx={{ width: '100%' }}>
+                                            {editingCommentId === comment.id ? (
+                                                <TextField
+                                                    fullWidth
+                                                    multiline
+                                                    rows={3}
+                                                    value={editingCommentContent}
+                                                    onChange={(e) => setEditingCommentContent(e.target.value)}
+                                                    id={`comment-edit-${comment.id}`}
+                                                    sx={{ mb: 1 }}
+                                                />
+                                            ) : (
+                                                <Typography
+                                                    variant="body2"
+                                                    color={TEXT_COLOR}
+                                                    sx={{ mb: 1, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+                                                >
+                                                    {comment.content}
+                                                </Typography>
                                             )}
 
-                                            {isQuestionPostAuthor && (
-                                                <Box
-                                                    sx={{ display: 'flex', gap: 1, alignItems: 'center', ml: 2, pl: 2, borderLeft: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` }}
-                                                >
+                                            <Box
+                                                sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, alignItems: 'center', mt: 1 }}
+                                            >
+                                                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                                                     <Button
-                                                        variant="contained" 
                                                         size="small"
-                                                        onClick={() => handleCommentAdopt(comment.id)}
-                                                        disabled={editingCommentId === comment.id || isSolved || user.username === comment.username}
-                                                        startIcon={null} 
+                                                        onClick={() => handleCommentLike(comment.id)}
+                                                        disabled={editingCommentId === comment.id}
+                                                        startIcon={<Favorite fontSize="small" />}
                                                         sx={{
-                                                            fontWeight: 600,
                                                             color: BG_COLOR,
-                                                            backgroundColor: AQUA_BLUE, 
-                                                            border: '1px solid transparent',
-                                                            '&:hover': {
-                                                                backgroundColor: DARK_AQUA_BLUE, 
+                                                            '&.Mui-disabled': {
+                                                                color: comment.savedInLikes ? '#ecc8f3 !important' : `${LIGHT_TEXT_COLOR} !important`
                                                             },
+                                                            backgroundColor: comment.savedInLikes ? PURPLE_COLOR : TEXT_COLOR,
+                                                            '&:hover': {
+                                                                backgroundColor: comment.savedInLikes ? DARK_PURPLE_COLOR : LIGHT_TEXT_COLOR
+                                                            },
+                                                            border: '1px solid transparent',
+                                                            fontWeight: 600,
                                                             minWidth: 'auto',
                                                             padding: '4px 8px',
                                                             height: '32px',
                                                             fontSize: '0.8rem',
-                                                            flexShrink: 0,
                                                         }}
                                                     >
-                                                        채택
+                                                        ({comment.likes})
                                                     </Button>
+
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleReport('댓글', comment.id)}
+                                                        disabled={editingCommentId === comment.id}
+                                                        sx={{
+                                                            color: LIGHT_TEXT_COLOR,
+                                                            '&:hover': { color: TEXT_COLOR },
+                                                            border: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.7)}`,
+                                                            borderRadius: 1,
+                                                            padding: '6px',
+                                                            height: '32px',
+                                                            width: '32px',
+                                                        }}
+                                                    >
+                                                        <Flag fontSize="inherit" />
+                                                    </IconButton>
                                                 </Box>
-                                            )}
+
+                                                {comment.username === user?.username && (
+                                                    <Box
+                                                        sx={{ display: 'flex', gap: 1, alignItems: 'center', ml: 2, pl: 2, borderLeft: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` }}
+                                                    >
+                                                        {editingCommentId === comment.id ? (
+                                                            <>
+                                                                <Button
+                                                                    variant="contained"
+                                                                    size="small"
+                                                                    onClick={() => handleCommentEditSave(comment.id)}
+                                                                    sx={{
+                                                                        minWidth: '50px',
+                                                                        p: '4px 8px',
+                                                                        height: '32px',
+                                                                        color: BG_COLOR,
+                                                                        backgroundColor: TEXT_COLOR,
+                                                                        fontWeight: 600,
+                                                                        '&:hover': { backgroundColor: LIGHT_TEXT_COLOR }
+                                                                    }}
+                                                                >
+                                                                    저장
+                                                                </Button>
+                                                                <Button
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    onClick={handleCommentEditCancel}
+                                                                    sx={{ minWidth: '50px', p: '4px 8px', height: '32px', color: TEXT_COLOR, borderColor: TEXT_COLOR }}
+                                                                >
+                                                                    취소
+                                                                </Button>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <IconButton
+                                                                    size="small"
+                                                                    onClick={() => handleCommentEditToggle(comment.id, comment.content)}
+                                                                    sx={{
+                                                                        color: LIGHT_TEXT_COLOR,
+                                                                        '&:hover': { color: TEXT_COLOR },
+                                                                        border: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.7)}`,
+                                                                        borderRadius: 1,
+                                                                        padding: '6px',
+                                                                        height: '32px',
+                                                                        width: '32px',
+                                                                    }}
+                                                                >
+                                                                    <Edit fontSize="inherit" />
+                                                                </IconButton>
+
+                                                                <Button
+                                                                    variant="contained"
+                                                                    size="small"
+                                                                    onClick={() => handleCommentDelete(comment.id)}
+                                                                    sx={{
+                                                                        backgroundColor: RED_COLOR,
+                                                                        color: BG_COLOR,
+                                                                        '&:hover': {
+                                                                            backgroundColor: alpha(RED_COLOR, 0.9),
+                                                                        },
+                                                                        border: `1px solid ${RED_COLOR}`,
+                                                                        minWidth: 'auto',
+                                                                        padding: '6px',
+                                                                        height: '32px',
+                                                                        width: '32px',
+                                                                        fontSize: '0.8rem',
+                                                                    }}
+                                                                >
+                                                                    <Delete fontSize='small' />
+                                                                </Button>
+                                                            </>
+                                                        )}
+                                                    </Box>
+                                                )}
+
+                                                {isQuestionPostAuthor && (
+                                                    <Box
+                                                        sx={{ display: 'flex', gap: 1, alignItems: 'center', ml: 2, pl: 2, borderLeft: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` }}
+                                                    >
+                                                        <Button
+                                                            variant="contained"
+                                                            size="small"
+                                                            onClick={() => handleCommentAdopt(comment.id)}
+                                                            disabled={editingCommentId === comment.id || isSolved || user.username === comment.username}
+                                                            startIcon={null}
+                                                            sx={{
+                                                                fontWeight: 600,
+                                                                color: BG_COLOR,
+                                                                backgroundColor: AQUA_BLUE,
+                                                                border: '1px solid transparent',
+                                                                '&:hover': {
+                                                                    backgroundColor: DARK_AQUA_BLUE,
+                                                                },
+                                                                minWidth: 'auto',
+                                                                padding: '4px 8px',
+                                                                height: '32px',
+                                                                fontSize: '0.8rem',
+                                                                flexShrink: 0,
+                                                            }}
+                                                        >
+                                                            채택
+                                                        </Button>
+                                                    </Box>
+                                                )}
+                                            </Box>
                                         </Box>
-                                    </Box>
-                                }
-                                slotProps={{ secondary: { component: 'div' } }}
-                                sx={{ width: '100%', m: 0 }}
-                            />
-                        </ListItem>
-                    )})}
+                                    }
+                                    slotProps={{ secondary: { component: 'div' } }}
+                                    sx={{ width: '100%', m: 0 }}
+                                />
+                            </ListItem>
+                        )
+                    })}
             </List>
         </>
     );

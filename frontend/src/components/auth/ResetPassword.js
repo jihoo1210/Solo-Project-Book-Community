@@ -1,5 +1,3 @@
-// src/components/ResetPassword.js
-
 import React, { useState } from "react";
 import {
   Box,
@@ -135,20 +133,23 @@ const ResetPassword = () => {
   // 입력 변경 시 오류 초기화 + 이메일 변경 감지
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const newValue = value.replace(/\s/g, "");
+    if(name === "password" || name === "passwordConfirm") value.toLowerCase()
+    const newValue = value.replace(/\s/g, "").toLowerCase();
     setFormData((prev) => ({ ...prev, [name]: newValue }));
     setFormErrors((prev) => ({ ...prev, [name]: "" }));
 
     if (name === "email") {
       if (newValue !== lastSentEmail) {
-        // ✅ 이메일이 바뀌면 인증 상태 초기화
+        // 이메일이 바뀌면 인증 상태 초기화
         setShowEmailVerificationInput(false);
         setEmailVerificationCode("");
         setIsEmailVerified(false);
         setEmailVerificationInfo("");
-      } else {
-        // ✅ 다시 원래 이메일로 입력하면 인증 코드 입력란 복원
+      } else if(newValue !== '') {
+        // 다시 원래 이메일로 입력하면 인증 코드 입력란 복원
         setShowEmailVerificationInput(true);
+      } else {
+        setShowEmailVerificationInput(false)
       }
     }
   };
@@ -166,6 +167,7 @@ const ResetPassword = () => {
     try {
       setFormErrors(prev => ({...prev, email: ''}))
       setIsLoading(true);
+      // 이메일 전송 요청
       const response = await apiClient.get(
         `/auth/send-code?email=${formData.email}`
       );
@@ -180,7 +182,7 @@ const ResetPassword = () => {
           "CODE_SENT: 인증 코드가 전송되었습니다. 이메일을 확인해 주세요."
         );
         setShowEmailVerificationInput(true);
-        setLastSentEmail(formData.email); // ✅ 마지막 전송 이메일 저장
+        setLastSentEmail(formData.email); // 마지막 전송 이메일 저장
         setIsEmailVerified(false);
       }
     } catch (error) {
@@ -212,7 +214,7 @@ const ResetPassword = () => {
         username: username,
       }));
       
-      // ✅ 성공 시 오류 초기화
+      // 성공 시 오류 초기화
       setFormErrors({
         email: "",
         password: "",
@@ -263,7 +265,7 @@ const ResetPassword = () => {
         email: formData.email,
         password: formData.password,
       });
-      // ✅ 성공 시 오류 초기화
+      // 성공 시 오류 초기화
       setFormErrors({
         email: "",
         password: "",
@@ -449,7 +451,7 @@ const ResetPassword = () => {
                     label="회원명"
                     name="username"
                     value={formData.username}
-                    InputProps={{ readOnly: true }}
+                    slotProps={{input: {readOnly: true }}}
                   />
                 </Grid>
               )}

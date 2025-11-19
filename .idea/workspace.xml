@@ -4,47 +4,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#26 Implement S3">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AdminController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/ReportController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/UsernameAndRoleResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/user/UserIndexResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Report.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/ReportRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/AdminService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/ReportService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/ReportCommentSearchSpec.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/ReportPostsSearchSpec.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/ReportUserSearchSpec.java" afterDir="false" />
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#28 알림 조회 오류 수정">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/UsernameResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/UsernameResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/signin/SigninResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/signin/SigninResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Alert.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Alert.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Comment.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Comment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/PostsLikes.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/PostsLikes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/utilities/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/utilities/Role.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/AlertRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/AlertRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/CommentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/CommentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/CommentLikesSearchSpec.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/CommentLikesSearchSpec.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/CommentSearchSpec.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/CommentSearchSpec.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/web/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/web/DataInitializer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPage.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/AuthContext.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/AuthContext.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/ResetPassword.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/ResetPassword.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/chat/ChatList.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/chat/ChatList.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/chat/ChatRoom.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/chat/ChatRoom.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/constants/Theme.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/constants/Theme.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/comment/CommentSection.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/comment/CommentSection.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/templates/Footer.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/templates/Footer.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyFavorite.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyFavorite.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyPage.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,12 +122,12 @@
     <option name="currentCommit" value="1" />
     <option name="onto" value="242858b6faf36cd205d1372ddc4db6e2783a8735" />
   </component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/jihoo1210/Solo-Project-Book-Community.git&quot;,
-    &quot;accountId&quot;: &quot;2851e419-635c-4983-9c5d-41855a7be81c&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/jihoo1210/Solo-Project-Book-Community.git",
+    "accountId": "981623e4-9cc5-4c69-9507-d334c6a6570f"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 2
@@ -554,7 +533,31 @@
       <option name="project" value="LOCAL" />
       <updated>1763430216114</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="#28 관리자 페이지, 디자인 및 약간의 오류 수정">
+      <option name="closed" value="true" />
+      <created>1763537265853</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1763537265853</updated>
+    </task>
+    <task id="LOCAL-00043" summary="#28 관리자 기능 및 프론트엔드로 현재 사용자가 관리자임을 알려주기 위한 기능 추가">
+      <option name="closed" value="true" />
+      <created>1763537300024</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1763537300024</updated>
+    </task>
+    <task id="LOCAL-00044" summary="#28 알림 조회 오류 수정">
+      <option name="closed" value="true" />
+      <created>1763537320819</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1763537320819</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -582,9 +585,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#19 Create Favorite and My Actives Function" />
-    <MESSAGE value="#19 Create Favorite and My Actives Pages and delete alert" />
-    <MESSAGE value="#20 알림 읽음 상태 로직 비활성화(오류 발생: 추가 후에 바로 삭제하면 안됨)" />
     <MESSAGE value="#20 알림을 읽지 않았을 때 녹색 표시 비활성화(오류)" />
     <MESSAGE value="#20 이전 커밋과 동일" />
     <MESSAGE value="#20 회원가입 이메일 검증 Page" />
@@ -607,6 +607,9 @@
     <MESSAGE value="#24 약간의 오류 수정 및 정리" />
     <MESSAGE value="#26 댓글 삭제 -&gt; 알림 삭제, 채택 댓글 오류 수정" />
     <MESSAGE value="#26 Implement S3" />
-    <option name="LAST_COMMIT_MESSAGE" value="#26 Implement S3" />
+    <MESSAGE value="#28 관리자 페이지, 디자인 및 약간의 오류 수정" />
+    <MESSAGE value="#28 관리자 기능 및 프론트엔드로 현재 사용자가 관리자임을 알려주기 위한 기능 추가" />
+    <MESSAGE value="#28 알림 조회 오류 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="#28 알림 조회 오류 수정" />
   </component>
 </project>

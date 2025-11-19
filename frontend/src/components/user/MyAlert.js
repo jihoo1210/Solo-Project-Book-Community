@@ -6,23 +6,18 @@ import {
     CircularProgress,
     TextField, InputAdornment, IconButton, Menu, MenuItem,
     Collapse,
-    // [추가] Accordion과 유사한 동작을 위해 Icons를 추가합니다.
-    Tooltip, // 버튼에 툴팁을 추가합니다.
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 
 import apiClient from '../../api/Api-Service';
 
-// 검색 및 정렬 관련 아이콘
 import SearchIcon from '@mui/icons-material/Search';
 import SortIcon from '@mui/icons-material/Sort';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-// 승인/거절 관련 아이콘
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-// [추가] 확장/축소 아이콘
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
@@ -32,7 +27,7 @@ import {
     COMMENT_COLOR, ADOPT_COLOR,
     APPROVE_COLOR, REJECT_COLOR,
     APPLICATION_COLOR,
-    NEW_COLOR // [추가] 안 읽은 알림 강조를 위해 NEW_COLOR를 import합니다.
+    NEW_COLOR
 } from '../constants/Theme';
 import { formatTimeOrDate } from '../utilities/DateUtiles';
 
@@ -160,7 +155,6 @@ const MyAlert = () => {
 
     const [sortOrder, setSortOrder] = useState('desc');
 
-    // [수정] Hover 상태 제거 및 Expanded 상태 추가
     const [expandedAlertId, setExpandedAlertId] = useState(null); // 현재 확장된 알림의 ID
     const [reason, setReason] = useState('');
     const [actionLoading, setActionLoading] = useState(null);
@@ -200,8 +194,6 @@ const MyAlert = () => {
             setAlerts([]);
             setTotalAlerts(0);
         } finally {
-            // 알림 읽음 처리 로직 제거 (서버에서 이미 처리하거나, '읽음' 상태 표시를 하지 않음)
-            // apiClient.delete("/alert/close") // AlertService.java에서 관련 로직 삭제했으므로 클라이언트에서도 제거
             setIsLoading(false);
         }
     };
@@ -233,8 +225,7 @@ const MyAlert = () => {
             window.alert(errorMsg);
         } finally {
             setActionLoading(null);
-            // setHoveredAlertId(null); // 제거
-            setExpandedAlertId(null); // [수정] 확장 상태 닫기
+            setExpandedAlertId(null); // 확장 상태 닫기
             setReason('');
         }
     };
@@ -270,8 +261,7 @@ const MyAlert = () => {
             window.alert(errorMsg);
         } finally {
             setActionLoading(null);
-            // setHoveredAlertId(null); // 제거
-            setExpandedAlertId(null); // [수정] 확장 상태 닫기
+            setExpandedAlertId(null); // 확장 상태 닫기
             setReason('');
         }
     };
@@ -292,7 +282,7 @@ const MyAlert = () => {
     const handlePerPageSelect = (value) => { setRowsPerPage(value); setPage(1); setPerPageAnchorEl(null); };
 
     /**
-     * [수정] Row 클릭 핸들러 (Accordion/Collapse 확장/축소 기능)
+     * Row 클릭 핸들러
      * - '신청' 타입일 경우에만 인라인 액션이 표시되며, 다른 알림은 전체 내용만 표시됩니다.
      */
     const handleRowClick = async (alert, event) => {
@@ -309,14 +299,7 @@ const MyAlert = () => {
             setExpandedAlertId(alert.id);
             setReason(''); // 확장 열 때 사유 초기화
         }
-
-        // 원래의 네비게이션 로직 (클릭 시 이동)은 주석 처리 또는 제거
-        // const targetPath = alert.link || `/post/${alert.postsId}?from=my-alerts`;
-        // window.location.href = targetPath;
-        // 요청 사항에 '클릭하면 accordion이 작동'하는 것으로 변경되었으므로, 네비게이션은 막습니다.
     };
-    
-    // [삭제] 호버 시작/종료 핸들러 제거
 
     const pageCount = Math.ceil(totalAlerts / rowsPerPage);
     const tabLabels = ['전체', '댓글', '채택', '신청', '승인/거절'];
@@ -516,12 +499,11 @@ const MyAlert = () => {
                                     <CustomTableCell sx={{ width: '35%' }}>게시글 제목</CustomTableCell>
                                     <CustomTableCell sx={{ width: '30%' }}>알림 내용</CustomTableCell>
                                     <CustomTableCell sx={{ width: '10%' }}>작성자</CustomTableCell>
-                                    {/* [수정] 작성일 셀의 너비를 12%로 조정 (기존 10% + 아이콘 2% 공간 통합)하고, 아이콘용 셀 삭제 */}
                                     <CustomTableCell sx={{ width: '12%' }}>작성일</CustomTableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {/* 로딩 및 에러 상태 (colSpan=6으로 변경) */}
+                                {/* 로딩 및 에러 상태 */}
                                 {isLoading ? (
                                     <TableRow>
                                         <TableCell colSpan={6} sx={{ textAlign: 'center', py: 5 }}>
@@ -545,15 +527,12 @@ const MyAlert = () => {
                                     alerts.map((alert) => {
                                         const subjectString = alert.subject;
                                         
-                                        // [추가] savedInViews 상태에 따라 배경색을 결정합니다. (PostsList.js와 동일)
                                         const isViewed = alert.savedInViews;
-                                        const isExpanded = expandedAlertId === alert.id; // [수정] 확장 상태 확인
+                                        const isExpanded = expandedAlertId === alert.id; // 확장 상태 확인
                                         
                                         const rowBackgroundColor = isViewed ? BG_COLOR : alpha(NEW_COLOR, 0.1);
-                                        // 확장된 상태에서는 배경색을 강조
                                         const activeBackgroundColor = isExpanded ? alpha(TEXT_COLOR, 0.05) : rowBackgroundColor;
 
-                                        // isRead/willRead 관련 스타일 제거. 기본 색상과 굵기 사용
                                         const rowColor = TEXT_COLOR;
                                         const rowFontWeight = 400;
 
@@ -574,26 +553,22 @@ const MyAlert = () => {
                                             <React.Fragment key={alert.id}>
                                                 <TableRow
                                                     onClick={(event) => handleRowClick(alert, event)}
-                                                    // [삭제] onMouseEnter, onMouseLeave 제거
                                                     sx={(theme) => ({
                                                         textDecoration: 'none',
                                                         '& > .MuiTableCell-root': { borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` },
-                                                        // 확장된 상태가 아닐 때만 마지막 구분선 처리
                                                         '&:last-child > .MuiTableCell-root': { borderBottom: isExpanded ? `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` : 'none' },
-                                                        // [수정] 확장 상태에 따라 배경색 설정
                                                         backgroundColor: activeBackgroundColor,
                                                         '&:hover': {
                                                             backgroundColor: alpha(TEXT_COLOR, 0.05),
                                                             cursor: 'pointer'
                                                         },
-                                                        // PostsList의 반응형 디자인 적용
                                                         [theme.breakpoints.down('sm')]: {
                                                             display: 'block',
-                                                            borderBottom: isExpanded ? 'none !important' : `1px solid ${TEXT_COLOR} !important`, // 모바일에서 확장 시 하단 선 제거
+                                                            borderBottom: isExpanded ? 'none !important' : `1px solid ${TEXT_COLOR} !important`, 
                                                             padding: theme.spacing(1, 0),
                                                             '& > .MuiTableCell-root': {
                                                                 borderBottom: 'none !important',
-                                                                padding: theme.spacing(0.5, 2), // 모바일에서 패딩 조정
+                                                                padding: theme.spacing(0.5, 2),
                                                             }
                                                         }
                                                     })}
@@ -621,7 +596,6 @@ const MyAlert = () => {
                                                         })}
                                                     >
                                                         <Chip label={typeDisplayString} size="small" style={getChipStyle(subjectString)} />
-                                                        {/* '읽음/새 알림' 표시 로직 제거 */}
                                                     </TableCell>
 
                                                     {/* 3. 게시글 제목 */}
@@ -633,7 +607,7 @@ const MyAlert = () => {
                                                                 display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
                                                                 fontSize: '1rem', order: idxTitle,
                                                                 whiteSpace: 'normal', wordBreak: 'break-word',
-                                                                padding: theme.spacing(1, 2, 0.5, 2), // 모바일에서 상단 패딩 추가
+                                                                padding: theme.spacing(1, 2, 0.5, 2),
                                                                 '&::before': { content: `'${mobileLabels[2]}: '`, ...mobileLabelStyles }
                                                             }
                                                         })}
@@ -682,27 +656,26 @@ const MyAlert = () => {
                                                         })}
                                                     >{alert.username || '알 수 없음'}</TableCell>
 
-                                                    {/* 6. 작성일 [수정: 아이콘 통합] */}
+                                                    {/* 6. 작성일 */}
                                                     <TableCell
                                                         sx={(theme) => ({
                                                             color: LIGHT_TEXT_COLOR,
                                                             [theme.breakpoints.down('sm')]: {
-                                                                display: 'flex', justifyContent: 'space-between', // 모바일에서도 아이콘을 표시하기 위해 space-between 유지
+                                                                display: 'flex', justifyContent: 'space-between',
                                                                 fontSize: '0.85rem', order: idxDate,
-                                                                padding: theme.spacing(0, 2, 0, 2), // 모바일에서 패딩 조정
+                                                                padding: theme.spacing(0, 2, 0, 2), 
                                                                 '&::before': { content: `'${mobileLabels[5]}: '`, ...mobileLabelStyles }
                                                             }
                                                         })}
                                                     >
-                                                        {/* [수정] AdminPage.js와 동일한 방식으로 날짜와 아이콘 통합 */}
                                                         <Box
                                                             component="span"
                                                             sx={{
                                                                 whiteSpace: 'nowrap',
                                                                 display: 'flex',
-                                                                justifyContent: 'space-between', // 날짜와 아이콘을 분리
+                                                                justifyContent: 'space-between',
                                                                 alignItems: 'center',
-                                                                width: '100%' // 셀 전체 너비 사용
+                                                                width: '100%'
                                                             }}
                                                         >
                                                             <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
@@ -715,9 +688,6 @@ const MyAlert = () => {
                                                             }
                                                         </Box>
                                                     </TableCell>
-                                                    
-                                                    {/* 7. 확장/축소 아이콘 셀 (PC 뷰용) 삭제 */}
-                                                    {/* <TableCell ...>...</TableCell> 부분이 삭제되었습니다. */}
                                                 </TableRow>
 
 
@@ -730,9 +700,7 @@ const MyAlert = () => {
                                                             borderBottom: isExpanded ? `1px solid ${TEXT_COLOR} !important` : 'none !important',
                                                         },
                                                     })}
-                                                    // [삭제] 호버 이벤트 제거
                                                 >
-                                                    {/* [수정] colSpan을 7에서 6으로 변경 */}
                                                     <TableCell colSpan={6} sx={{ display: { xs: 'block', md: 'table-cell' } }}>
                                                         <Collapse in={isExpanded} timeout={300} unmountOnExit>
                                                             <Box
@@ -745,7 +713,6 @@ const MyAlert = () => {
                                                                     flexDirection: 'column',
                                                                     borderTop: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.2)}`,
                                                                     borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.2)}`,
-                                                                    // [수정] 모바일 뷰에서도 패딩 유지
                                                                     [theme.breakpoints.down('sm')]: {
                                                                         padding: theme.spacing(2),
                                                                         borderBottom: `1px solid ${TEXT_COLOR} !important`,
@@ -753,12 +720,12 @@ const MyAlert = () => {
                                                                 })}
                                                             >
                                                                 
-                                                                {/* 1. 알림 내용 전체 표시 (짤림 없이) - 신청 타입의 디자인을 모든 타입에 적용 */}
+                                                                {/* 알림 내용 전체 표시 */}
                                                                 <Box sx={{
                                                                     width: '100%',
                                                                     minHeight: '100px',
                                                                     p: 0,
-                                                                    mb: isApplication ? 1 : 0, // 신청 타입일 때만 아래 여백 추가
+                                                                    mb: isApplication ? 1 : 0,
                                                                     backgroundColor: alpha(BG_COLOR, 0.1), 
                                                                     border: `1px solid ${LIGHT_TEXT_COLOR}`,
                                                                     borderRadius: 1,
@@ -776,7 +743,7 @@ const MyAlert = () => {
                                                                     </Typography>
                                                                 </Box>
                                                                 
-                                                                {/* 2. 신청 알림에 대해서만 승인/거절 액션 UI 표시 */}
+                                                                {/* 신청 알림에 대해서만 승인/거절 액션 UI 표시 */}
                                                                 {isApplication && ( 
                                                                     <Box sx={{ 
                                                                         width: '100%', 
@@ -816,7 +783,7 @@ const MyAlert = () => {
 
                                                                         {/* 승인/거절 버튼 그룹 */}
                                                                         <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, width: { xs: '100%', md: 'auto' }, justifyContent: { xs: 'space-between', md: 'end' } }}>
-                                                                            {/* 승인 버튼 (APPROVE_COLOR) */}
+                                                                            {/* 승인 버튼 */}
                                                                             <Button
                                                                                 variant="contained"
                                                                                 startIcon={isActionProcessing ? <CircularProgress size={16} sx={{ color: BG_COLOR }} /> : <CheckCircleIcon />}
@@ -832,7 +799,7 @@ const MyAlert = () => {
                                                                                 {isActionProcessing ? '승인 중' : '승인'}
                                                                             </Button>
 
-                                                                            {/* 거절 버튼 (REJECT_COLOR, 사유 입력 시 활성화) */}
+                                                                            {/* 거절 버튼 (사유 입력 시 활성화) */}
                                                                             <Button
                                                                                 variant="contained"
                                                                                 startIcon={isActionProcessing ? <CircularProgress size={16} sx={{ color: BG_COLOR }} /> : <CancelIcon />}

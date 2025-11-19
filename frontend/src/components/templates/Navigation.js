@@ -14,7 +14,7 @@ import {
   ListItemText,
   Slide,
   Grid,
-  // 💡 수정: Badge 컴포넌트 import 다시 추가
+  // Badge 컴포넌트 import 다시 추가
   Badge,
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
@@ -23,7 +23,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-// 💡 수정: 로그아웃 아이콘 임포트 추가 유지
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
@@ -32,12 +31,9 @@ import {
   Inventory2Outlined,
   OutlinedFlag,
 } from "@mui/icons-material";
-// 💡 추가: AlertContext 임포트
 import { useAlert } from "../utilities/AlertContext";
+import { BG_COLOR, TEXT_COLOR } from '../constants/Theme'
 
-// 색상 정의
-const BG_COLOR = "#FFFFFF";
-const TEXT_COLOR = "#000000";
 
 // AppBar 커스텀 스타일
 const ModernAppBar = styled(AppBar)(({ theme }) => ({
@@ -113,9 +109,7 @@ const Navigation = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  // 💡 수정: isExistsAlert 상태를 useAuth에서 가져오는 부분 제거 유지
   const { isLoggedIn, user, logout } = useAuth();
-  // 💡 추가: useAlert에서 haveNewAlert 상태 가져오기
   const { haveNewAlert } = useAlert();
 
   const handleDrawerToggle = () => {
@@ -130,7 +124,7 @@ const Navigation = () => {
   const handleSearchExecute = () => {
     if (searchTerm.trim()) {
       console.log("검색 실행:", searchTerm);
-      // 여기에 실제 검색 API 호출 또는 페이지 이동 로직 추가
+      // TODO 실제 검색 API 호출 또는 페이지 이동 로직 추가 예정
       handleSearchClose();
     } else {
       console.log("검색어를 입력해 주세요.");
@@ -150,8 +144,8 @@ const Navigation = () => {
   // 로그인 상태에 따른 네비게이션 아이템 정의
   const navItems = isLoggedIn
     ? [
-        { text: user.username, path: "/my/page", isUser: true }, // 사용자 정보 버튼 (테두리 유지)
-        { text: "로그아웃", path: "#", onClick: logout, isLogout: true }, // 로그아웃 아이콘 버튼으로 변경
+        { text: user.username, path: "/my/page", isUser: true },
+        { text: "로그아웃", path: "#", onClick: logout, isLogout: true },
       ]
     : [
         { text: "회원가입", path: "/auth/signup" },
@@ -166,18 +160,18 @@ const Navigation = () => {
     >
       <Toolbar />
       <List>
-        {/* 사이드바 상단: 보관함 및 알림 버튼 (요청에 따라 Grid로 크기 xs=6 설정) */}
+        {/* 사이드바 상단: 보관함 및 알림 버튼 */}
         <Grid
           container
           spacing={1} // 아이템 사이의 간격
           sx={{
             p: 2,
             borderBottom: `1px solid ${alpha(TEXT_COLOR, 0.1)}`,
-            margin: 0, // Grid container의 기본 마진 제거
-            width: "100%", // 너비 100%
+            margin: 0,
+            width: "100%",
           }}
         >
-          {/* 💡 수정: 보관함 버튼 (Grid xs=6으로 크기 조정) */}
+          {/* 보관함 버튼 */}
           <Grid size={{ xs: 6 }} sx={{ p: "0 !important" }}>
             <Button
               component={Link}
@@ -190,14 +184,12 @@ const Navigation = () => {
                 p: "12px 0",
                 color: TEXT_COLOR,
                 border: `1px solid ${TEXT_COLOR}`,
-                // border: 'none', // 테두리 제거 (요청에 따라)
-                "& .MuiButton-startIcon": { m: 0 }, // 아이콘만 남기기 위해 텍스트 제거
+                "& .MuiButton-startIcon": { m: 0 },
               }}
               startIcon={
                 <FavoriteBorderOutlinedIcon sx={{ fontSize: "1.5rem" }} />
               }
             >
-              {/* 텍스트를 제거하고 아이콘만 남깁니다. */}
             </Button>
           </Grid>
 
@@ -213,18 +205,16 @@ const Navigation = () => {
                 p: "12px 0",
                 color: TEXT_COLOR,
                 border: `1px solid ${TEXT_COLOR}`,
-                // border: 'none', // 테두리 제거 (요청에 따라)
-                "& .MuiButton-startIcon": { m: 0 }, // 아이콘만 남기기 위해 텍스트 제거
+                "& .MuiButton-startIcon": { m: 0 },
               }}
               startIcon={<Inventory2Outlined sx={{ fontSize: "1.5rem" }} />}
             >
-              {/* 텍스트를 제거하고 아이콘만 남깁니다. */}
             </Button>
           </Grid>
 
-          {/* 💡 수정: 알림 버튼 (Grid xs=12으로 크기 조정 및 Badge 적용) */}
+          {/* 알림 버튼 */}
           <Grid size={{ xs: 6 }} sx={{ p: "0 !important" }}>
-            {/* 💡 수정: Badge 컴포넌트 다시 추가 및 invisible={!haveNewAlert} 적용 */}
+            {/* Badge 컴포넌트 */}
             <Button
               component={Link}
               to="/my/alerts"
@@ -236,8 +226,7 @@ const Navigation = () => {
                 p: "12px 0",
                 color: TEXT_COLOR,
                 border: `1px solid ${TEXT_COLOR}`,
-                // border: 'none', // 테두리 제거 (요청에 따라)
-                "& .MuiButton-startIcon": { m: 0 }, // 아이콘만 남기기 위해 텍스트 제거
+                "& .MuiButton-startIcon": { m: 0 },
               }}
               startIcon={
                 <Badge
@@ -250,6 +239,7 @@ const Navigation = () => {
               }
             ></Button>
           </Grid>
+          {/* 커뮤니티 버튼 */}
           <Grid size={{ xs: 6 }} sx={{ p: "0 !important" }}>
             <Button
               component={Link}
@@ -262,13 +252,13 @@ const Navigation = () => {
                 p: "12px 0",
                 color: TEXT_COLOR,
                 border: `1px solid ${TEXT_COLOR}`,
-                // border: 'none', // 테두리 제거 (요청에 따라)
-                "& .MuiButton-startIcon": { m: 0 }, // 아이콘만 남기기 위해 텍스트 제거
+                "& .MuiButton-startIcon": { m: 0 },
               }}
             >
               <ForumOutlined sx={{ fontSize: "1.5rem" }} />
             </Button>
           </Grid>
+          {/* 신고 목록 버튼 */}
           {user.role === "관리자" && (
             <Grid size={{ xs: 12 }} sx={{ p: "0 !important" }}>
               <Button
@@ -302,14 +292,11 @@ const Navigation = () => {
             sx={{
               textDecoration: "none",
               color: "inherit",
-              // 버튼 목록에 대한 margin 설정
               margin: "16px 16px",
               width: "calc(100% - 32px)",
-              // 로그아웃 버튼의 크기를 xs=12로 조정 (List/ListItem은 이미 Block 요소이므로 width: '100%'로 충분합니다.)
             }}
           >
             {item.isLogout ? (
-              // 💡 수정: 로그아웃 버튼 (xs=12 크기, isUser와 동일한 테두리)
               <Button
                 onClick={
                   item.onClick
@@ -321,7 +308,7 @@ const Navigation = () => {
                     : undefined
                 }
                 color="inherit"
-                variant="outlined" // isUser와 동일하게 outlined 적용
+                variant="outlined"
                 sx={{
                   width: "100%",
                   justifyContent: "center",
@@ -329,15 +316,15 @@ const Navigation = () => {
                   textTransform: "none",
                   color: TEXT_COLOR,
                   borderColor: TEXT_COLOR,
-                  fontWeight: 600, // 사용자명과 동일하게 fontWeight 적용
+                  fontWeight: 600,
                 }}
                 aria-label="로그아웃"
-                startIcon={<LogoutIcon sx={{ height: "32px" }} />} // 아이콘을 텍스트와 함께 표시
+                startIcon={<LogoutIcon sx={{ height: "32px" }} />}
               >
                 {item.text}
               </Button>
             ) : (
-              // 일반 버튼 (로그인, 회원가입, 사용자명)
+              // (로그인, 회원가입, 사용자명)
               <Button
                 sx={{
                   color: TEXT_COLOR,
@@ -345,20 +332,17 @@ const Navigation = () => {
                   justifyContent: item.isUser ? "center" : "flex-start",
                   p: item.isUser ? "8px 16px" : 2,
                   textTransform: "none",
-                  // 💡 수정: isUser (사용자명)만 테두리 유지, 나머지는 제거
                   ...(item.isUser && {
                     border: `1px solid ${TEXT_COLOR}`,
                     fontWeight: 600,
                   }),
                   ...((item.text === "로그인" || item.text === "회원가입") && {
-                    // 로그인/회원가입은 테두리 제거 후 일반 텍스트 버튼으로 회귀
                     border: "none",
                     fontWeight: 500,
                     justifyContent: "center",
                     p: "8px 16px",
                   }),
                 }}
-                // variant 설정: isUser만 outlined, 나머지는 text
                 variant={item.isUser ? "outlined" : "text"}
                 onClick={
                   item.onClick
@@ -403,7 +387,7 @@ const Navigation = () => {
               }}
             >
               {isLoggedIn ? (
-                // 로그인 상태: 검색 -> 보관함 아이콘 -> 알림 아이콘 -> 사용자명 버튼 -> 로그아웃 아이콘
+                // 로그인 상태
                 <>
                   {/* 검색 아이콘 */}
                   <IconButton
@@ -421,6 +405,7 @@ const Navigation = () => {
                     )}
                   </IconButton>
 
+                  {/* 신고 목록 버튼 */}
                   {user.role === "관리자" && (
                     <IconButton
                       color="inherit"
@@ -432,6 +417,7 @@ const Navigation = () => {
                     </IconButton>
                   )}
 
+                  {/* 커뮤니티 버튼 */}
                   <IconButton
                     color="inherit"
                     component={Link}
@@ -441,7 +427,7 @@ const Navigation = () => {
                     <ForumOutlined sx={{ fontSize: "1.7rem" }} />
                   </IconButton>
 
-                  {/* 💡 수정: 보관함 아이콘 (테두리 제거 -> IconButton) */}
+                  {/* 보관함 아이콘 */}
                   <IconButton
                     color="inherit"
                     component={Link}
@@ -451,7 +437,7 @@ const Navigation = () => {
                     <FavoriteBorderOutlinedIcon sx={{ fontSize: "1.7rem" }} />
                   </IconButton>
 
-                  {/* 💡 수정: 보관함 아이콘 (테두리 제거 -> IconButton) */}
+                  {/* 보관함 아이콘 */}
                   <IconButton
                     color="inherit"
                     component={Link}
@@ -461,7 +447,7 @@ const Navigation = () => {
                     <Inventory2Outlined sx={{ fontSize: "1.7rem" }} />
                   </IconButton>
 
-                  {/* 💡 수정: 알림 아이콘 (Badge 컴포넌트 적용) */}
+                  {/* 알림 아이콘 */}
 
                   <IconButton
                     color="inherit"
@@ -478,7 +464,7 @@ const Navigation = () => {
                     </Badge>
                   </IconButton>
 
-                  {/* 💡 수정: 사용자명 버튼 (테두리 유지) */}
+                  {/* 사용자명 버튼 (테두리 유지) */}
                   <Button
                     component={Link}
                     to="/my/page"
@@ -498,7 +484,7 @@ const Navigation = () => {
                     {user.username}
                   </Button>
 
-                  {/* 💡 수정: 로그아웃 버튼 (아이콘 버튼, 테두리 제거) */}
+                  {/* 로그아웃 버튼 */}
                   <IconButton
                     color="inherit"
                     onClick={logout}
@@ -508,7 +494,7 @@ const Navigation = () => {
                   </IconButton>
                 </>
               ) : (
-                // 비로그인 상태: 검색 -> 회원가입 -> 로그인 (모두 테두리 제거)
+                // 비로그인 상태
                 <>
                   {/* 검색 아이콘 */}
                   <IconButton
@@ -526,7 +512,7 @@ const Navigation = () => {
                       <SearchIcon sx={{ fontSize: "1.7rem" }} />
                     )}
                   </IconButton>
-                  {/* 💡 수정: 회원가입 (테두리 제거) */}
+                  {/* 회원가입 */}
                   <Button
                     color="inherit"
                     component={Link}
@@ -535,7 +521,7 @@ const Navigation = () => {
                   >
                     회원가입
                   </Button>
-                  {/* 💡 수정: 로그인 (테두리 제거) */}
+                  {/* 로그인 */}
                   <Button
                     color="inherit"
                     sx={{ ml: 2, fontWeight: 500 }}
@@ -548,7 +534,7 @@ const Navigation = () => {
               )}
             </Box>
 
-            {/* 모바일 (xs) 아이콘 그룹: 검색, 메뉴 아이콘만 표시 */}
+            {/* 모바일 */}
             <Box
               sx={{ display: { xs: "flex", sm: "none" }, alignItems: "center" }}
             >
