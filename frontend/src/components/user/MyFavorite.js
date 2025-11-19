@@ -18,16 +18,8 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ForumIcon from '@mui/icons-material/Forum'; 
 import apiClient from '../../api/Api-Service';
-
-// PostsList.js에서 가져온 상수 및 스타일 정의 (필요 없는 주석은 제거됨)
-const BG_COLOR = '#FFFFFF';
-const TEXT_COLOR = '#000000';
-const LIGHT_TEXT_COLOR = '#555555';
-const HEADER_HEIGHT = '64px';
-const PURPLE_COLOR = '#9c27b0';
-const RED_COLOR = '#F44336';
-const MODIFIED_COLOR = '#FFC107'; 
-const VIEW_SAVED_COLOR = '#8B4513'; 
+import { getPostDateInfo } from '../utilities/DateUtiles'; 
+import { BG_COLOR, HEADER_HEIGHT, LIGHT_TEXT_COLOR, MODIFIED_COLOR, PURPLE_COLOR, RED_COLOR, TEXT_COLOR, VIEW_SAVED_COLOR } from '../constants/Theme';
 
 // 스타일 컴포넌트 정의
 const PostsListWrapper = styled(Box)(({ theme }) => ({
@@ -122,49 +114,6 @@ const StyledChip = styled(Chip)(({ theme, subject }) => {
         height: '24px',
     };
 });
-
-/**
- * 게시글 날짜를 조건부로 포매팅하는 함수 (오늘: HH:MM, 그 외: MM/DD)
- * @param {string} dateString 포매팅할 날짜 문자열
- * @returns {string} 포매팅된 시간 또는 날짜 문자열
- */
-const formatTimeOrDate = (dateString) => {
-    const postDate = new Date(dateString);
-    const today = new Date();
-
-    const postDay = new Date(postDate.getFullYear(), postDate.getMonth(), postDate.getDate());
-    const todayDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-    if (postDay.getTime() === todayDay.getTime()) {
-        const hours = String(postDate.getHours()).padStart(2, '0');
-        const minutes = String(postDate.getMinutes()).padStart(2, '0');
-        return `${hours}:${minutes}`;
-    }
-    else {
-        const month = String(postDate.getMonth() + 1).padStart(2, '0');
-        const day = String(postDate.getDate()).padStart(2, '0');
-        return `${month}/${day}`;
-    }
-};
-
-/**
- * createdDate와 modifiedDate를 비교하여 표시할 날짜 문자열과 수정 여부를 반환합니다.
- * @param {string} modifiedDateString 수정 날짜 문자열
- * @param {string} createdDateString 생성 날짜 문자열
- * @returns {{ dateDisplay: string, isModified: boolean }} 표시할 날짜 정보와 수정 여부
- */
-const getPostDateInfo = (modifiedDateString, createdDateString) => {
-    const createdDate = new Date(createdDateString);
-    const modifiedDate = new Date(modifiedDateString);
-
-    const isModified = modifiedDateString && createdDateString && modifiedDate.getTime() > createdDate.getTime();
-    const dateToDisplay = isModified ? modifiedDateString : createdDateString;
-
-    return {
-        dateDisplay: formatTimeOrDate(dateToDisplay),
-        isModified: isModified,
-    };
-};
 
 // 모바일 뷰에서 사용할 공통 스타일과 레이블 정의
 const labelStyles = { fontWeight: 'bold', color: TEXT_COLOR, minWidth: '60px', marginRight: '8px' };
@@ -338,7 +287,13 @@ const MyFavorite = () => {
             return (
                 <TableRow>
                     {/* PostsList.js와 동일한 컬럼 너비/개수 */}
-                    <CustomTableCell sx={{ width: '5%' }}>ID</CustomTableCell><CustomTableCell sx={{ width: '8%' }}>주제</CustomTableCell><CustomTableCell sx={{ width: '35%' }}>제목</CustomTableCell><CustomTableCell sx={{ width: '15%' }}>작성자</CustomTableCell><CustomTableCell sx={{ width: '10%' }}>좋아요</CustomTableCell><CustomTableCell sx={{ width: '10%' }}>조회수</CustomTableCell><CustomTableCell sx={{ width: '17%' }}>작성일</CustomTableCell>
+                    <CustomTableCell sx={{ width: '5%' }}>ID</CustomTableCell>
+                    <CustomTableCell sx={{ width: '8%' }}>주제</CustomTableCell>
+                    <CustomTableCell sx={{ width: '42%' }}>제목</CustomTableCell>
+                    <CustomTableCell sx={{ width: '15%' }}>작성자</CustomTableCell>
+                    <CustomTableCell sx={{ width: '10%' }}>좋아요</CustomTableCell>
+                    <CustomTableCell sx={{ width: '10%' }}>조회수</CustomTableCell>
+                    <CustomTableCell sx={{ width: '10%' }}>작성일</CustomTableCell>
                 </TableRow>
             );
         } else { // 댓글 (즐겨찾기한 댓글)
@@ -348,8 +303,8 @@ const MyFavorite = () => {
                 <TableRow>
                     <CustomTableCell sx={{ width: '5%' }}>ID</CustomTableCell>
                     <CustomTableCell sx={{ width: '8%' }}>주제</CustomTableCell>
-                    <CustomTableCell sx={{ width: '37%' }}>제목</CustomTableCell>
-                    <CustomTableCell sx={{ width: '15%' }}>댓글 내용</CustomTableCell>
+                    <CustomTableCell sx={{ width: '32%' }}>제목</CustomTableCell>
+                    <CustomTableCell sx={{ width: '20%' }}>댓글 내용</CustomTableCell>
                     <CustomTableCell sx={{ width: '15%' }}>작성자</CustomTableCell>
                     <CustomTableCell sx={{ width: '10%' }}>좋아요</CustomTableCell>
                     <CustomTableCell sx={{ width: '10%' }}>작성일</CustomTableCell>
@@ -370,7 +325,7 @@ const MyFavorite = () => {
             return [
                 <MenuItem key="comment-title" onClick={() => handleFilterOptionSelect('제목')}>제목</MenuItem>,
                 <MenuItem key="comment-content" onClick={() => handleFilterOptionSelect('내용')}>내용</MenuItem>,
-                <MenuItem key="comment-author" onClick={() => handleFilterOptionSelect('작성자')} disabled>작성자 (댓글에서는 불가)</MenuItem>,
+                <MenuItem key="comment-author" onClick={() => handleFilterOptionSelect('작성자')}>작성자</MenuItem>,
             ];
         }
     }, [activityType]);
@@ -735,7 +690,6 @@ const MyFavorite = () => {
                                         aria-haspopup="true"
                                         aria-expanded={openFilterMenu ? 'true' : undefined}
                                         sx={{ flex: { xs: 1, md: 'none' } }}
-                                        disabled={activityType === 1 && searchField !== '제목' && searchField !== '내용'}
                                     >
                                         {searchField}
                                     </FilterButton>

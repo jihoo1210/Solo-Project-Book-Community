@@ -1,5 +1,3 @@
-// src/components/MyAlert.js
-
 import React, { useState, useEffect } from 'react';
 import {
     Box, Container, Typography, Button, Table, TableBody,
@@ -8,6 +6,8 @@ import {
     CircularProgress,
     TextField, InputAdornment, IconButton, Menu, MenuItem,
     Collapse,
+    // [추가] Accordion과 유사한 동작을 위해 Icons를 추가합니다.
+    Tooltip, // 버튼에 툴팁을 추가합니다.
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 
@@ -21,6 +21,11 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 // 승인/거절 관련 아이콘
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+
+// [추가] 확장/축소 아이콘
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+
 
 import {
     BG_COLOR, TEXT_COLOR, LIGHT_TEXT_COLOR, HEADER_HEIGHT,
@@ -155,8 +160,8 @@ const MyAlert = () => {
 
     const [sortOrder, setSortOrder] = useState('desc');
 
-    // Hover 및 인라인 액션 관련 상태
-    const [hoveredAlertId, setHoveredAlertId] = useState(null);
+    // [수정] Hover 상태 제거 및 Expanded 상태 추가
+    const [expandedAlertId, setExpandedAlertId] = useState(null); // 현재 확장된 알림의 ID
     const [reason, setReason] = useState('');
     const [actionLoading, setActionLoading] = useState(null);
 
@@ -228,7 +233,8 @@ const MyAlert = () => {
             window.alert(errorMsg);
         } finally {
             setActionLoading(null);
-            setHoveredAlertId(null);
+            // setHoveredAlertId(null); // 제거
+            setExpandedAlertId(null); // [수정] 확장 상태 닫기
             setReason('');
         }
     };
@@ -255,7 +261,7 @@ const MyAlert = () => {
                 content: reason.trim()
             });
             const newContent = `신청이 거절되었습니다. 사유: ${reason.trim()}`;
-            // 거절 후 로컬 상태 업데이트: subject를 '거절'로 변경
+            // 거절 후 로컬 상태 업데이트: subject를 '거절'으로 변경
             setAlerts(prevAlerts => prevAlerts.map(a => a.id === alert.id ? { ...a, subject: '거절', content: newContent } : a));
             window.alert("신청이 거절되었습니다.");
             fetchAlerts(page, selectedTab, sortOrder, rowsPerPage, searchField, searchTerm);
@@ -264,7 +270,8 @@ const MyAlert = () => {
             window.alert(errorMsg);
         } finally {
             setActionLoading(null);
-            setHoveredAlertId(null);
+            // setHoveredAlertId(null); // 제거
+            setExpandedAlertId(null); // [수정] 확장 상태 닫기
             setReason('');
         }
     };
@@ -284,30 +291,32 @@ const MyAlert = () => {
     const handlePerPageClose = () => { setPerPageAnchorEl(null); };
     const handlePerPageSelect = (value) => { setRowsPerPage(value); setPage(1); setPerPageAnchorEl(null); };
 
-    // handleRowClick (버튼, 입력 필드 클릭 시 네비게이션 방지)
+    /**
+     * [수정] Row 클릭 핸들러 (Accordion/Collapse 확장/축소 기능)
+     * - '신청' 타입일 경우에만 인라인 액션이 표시되며, 다른 알림은 전체 내용만 표시됩니다.
+     */
     const handleRowClick = async (alert, event) => {
+        // 버튼, 입력 필드 등 클릭 시 네비게이션/확장 방지
         if (event.target.closest('button') || event.target.closest('input') || event.target.closest('textarea')) {
             return;
         }
 
-        const targetPath = alert.link || `/post/${alert.postsId}?from=my-alerts`;
-        window.location.href = targetPath;
-    };
-
-    // 호버 시작/종료 핸들러
-    const handleRowMouseEnter = (alertId, subject) => {
-        // 신청 알림에 대해서만 호버 액션 활성화
-        if (subject !== '신청') return; 
-
-        setHoveredAlertId(alertId);
-        if (hoveredAlertId !== alertId) {
-            setReason('');
+        // 확장/축소 토글 로직
+        if (expandedAlertId === alert.id) {
+            setExpandedAlertId(null);
+            setReason(''); // 확장 닫을 때 사유 초기화
+        } else {
+            setExpandedAlertId(alert.id);
+            setReason(''); // 확장 열 때 사유 초기화
         }
-    };
 
-    const handleRowMouseLeave = () => {
-        setHoveredAlertId(null);
+        // 원래의 네비게이션 로직 (클릭 시 이동)은 주석 처리 또는 제거
+        // const targetPath = alert.link || `/post/${alert.postsId}?from=my-alerts`;
+        // window.location.href = targetPath;
+        // 요청 사항에 '클릭하면 accordion이 작동'하는 것으로 변경되었으므로, 네비게이션은 막습니다.
     };
+    
+    // [삭제] 호버 시작/종료 핸들러 제거
 
     const pageCount = Math.ceil(totalAlerts / rowsPerPage);
     const tabLabels = ['전체', '댓글', '채택', '신청', '승인/거절'];
@@ -506,33 +515,31 @@ const MyAlert = () => {
                                     <CustomTableCell sx={{ width: '8%' }}>유형</CustomTableCell>
                                     <CustomTableCell sx={{ width: '35%' }}>게시글 제목</CustomTableCell>
                                     <CustomTableCell sx={{ width: '30%' }}>알림 내용</CustomTableCell>
-                                    <CustomTableCell sx={{ width: '12%' }}>작성자</CustomTableCell>
-                                    <CustomTableCell sx={{ width: '10%' }}>작성일</CustomTableCell>
+                                    <CustomTableCell sx={{ width: '10%' }}>작성자</CustomTableCell>
+                                    {/* [수정] 작성일 셀의 너비를 12%로 조정 (기존 10% + 아이콘 2% 공간 통합)하고, 아이콘용 셀 삭제 */}
+                                    <CustomTableCell sx={{ width: '12%' }}>작성일</CustomTableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {/* 로딩 및 에러 상태 (colSpan=6) */}
+                                {/* 로딩 및 에러 상태 (colSpan=6으로 변경) */}
                                 {isLoading ? (
                                     <TableRow>
                                         <TableCell colSpan={6} sx={{ textAlign: 'center', py: 5 }}>
                                             <CircularProgress sx={{ color: TEXT_COLOR }} size={30} />
                                             <Typography variant="body1" sx={{ mt: 1, color: LIGHT_TEXT_COLOR }}>알림을 불러오는 중...</Typography>
-                                        </TableCell>
-                                    </TableRow>
+                                        </TableCell></TableRow>
                                 ) : error ? (
                                     <TableRow>
                                         <TableCell colSpan={6} sx={{ textAlign: 'center', py: 5 }}>
                                             <Typography variant="body1" color="error">{error}</Typography>
-                                        </TableCell>
-                                    </TableRow>
+                                        </TableCell></TableRow>
                                 ) : alerts.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={6} sx={{ textAlign: 'center', py: 5 }}>
                                             <Typography variant="body1" sx={{ color: LIGHT_TEXT_COLOR }}>
                                                 {searchTerm ? `"${searchTerm}"에 대한 검색 결과가 없습니다.` : '알림이 없습니다.'}
                                             </Typography>
-                                        </TableCell>
-                                    </TableRow>
+                                        </TableCell></TableRow>
                                 ) : (
                                     // 알림 목록 렌더링
                                     alerts.map((alert) => {
@@ -540,7 +547,11 @@ const MyAlert = () => {
                                         
                                         // [추가] savedInViews 상태에 따라 배경색을 결정합니다. (PostsList.js와 동일)
                                         const isViewed = alert.savedInViews;
+                                        const isExpanded = expandedAlertId === alert.id; // [수정] 확장 상태 확인
+                                        
                                         const rowBackgroundColor = isViewed ? BG_COLOR : alpha(NEW_COLOR, 0.1);
+                                        // 확장된 상태에서는 배경색을 강조
+                                        const activeBackgroundColor = isExpanded ? alpha(TEXT_COLOR, 0.05) : rowBackgroundColor;
 
                                         // isRead/willRead 관련 스타일 제거. 기본 색상과 굵기 사용
                                         const rowColor = TEXT_COLOR;
@@ -551,8 +562,6 @@ const MyAlert = () => {
                                             : subjectString;
 
                                         const isApplication = subjectString === '신청';
-                                        // 읽음 상태 무시하고 신청 알림에 대해서만 호버 액션 활성화
-                                        const isHovered = hoveredAlertId === alert.id; 
                                         const isActionProcessing = actionLoading === alert.id;
 
                                         // 모바일 뷰에서 순서를 지정하기 위한 인덱스
@@ -564,32 +573,28 @@ const MyAlert = () => {
                                         return (
                                             <React.Fragment key={alert.id}>
                                                 <TableRow
-                                                    // 신청 알림에 대해서만 호버 이벤트 적용
-                                                    onMouseEnter={isApplication ? () => handleRowMouseEnter(alert.id, subjectString) : null}
-                                                    onMouseLeave={isApplication ? handleRowMouseLeave : null}
                                                     onClick={(event) => handleRowClick(alert, event)}
+                                                    // [삭제] onMouseEnter, onMouseLeave 제거
                                                     sx={(theme) => ({
                                                         textDecoration: 'none',
                                                         '& > .MuiTableCell-root': { borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` },
-                                                        '&:last-child > .MuiTableCell-root': { borderBottom: 'none' },
-                                                        // [수정] 읽음 상태에 따라 배경색 설정
-                                                        backgroundColor: rowBackgroundColor,
+                                                        // 확장된 상태가 아닐 때만 마지막 구분선 처리
+                                                        '&:last-child > .MuiTableCell-root': { borderBottom: isExpanded ? `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` : 'none' },
+                                                        // [수정] 확장 상태에 따라 배경색 설정
+                                                        backgroundColor: activeBackgroundColor,
                                                         '&:hover': {
-                                                            backgroundColor: isHovered ? alpha(APPLICATION_COLOR, 0.05) : alpha(TEXT_COLOR, 0.05),
+                                                            backgroundColor: alpha(TEXT_COLOR, 0.05),
                                                             cursor: 'pointer'
                                                         },
-                                                        // 호버 중일 때 배경색 유지
-                                                        ...(isHovered && { backgroundColor: alpha(APPLICATION_COLOR, 0.05) }),
-
                                                         // PostsList의 반응형 디자인 적용
                                                         [theme.breakpoints.down('sm')]: {
                                                             display: 'block',
-                                                            borderBottom: `1px solid ${TEXT_COLOR} !important`,
+                                                            borderBottom: isExpanded ? 'none !important' : `1px solid ${TEXT_COLOR} !important`, // 모바일에서 확장 시 하단 선 제거
                                                             padding: theme.spacing(1, 0),
                                                             '& > .MuiTableCell-root': {
                                                                 borderBottom: 'none !important',
                                                                 padding: theme.spacing(0.5, 2), // 모바일에서 패딩 조정
-                                                            },
+                                                            }
                                                         }
                                                     })}
                                                 >
@@ -677,73 +682,102 @@ const MyAlert = () => {
                                                         })}
                                                     >{alert.username || '알 수 없음'}</TableCell>
 
-                                                    {/* 6. 작성일 */}
+                                                    {/* 6. 작성일 [수정: 아이콘 통합] */}
                                                     <TableCell
                                                         sx={(theme) => ({
                                                             color: LIGHT_TEXT_COLOR,
                                                             [theme.breakpoints.down('sm')]: {
-                                                                display: 'flex', justifyContent: 'flex-start',
+                                                                display: 'flex', justifyContent: 'space-between', // 모바일에서도 아이콘을 표시하기 위해 space-between 유지
                                                                 fontSize: '0.85rem', order: idxDate,
+                                                                padding: theme.spacing(0, 2, 0, 2), // 모바일에서 패딩 조정
                                                                 '&::before': { content: `'${mobileLabels[5]}: '`, ...mobileLabelStyles }
                                                             }
                                                         })}
                                                     >
-                                                        {formatTimeOrDate(alert.createdDate)}
+                                                        {/* [수정] AdminPage.js와 동일한 방식으로 날짜와 아이콘 통합 */}
+                                                        <Box
+                                                            component="span"
+                                                            sx={{
+                                                                whiteSpace: 'nowrap',
+                                                                display: 'flex',
+                                                                justifyContent: 'space-between', // 날짜와 아이콘을 분리
+                                                                alignItems: 'center',
+                                                                width: '100%' // 셀 전체 너비 사용
+                                                            }}
+                                                        >
+                                                            <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
+                                                                {formatTimeOrDate(alert.createdDate)}
+                                                            </Box>
+                                                            {/* 아코디언 상태 표시 아이콘 */}
+                                                            {isExpanded ?
+                                                                <ExpandLessIcon sx={{ color: TEXT_COLOR, ml: 1, flexShrink: 0 }} /> :
+                                                                <ExpandMoreIcon sx={{ color: TEXT_COLOR, ml: 1, flexShrink: 0 }} />
+                                                            }
+                                                        </Box>
                                                     </TableCell>
+                                                    
+                                                    {/* 7. 확장/축소 아이콘 셀 (PC 뷰용) 삭제 */}
+                                                    {/* <TableCell ...>...</TableCell> 부분이 삭제되었습니다. */}
                                                 </TableRow>
 
-                                                {/* 호버 시 액션 UI Row (Collapse 적용 및 반응형 적용) */}
-                                                {/* 신청 알림에 대해서만 액션 표시 */}
-                                                {isApplication && ( 
-                                                    <TableRow
-                                                        sx={(theme) => ({
-                                                            '& > .MuiTableCell-root': { padding: 0, borderBottom: 'none !important' },
-                                                            backgroundColor: BG_COLOR,
-                                                            [theme.breakpoints.down('sm')]: {
-                                                                borderBottom: isHovered ? `1px solid ${TEXT_COLOR} !important` : 'none !important',
-                                                            },
-                                                        })}
-                                                        onMouseEnter={() => setHoveredAlertId(alert.id)}
-                                                        onMouseLeave={handleRowMouseLeave}
-                                                    >
-                                                        <TableCell colSpan={6} sx={{ display: { xs: 'block', md: 'table-cell' } }}>
-                                                            <Collapse in={isHovered} timeout={300} unmountOnExit>
-                                                                <Box
-                                                                    sx={{
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        gap: 2,
-                                                                        p: 4,
-                                                                        justifyContent: 'space-between',
-                                                                        flexDirection: 'column',
-                                                                        borderTop: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.2)}`,
-                                                                        borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.2)}`,
-                                                                    }}
-                                                                >
-                                                                    
-                                                                    {/* 1. 알림 내용 전체 표시 (짤림 없이) - 상단 블록으로 독립 */}
-                                                                    <Box sx={{
-                                                                        width: '100%',
-                                                                        p: 0,
-                                                                        mb: 1,
-                                                                        backgroundColor: alpha(APPLICATION_COLOR, 0.1), 
-                                                                        border: `1px solid ${APPLICATION_COLOR}`,
-                                                                        borderRadius: 1,
-                                                                        whiteSpace: 'pre-wrap',
-                                                                        wordBreak: 'break-word',
-                                                                        color: TEXT_COLOR,
-                                                                        fontWeight: 500,
-                                                                        textAlign: 'left',
-                                                                    }}>
-                                                                        <Typography variant="subtitle2" sx={{ fontWeight: 700, m: 0.5, color: APPLICATION_COLOR, margin: '1rem' }}>
-                                                                            전체 내용
-                                                                        </Typography>
-                                                                        <Typography variant="body2" sx={{ color: TEXT_COLOR, fontSize: '0.9rem', margin: '1rem' }}>
-                                                                            {alert.content || '알림 내용이 없습니다.'}
-                                                                        </Typography>
-                                                                    </Box>
-                                                                    
-                                                                    {/* 2. 거절 사유 입력 필드 및 버튼 그룹 (가운데) */}
+
+                                                {/* 확장된 내용 UI Row (Collapse 적용 및 반응형 적용) */}
+                                                <TableRow
+                                                    sx={(theme) => ({
+                                                        '& > .MuiTableCell-root': { padding: 0, borderBottom: 'none !important' },
+                                                        backgroundColor: BG_COLOR,
+                                                        [theme.breakpoints.down('sm')]: {
+                                                            borderBottom: isExpanded ? `1px solid ${TEXT_COLOR} !important` : 'none !important',
+                                                        },
+                                                    })}
+                                                    // [삭제] 호버 이벤트 제거
+                                                >
+                                                    {/* [수정] colSpan을 7에서 6으로 변경 */}
+                                                    <TableCell colSpan={6} sx={{ display: { xs: 'block', md: 'table-cell' } }}>
+                                                        <Collapse in={isExpanded} timeout={300} unmountOnExit>
+                                                            <Box
+                                                                sx={(theme) => ({
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: 2,
+                                                                    p: 4,
+                                                                    justifyContent: 'space-between',
+                                                                    flexDirection: 'column',
+                                                                    borderTop: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.2)}`,
+                                                                    borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.2)}`,
+                                                                    // [수정] 모바일 뷰에서도 패딩 유지
+                                                                    [theme.breakpoints.down('sm')]: {
+                                                                        padding: theme.spacing(2),
+                                                                        borderBottom: `1px solid ${TEXT_COLOR} !important`,
+                                                                    },
+                                                                })}
+                                                            >
+                                                                
+                                                                {/* 1. 알림 내용 전체 표시 (짤림 없이) - 신청 타입의 디자인을 모든 타입에 적용 */}
+                                                                <Box sx={{
+                                                                    width: '100%',
+                                                                    minHeight: '100px',
+                                                                    p: 0,
+                                                                    mb: isApplication ? 1 : 0, // 신청 타입일 때만 아래 여백 추가
+                                                                    backgroundColor: alpha(BG_COLOR, 0.1), 
+                                                                    border: `1px solid ${LIGHT_TEXT_COLOR}`,
+                                                                    borderRadius: 1,
+                                                                    whiteSpace: 'pre-wrap',
+                                                                    wordBreak: 'break-word',
+                                                                    color: TEXT_COLOR,
+                                                                    fontWeight: 500,
+                                                                    textAlign: 'left',
+                                                                }}>
+                                                                    <Typography variant="subtitle2" sx={{ fontWeight: 700, m: 0.5, color: TEXT_COLOR, margin: '1rem' }}>
+                                                                        (전체 내용)
+                                                                    </Typography>
+                                                                    <Typography variant="body2" sx={{ color: TEXT_COLOR, fontSize: '0.9rem', margin: '1rem', }}>
+                                                                        {'\t' + alert.content || '알림 내용이 없습니다.'}
+                                                                    </Typography>
+                                                                </Box>
+                                                                
+                                                                {/* 2. 신청 알림에 대해서만 승인/거절 액션 UI 표시 */}
+                                                                {isApplication && ( 
                                                                     <Box sx={{ 
                                                                         width: '100%', 
                                                                         display: 'flex', 
@@ -752,8 +786,8 @@ const MyAlert = () => {
                                                                         flexDirection: { xs: 'column', md: 'row' },
                                                                         flexWrap: 'wrap',
                                                                         justifyContent: 'space-between',
+                                                                        mt: 2,
                                                                     }}>
-                                                                        {/* 거절 사유 입력 필드 */}
                                                                         <TextField
                                                                             label={"사유 입력 (거절 시 필수)"}
                                                                             variant="outlined"
@@ -781,7 +815,7 @@ const MyAlert = () => {
                                                                         />
 
                                                                         {/* 승인/거절 버튼 그룹 */}
-                                                                        <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, width: '100%', justifyContent: 'end' }}>
+                                                                        <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, width: { xs: '100%', md: 'auto' }, justifyContent: { xs: 'space-between', md: 'end' } }}>
                                                                             {/* 승인 버튼 (APPROVE_COLOR) */}
                                                                             <Button
                                                                                 variant="contained"
@@ -816,11 +850,10 @@ const MyAlert = () => {
                                                                             </Button>
                                                                         </Box>
                                                                     </Box>
-                                                                </Box>
-                                                            </Collapse>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                )}
+                                                                )}
+                                                            </Box>
+                                                        </Collapse>
+                                                    </TableCell></TableRow>
                                             </React.Fragment>
                                         );
                                     })

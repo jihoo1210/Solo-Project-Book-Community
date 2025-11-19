@@ -141,9 +141,15 @@ const CommentsSection = ({
         }
     };
 
-    const handleReport = (type, targetId) => {
+    const handleReport = async (type, targetId) => {
         if (window.confirm(`${type} (${targetId})를 신고하시겠습니까? 신고 후에는 되돌릴 수 없습니다.`)) {
-            alert(`${type} (${targetId})를 신고했습니다. 감사합니다.`);
+            try {
+                await apiClient.post(`/report/comment/${targetId}`)
+                alert(`${type} (${targetId})를 신고했습니다. 감사합니다.`);
+            } catch (err) {
+                console.log("err", err)
+                alert(err.response?.data?.message || "댓글 신고 중 오류가 발생했습니다.")
+            }
         }
     };
 
@@ -434,7 +440,7 @@ const CommentsSection = ({
 
     return (
         <>
-            {isRecruitPost && (
+            {(isRecruitPost && postAuthorUsername !== user.username) && (
                 <Box sx={(theme) => ({
                     [theme.breakpoints.down('sm')]: {
                         marginX: theme.spacing(2),
@@ -724,7 +730,7 @@ const CommentsSection = ({
                                                         variant="contained" 
                                                         size="small"
                                                         onClick={() => handleCommentAdopt(comment.id)}
-                                                        disabled={editingCommentId === comment.id || isSolved}
+                                                        disabled={editingCommentId === comment.id || isSolved || user.username === comment.username}
                                                         startIcon={null} 
                                                         sx={{
                                                             fontWeight: 600,

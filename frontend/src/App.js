@@ -19,6 +19,7 @@ import ResetPassword from "./components/auth/ResetPassword";
 import ChatRoom from "./components/chat/ChatRoom";
 import theme from "./components/constants/Theme";
 import ChatList from "./components/chat/ChatList";
+import AdminPage from "./components/admin/AdminPage";
 function App() {
   return (
     <AuthProvider>
@@ -61,6 +62,9 @@ function App() {
                 <Route path="/chat">
                   <Route path="room/:roomId" element={<ChatRoom />} />
                   <Route path="list" element={<ChatList />} />
+                </Route>
+                <Route path="/admin">
+                  <Route path="report" element={<AdminPage />} />
                 </Route>
                 <Route path="*" element={<PostsList />} />
               </Routes>

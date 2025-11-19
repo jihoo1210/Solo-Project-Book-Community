@@ -11,9 +11,6 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null); 
     // 추가: 초기 로딩 상태 (인증 상태 확인 중)
     const [authLoading, setAuthLoading] = useState(true); 
-    
-    // 💡 삭제: 알림 존재 여부 상태 (isExistsAlert) 삭제
-    // const [isExistsAlert, setIsExistsAlert] = useState(false);
 
     // 추가: 서버에 현재 인증 상태(쿠키 유효성)를 확인하는 함수
     // 페이지가 새로고침될 때 username을 다시 가져와서 오류 방지
@@ -24,13 +21,13 @@ export const AuthProvider = ({ children }) => {
             
             // 응답 본문에서 사용자 이름만 가져옵니다. 
             // 💡 삭제: savedInAlert 값 제거
-            const { username } = response.data.result; 
+            const { username, role } = response.data.result; 
 
             console.log('username: ', username);
             // 💡 삭제: console.log('savedInAlert', savedInAlert) 제거
             
             setIsLoggedIn(true);
-            setUser({ username });
+            setUser({ username, role });
             // 💡 삭제: 알림 상태 저장 로직 제거
             // setIsExistsAlert(savedInAlert);
             
@@ -52,12 +49,12 @@ export const AuthProvider = ({ children }) => {
     }, [fetchCurrentUser]); // useCallback으로 인해 fetchCurrentUser가 변경되지 않으므로 무한 루프 위험 없음
 
     // 로그인 처리 함수: 서버 로그인 API 호출 후 응답 본문에서 사용자 이름만 저장
-    const login = (username) => {
+    const login = (username, role) => {
         // 백엔드 로그인 API(/auth/signin) 호출 후 성공 시,
         // 백엔드에서 응답 본문에 담아준 사용자 이름(username)만 프론트 상태에 저장합니다.
         setIsLoggedIn(true);
         // user.username에 저장
-        setUser({ username });
+        setUser({ username, role });
         // 💡 삭제: savedInAlert 관련 주석 및 로직 제거
     };
 
@@ -91,9 +88,7 @@ export const AuthProvider = ({ children }) => {
         user, 
         login, 
         logout,
-        authLoading, // 추가
-        // 💡 삭제: 알림 존재 여부 상태 제거
-        // isExistsAlert, 
+        authLoading,
     };
 
     // Context Value 제공

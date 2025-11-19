@@ -1,5 +1,3 @@
-// src/components/ChatRoom.js
-
 import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
@@ -126,15 +124,13 @@ const ChatRoom = () => {
 
   useEffect(() => {
 
-    // roomId와 username을 쿼리 파라미터로 전달
-    console.log('roomId', roomId)
-
     const fetchCommunity = async () => {
       try {
       const response = await apiClient.get(`/chatroom/${roomId}`)
       const roomNameData = response.data.result.roomName
       setRoomName(roomNameData)
       const userData = response.data.result.usernameAndIsConnectedResponse;
+      console.log('userData', userData)
       setUsers([...userData])
       } catch (error) {
         console.log('error', error)

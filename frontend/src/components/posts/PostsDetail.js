@@ -263,9 +263,15 @@ const PostsDetail = () => {
     increaseLikeCount();
   };
 
-  const handleReport = (type, targetId) => {
+  const handleReport = async (type, targetId) => {
     if (window.confirm(`${type} (${targetId})를 신고하시겠습니까? 신고 후에는 되돌릴 수 없습니다.`)) {
-      // TODO: 신고 API 연결
+      try {
+        await apiClient.post(`/report/posts/${post.id}`)
+        alert(`게시글: ${post.id}를 신고했습니다. 감사합니다.`)
+      } catch (err) {
+        console.log("err", err)
+        alert(err.response?.data?.message || "게시글 신고 중 오류가 발생했습니다.")
+      }
     }
   };
 
