@@ -15,6 +15,7 @@ import java.util.Optional;
 public interface AlertRepository extends JpaRepository<Alert, Long>, JpaSpecificationExecutor<Alert> {
     boolean existsByPostsAndSenderAndSubject(Posts posts, User sender, AlertSubject subject);
     Optional<Alert> findByPostsAndUserAndSubject(Posts posts, User user, AlertSubject subject);
+    Optional<Alert> findByPostsAndUserAndSenderAndSubject(Posts posts, User user, User sender, AlertSubject subject);
     boolean existsByUser(User user);
 
     Collection<Alert> findAllByUser(User user);
