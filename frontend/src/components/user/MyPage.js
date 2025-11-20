@@ -128,9 +128,12 @@ const MyPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
-    if(name === "password") value.toLowerCase();
-    const newValue = value.replace(/\s/g, '');
+    let newValue;
+    if(name === "password" || name === "passwordConfirm") {
+      newValue = value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣\s]/g, "");
+    } else {
+      newValue = value.replace(/\s/g, '');
+    }
 
     setFormData((prev) => ({ ...prev, [name]: newValue }));
     
@@ -206,6 +209,11 @@ const MyPage = () => {
     if (formData.password || formData.passwordConfirm) {
         if (formData.password !== formData.passwordConfirm) {
             alert('새 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+            return;
+        }
+
+        if (formData.passwordConfirm < 8 || formData.password.length < 8) {
+            alert("비밀번호는 8자 이상이어야 합니다.")
             return;
         }
     }
@@ -338,7 +346,7 @@ const MyPage = () => {
                   <Grid size={{xs:12}}>
                     {/* 새 비밀번호 필드 */}
                     <FormControl fullWidth variant="outlined">
-                      <InputLabel sx={{ color: LIGHT_TEXT_COLOR }}>새 비밀번호</InputLabel>
+                      <InputLabel sx={{ color: LIGHT_TEXT_COLOR }}>새 비밀번호(8자 이상)</InputLabel>
                       <OutlinedInput
                         name="password"
                         type={showPassword ? 'text' : 'password'}
@@ -359,7 +367,7 @@ const MyPage = () => {
                             </IconButton>
                           </InputAdornment>
                         }
-                        label="새 비밀번호"
+                        label="새 비밀번호(8자 이상)"
                       />
                     </FormControl>
                   </Grid>
