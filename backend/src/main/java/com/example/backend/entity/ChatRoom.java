@@ -22,9 +22,11 @@ public class ChatRoom {
     @Column
     private String roomName;
 
+    // 관리자
     @ManyToOne
     private User creator;
 
+    // 초대된 사용자
     @ManyToMany
     @JoinTable(
             name = "chat_room_invited_users",
@@ -33,21 +35,20 @@ public class ChatRoom {
     )
     private List<User> invitedUsers;
 
-    // DB에 저장하지 않고 관리
-/*    @Builder.Default
-    @Transient
-    private List<User> connectedUsers = new ArrayList<>();*/
-
+    // [모집] 게시글 정보
     @OneToOne
     private Posts posts;
 
+    // 채팅방 내부 댓글
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoomText> chatRoomTexts;
 
+    // 최대 인원수
     @Builder.Default
     @Column
     private Integer maxUserNumber = 0;
 
+    // 현재 인원수
     @Builder.Default
     @Column
     private Integer currentUserNumber = 0;
