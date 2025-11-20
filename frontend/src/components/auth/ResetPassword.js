@@ -411,7 +411,7 @@ const ResetPassword = () => {
                       label="인증 코드 (6자리)"
                       name="emailVerificationCode"
                       value={emailVerificationCode}
-                      onChange={(e) => setEmailVerificationCode(e.target.value)}
+                      onChange={(e) => setEmailVerificationCode(e.target.value.length <= 6 ? e.target.value : emailVerificationCode)}
                       disabled={isEmailVerified}
                       error={
                         !isEmailVerified &&
@@ -452,6 +452,7 @@ const ResetPassword = () => {
                     name="username"
                     value={formData.username}
                     slotProps={{input: {readOnly: true }}}
+                    disabled={true}
                   />
                 </Grid>
               )}

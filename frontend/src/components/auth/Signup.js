@@ -317,7 +317,7 @@ const Signup = () => {
   const isEmailChanged = formData.email !== lastSentEmail;
   const isVerifyButtonDisabled =
     emailVerificationCode.length !== 6 || isEmailVerified;
-  const isSendButtonDisabled = isLoading || formData.email !== '' || (!isEmailChanged && isEmailVerified);
+  const isSendButtonDisabled = isLoading || formData.email === '' || (!isEmailChanged && isEmailVerified);
 
   const getEmailMessageColor = () => {
     if (!emailVerificationInfo) return RED_COLOR;

@@ -428,7 +428,7 @@ const CommentsSection = ({
                             minWidth: 'auto'
                         }}
                     >
-                        알림 보관함으로 이동
+                        실시간 커뮤니티 리스트로 이동
                     </Button>
                 )}
             </ApplicationCompleteMessage>

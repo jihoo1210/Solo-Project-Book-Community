@@ -73,7 +73,7 @@ public class UserController {
         try {
             User user = userDetails.getUser();
 
-            service.deleteUser(user);
+            service.deleteUser(user.getId());
 
             return ResponseEntity.ok().build();
         } catch (Exception e) {

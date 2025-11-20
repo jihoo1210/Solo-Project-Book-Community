@@ -5,6 +5,7 @@ import com.example.backend.entity.utilities.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -55,9 +56,9 @@ public class User extends BaseEntity {
     private List<ChatRoom> chatRoomList;
 
     // 채팅방 정보(초대된 사용자)
-    // 회원 영속 상태 -> 초대된 사용자 정보 영속 상태
-    @ManyToMany(mappedBy = "invitedUsers", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    private List<ChatRoom> invitedUsersInChatRooms;
+    @Builder.Default
+    @ManyToMany(mappedBy = "invitedUsers")
+    private List<ChatRoom> invitedUsersInChatRooms = new ArrayList<>();
 
     // 채팅방 메시지 정보
     // 회원 삭제 -> 메시지 삭제

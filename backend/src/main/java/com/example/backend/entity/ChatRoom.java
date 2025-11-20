@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -27,13 +28,14 @@ public class ChatRoom {
     private User creator;
 
     // 초대된 사용자
+    @Builder.Default
     @ManyToMany
     @JoinTable(
             name = "chat_room_invited_users",
             joinColumns = @JoinColumn(name = "chat_room_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> invitedUsers;
+    private List<User> invitedUsers = new ArrayList<>();
 
     // [모집] 게시글 정보
     @OneToOne

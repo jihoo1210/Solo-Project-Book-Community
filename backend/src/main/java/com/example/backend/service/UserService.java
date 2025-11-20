@@ -4,14 +4,16 @@
  */
 package com.example.backend.service;
 
-import com.example.backend.dto.auth.UsernameResponse;
 import com.example.backend.dto.auth.CheckEmailResponse;
 import com.example.backend.dto.auth.CheckUsernameResponse;
+import com.example.backend.dto.auth.UsernameResponse;
 import com.example.backend.dto.auth.signup.SignupRequest;
 import com.example.backend.dto.auth.signup.SignupResponse;
 import com.example.backend.dto.auth.verify.VerifyCodeRequest;
 import com.example.backend.dto.user.ChangeUserInfoRequest;
+import com.example.backend.entity.ChatRoom;
 import com.example.backend.entity.User;
+import com.example.backend.repository.ChatRoomRepository;
 import com.example.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.backend.entity.utilities.Role.ROLE_TEMP;
 import static com.example.backend.entity.utilities.Role.ROLE_USER;
@@ -31,6 +36,8 @@ public class UserService {
 
     private final UserRepository repository;
     private final PasswordEncoder encoder;
+    private final ChatRoomService chatRoomService;
+    private final ChatRoomRepository chatRoomRepository;
 
     /**
      * 회원가입 요청을 처리하는 메소드.
@@ -114,11 +121,21 @@ public class UserService {
 
     /**
      * 회원 탈퇴
-     * @param user: 탈퇴할 회원
+     * @param userId: 탈퇴할 회원 ID
      */
     @Transactional
-    public void deleteUser(User user) {
-        User target = repository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+    public void deleteUser(Long userId) {
+        User target = repository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+
+        log.info("target.getInvitedUsersInChatRooms(): {}", target.getInvitedUsersInChatRooms());
+        List<ChatRoom> roomsSnapshot = new ArrayList<>(target.getInvitedUsersInChatRooms());
+        log.info("roomsSnapshot: {}", roomsSnapshot);
+
+        for (ChatRoom chatRoom : roomsSnapshot) {
+            List<Long> removeUserIds = List.of(target.getId());
+            chatRoomService.removeUser(chatRoom.getId(), removeUserIds);
+        }
+
         repository.delete(target);
     }
 

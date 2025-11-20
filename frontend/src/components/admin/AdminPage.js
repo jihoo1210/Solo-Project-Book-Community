@@ -235,7 +235,6 @@ const AdminPage = () => {
             url = `/admin/comment?page=${pageNumberForBackend}&${sizeParam}&sort=${sortParam}&${searchFieldParam}&${searchTermParam}${tabParam}`;
         } else {
             url = `/admin/user?page=${pageNumberForBackend}&${sizeParam}&${sortParam}&${searchFieldParam}&${searchTermParam}`;
-            console.log(url);
         }
 
         try {

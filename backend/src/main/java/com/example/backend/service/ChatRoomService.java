@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ public class ChatRoomService {
      * @param creator 웹소켓 생성자
      * @return 생성된 웹소켓(room)
      */
+    @Transactional
     public ChatRoom createRoom(String roomName, User creator, Integer maxUserNumber, Posts targetPosts) {
         Posts posts = postsRepository.findById(targetPosts.getId()).orElseThrow(() -> new IllegalArgumentException("해당 게시물이 존재하지 않습니다."));
 
@@ -56,6 +58,7 @@ public class ChatRoomService {
      * @param invitedUserIds 초대할 회원 Id 리스트
      * @return 초대된 채팅방
      */
+    @Transactional
     public ChatRoom inviteUser(Long roomId, List<Long> invitedUserIds) {
         log.info("roomId: {}", roomId);
         log.info("invitedUserIds: {}", invitedUserIds);
@@ -67,7 +70,12 @@ public class ChatRoomService {
                 if(chatRoom.getInvitedUsers().contains(user) || chatRoom.getCreator().equals(user)) {
                     throw new IllegalArgumentException("이미 초대된 사용자 입니다.");
                 }
+                // 1. 초대된 회원을 저장
                 chatRoom.getInvitedUsers().add(user);
+                // 2. 초대된 회원이 저장된 채팅방을 저장
+                // 외래키 관리자(채팅방) -> 회원 -> 회원 엔티티의 초대된 채팅방 추가
+                log.info("chatRoom.getInvitedUsers(): {}", chatRoom.getInvitedUsers());
+                log.info("user.getInvitedUsersInChatRooms(): {}", user.getInvitedUsersInChatRooms());
                 chatRoom.setCurrentUserNumber(chatRoom.getCurrentUserNumber() + 1);
             } else {
                 throw new IllegalArgumentException("최대 회원수보다 더 많은 회원이 초대될 수 없습니다.");
@@ -77,10 +85,41 @@ public class ChatRoomService {
         return chatRoom;
     }
 
-    public ChatRoom getRoom(Long roomId) {
-        return chatRoomRepository.findById(roomId).orElse(null);
+    /**
+     * 채팅방의 회원 삭제
+     *
+     * @param roomId         회원을 조회할 채팅방
+     * @param invitedUserIds 삭제할 회원 Id 리스트
+     */
+    @Transactional
+    public void removeUser(Long roomId, List<Long> invitedUserIds) {
+        log.info("roomId: {}", roomId);
+        log.info("invitedUserIds: {}", invitedUserIds);
+        List<User> invitedUsers = userRepository.findAllById(invitedUserIds);
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티가 존재하지 않습니다."));
+        invitedUsers.forEach(user -> {
+            if(chatRoom.getInvitedUsers().stream().anyMatch(u -> u.getId().equals(user.getId())) || chatRoom.getCreator().getId().equals(user.getId())) {
+
+                // 채팅방 -> 회원 제거
+                chatRoom.getInvitedUsers().removeIf(u -> u.getId().equals(user.getId()));
+
+                // 채팅방의 현재 회원수 -1
+                chatRoom.setCurrentUserNumber(chatRoom.getCurrentUserNumber() - 1);
+
+                chatRoom.getPosts().setCurrentUserNumber(chatRoom.getPosts().getCurrentUserNumber() - 1);
+            }
+        });
     }
 
+    /**
+     * 해당 회원이 초대된 채팅방 조회 메서드
+     * @param user 현재 회원
+     * @param pageable 페이지 정보
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @param tab 현재 탭
+     * @return 필터링된 채팅방 페이지 리스트
+     */
     public Page<ChatRoomIndexResponse> index(User user, Pageable pageable, String searchField, String searchTerm, Integer tab) {
 
         Specification<ChatRoom> spec = ChatRoomSpec.search(user, searchField, searchTerm, tab);
@@ -97,6 +136,13 @@ public class ChatRoomService {
 
     }
 
+    /**
+     * 채팅방 세부 정보 조회 메서드
+     * @param user 현재 회원
+     * @param roomId 세부 정보 조회할 채팅방 ID
+     * @return 채팅방 세부 정보(초대된 회원 + 접속된 회원 등)
+     * @throws IllegalAccessException
+     */
     public ChatRoomShowResponse show(User user, Long roomId) throws IllegalAccessException {
 
         // 영속 상태 통일

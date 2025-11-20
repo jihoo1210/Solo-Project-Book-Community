@@ -136,18 +136,16 @@ public class AdminController {
 
     /**
      * 회원 삭제 메서드
-     * @param userDetails 회원 정보 - ADMIN 확인용
      * @param userId 삭제할 회원 ID
      * @return null
      */
     @DeleteMapping("/user/{userId}")
-    public ResponseEntity<?> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long userId) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
         try {
-            User user = userDetails.getUser();
-            userService.deleteUser(user);
+            userService.deleteUser(userId);
             return ResponseController.success(null);
         } catch (Exception e) {
-            log.warn(e.getMessage());
+            log.error("e: ", e);
             return ResponseController.fail(e.getMessage());
         }
     }
