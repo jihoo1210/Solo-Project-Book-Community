@@ -33,7 +33,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
 
     /**
-     * HTTP 요청이 들어올 때마다 실행되는 필터 로직.
+     * HTTP 요청이 들어올 때마다
+     * 1. 토큰 조회
+     * 2. 토큰이 있다면 SecurityContext에 등록
+     * @param request
+     * @param response
+     * @param filterChain
+     * @throws ServletException
+     * @throws IOException
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -72,7 +79,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * HTTP 요청 쿠키에서 'ACCESS_TOKEN'이라는 이름의 토큰을 추출합니다.
+     * HTTP 요청 쿠키에서 'ACCESS_TOKEN'이라는 이름의 토큰을 추출합니다
+     * @param request 토큰을 추출한 요청
+     * @return ACCESS_TOKEN
      */
     private String parseBearerToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
