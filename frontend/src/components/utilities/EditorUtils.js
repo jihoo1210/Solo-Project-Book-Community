@@ -4,7 +4,7 @@ import { getFileUrl } from './FileApi';
 export function sanitizeContentImages(html) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html || '', 'text/html');
-  doc.querySelectorAll('img').forEach((img) => {
+  doc.querySelectorAll('img[data-key]').forEach((img) => {
     img.setAttribute('src', '');
   });
   return doc.body.innerHTML;

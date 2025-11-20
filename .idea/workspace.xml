@@ -4,27 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#28 알림 조회 오류 수정">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/AuthContext.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/AuthContext.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/ResetPassword.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/ResetPassword.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/chat/ChatList.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/chat/ChatList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/chat/ChatRoom.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/chat/ChatRoom.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/constants/Theme.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/constants/Theme.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsEdit.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/comment/CommentSection.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/comment/CommentSection.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/templates/Footer.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/templates/Footer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyFavorite.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyFavorite.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyPage.js" afterDir="false" />
-    </list>
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#30 프론트엔드 utilities/.. 제외한 파일 주석 및 비밀번호 입력시 소문자 변환 설정" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -557,7 +537,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763537320819</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="#30 프론트엔드 utilities/.. 제외한 파일 주석 및 비밀번호 입력시 소문자 변환 설정">
+      <option name="closed" value="true" />
+      <created>1763541948106</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1763541948106</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -585,7 +573,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#20 알림을 읽지 않았을 때 녹색 표시 비활성화(오류)" />
     <MESSAGE value="#20 이전 커밋과 동일" />
     <MESSAGE value="#20 회원가입 이메일 검증 Page" />
     <MESSAGE value="#20 모임 신청 상태에 따라 모임 신청란 다르게 표시" />
@@ -610,6 +597,7 @@
     <MESSAGE value="#28 관리자 페이지, 디자인 및 약간의 오류 수정" />
     <MESSAGE value="#28 관리자 기능 및 프론트엔드로 현재 사용자가 관리자임을 알려주기 위한 기능 추가" />
     <MESSAGE value="#28 알림 조회 오류 수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="#28 알림 조회 오류 수정" />
+    <MESSAGE value="#30 프론트엔드 utilities/.. 제외한 파일 주석 및 비밀번호 입력시 소문자 변환 설정" />
+    <option name="LAST_COMMIT_MESSAGE" value="#30 프론트엔드 utilities/.. 제외한 파일 주석 및 비밀번호 입력시 소문자 변환 설정" />
   </component>
 </project>

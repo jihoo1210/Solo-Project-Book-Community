@@ -259,7 +259,7 @@ const Navigation = () => {
             </Button>
           </Grid>
           {/* 신고 목록 버튼 */}
-          {user.role === "관리자" && (
+          {user?.role === "관리자" && (
             <Grid size={{ xs: 12 }} sx={{ p: "0 !important" }}>
               <Button
                 component={Link}
