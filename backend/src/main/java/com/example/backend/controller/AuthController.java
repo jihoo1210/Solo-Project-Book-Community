@@ -178,6 +178,13 @@ public class AuthController {
             return ResponseController.fail(e.getMessage());
         }
     }
+
+    /**
+     * 인증 코드만 전송하는 메서드(비밀번호 초기화 용)
+     * @param dto 이메일
+     * @param bindingResult 유효성 검증
+     * @return null
+     */
     @GetMapping("/send-code")
     public ResponseEntity<?> sendCode(@Valid @ModelAttribute CheckEmailRequest dto, BindingResult bindingResult) {
         try {
@@ -200,6 +207,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * 인증 코드 검사하는 메서드
+     * @param dto 인증 코드, 이메일
+     * @param bindingResult 유효성 검사
+     * @return null
+     */
     @GetMapping("/verify-code")
     public ResponseEntity<?> verifyCode(@Valid @ModelAttribute VerifyCodeRequest dto, BindingResult bindingResult) {
         try {
@@ -251,6 +264,11 @@ public class AuthController {
         }
     }
 
+    /**
+     * 회원명 중복 검사 메서드
+     * @param username 회원명
+     * @return 중복 여부 boolean 값
+     */
     @GetMapping("/check-username")
     public ResponseEntity<?> checkUsername(@RequestParam String username) {
         try {

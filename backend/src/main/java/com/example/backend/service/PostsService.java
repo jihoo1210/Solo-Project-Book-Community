@@ -25,6 +25,7 @@ import java.util.List;
 
 import static com.example.backend.entity.utilities.AlertSubject.*;
 import static com.example.backend.entity.utilities.PostsSubject.*;
+import static com.example.backend.entity.utilities.Role.ROLE_ADMIN;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -342,7 +343,7 @@ public class PostsService {
         Long deletedId = target.getId();
         // 작성자 권한 검증
         // 오류 발생 -> userDetails에서 가져온 user는 <비영속>, 데이터베이스에서 조회된 user는 <영속> 상태임
-        // if(!user.equals(target.getUser())) throw new IllegalAccessException("다른 사용자의 글을 삭제할 수 없습니다.");
+         if(!user.getId().equals(target.getUser().getId()) || !user.getAuthority().equals(ROLE_ADMIN)) throw new IllegalAccessException("다른 사용자의 글을 삭제할 수 없습니다.");
 
         repository.delete(target);
 

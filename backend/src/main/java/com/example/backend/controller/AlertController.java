@@ -27,6 +27,15 @@ public class AlertController {
 
     private final AlertService service;
 
+    /**
+     * 알림 정보 가져오는 메서드
+     * @param userDetails 회원 정보 - 현재 회원 확인용
+     * @param pageable 페이지 정보
+     * @param searchField 검색 필드(제목, 내용 등)
+     * @param searchTerm 검색 단어
+     * @param tab 현재 탭(댓글, 신청 등)
+     * @return 필터링된 알림 페이지
+     */
     @GetMapping
     public ResponseEntity<?> index(@AuthenticationPrincipal CustomUserDetails userDetails, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                    @RequestParam(required = false, defaultValue = "") String searchField,
@@ -44,6 +53,11 @@ public class AlertController {
         }
     }
 
+    /**
+     * 새 알림이 있는지 확인하는 메서드
+     * @param userDetails 회원 정보 - 회원 확인용
+     * @return 새 알림 정보가 있는지를 표시할 boolean 값
+     */
     @GetMapping("/check-new-alert")
     public ResponseEntity<?> checkNewAlert(@AuthenticationPrincipal CustomUserDetails userDetails) {
         try {

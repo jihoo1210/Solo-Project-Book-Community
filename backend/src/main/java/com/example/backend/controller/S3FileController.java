@@ -25,7 +25,6 @@ public class S3FileController {
      * @param contentType MIME 타입
      * @return 업로드용 URL
      */
-    // (1) 업로드용 Presigned PUT URL 발급
     @PostMapping("/presign-upload")
     public ResponseEntity<?> presignUpload(@RequestParam("filename") String filename,
                                              @RequestParam("contentType") String contentType) {
@@ -48,7 +47,6 @@ public class S3FileController {
      * @param key 조회할 객체의 경로
      * @return 조회용 URL
      */
-    // (2) 조회용 Presigned GET URL로 리다이렉트 (에디터 HTML에는 이 앱 URL을 저장)
     @GetMapping("/url")
     public ResponseEntity<?> getFileUrl(@RequestParam String key) {
         try {
@@ -63,6 +61,11 @@ public class S3FileController {
         }
     }
 
+    /**
+     * 특정 파일 키를 받아서 삭제
+     * @param key 조회할 객체의 경로
+     * @return 삭제된 key
+     */
     @DeleteMapping
     public ResponseEntity<?> deleteFile(@RequestParam String key) {
         try {

@@ -21,6 +21,12 @@ public class TempController {
 
     private final TempService service;
 
+    /**
+     * 임시 사용자 비밀번호 초기화 메서드
+     * @param dto 비밀번호를 담은 DTO
+     * @param bindingResult 유효성 검사
+     * @return null
+     */
     @PatchMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@Valid @RequestBody PasswordResetRequest dto, BindingResult bindingResult) {
         try {
