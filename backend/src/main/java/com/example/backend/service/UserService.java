@@ -63,6 +63,11 @@ public class UserService {
                 .build();
     }
 
+    /**
+     * 이메일 중복 여부 검사 메서드
+     * @param email 이메일
+     * @return 이메일 중복 여부 boolean 값
+     */
     public CheckEmailResponse isEmailAvailable(String email) {
 
         if(repository.existsByEmail(email)) {
@@ -76,6 +81,11 @@ public class UserService {
         }
     }
 
+    /**
+     * 회원명 증복 여부 검사 메서드
+     * @param username 회원명
+     * @return 회원명 중복 여부 boolean 값
+     */
     public CheckUsernameResponse isUsernameAvailable(String username) {
         if(repository.existsByUsername(username)) {
             return CheckUsernameResponse.builder()
@@ -89,7 +99,9 @@ public class UserService {
     }
 
     /**
-     * 회원 정보 수정
+     * 회원 정보 수정 메서드
+     * @param user 수정할 회원
+     * @param dto 수정할 회원 정보
      */
     @Transactional
     public void changeUserInfo(User user, ChangeUserInfoRequest dto) {

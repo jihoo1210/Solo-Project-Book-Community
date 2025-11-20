@@ -10,8 +10,8 @@ import com.example.backend.dto.likes.LikesResponse;
 import com.example.backend.entity.*;
 import com.example.backend.entity.utilities.Role;
 import com.example.backend.repository.*;
-import com.example.backend.service.utilities.CommentLikesSearchSpec;
-import com.example.backend.service.utilities.CommentSearchSpec;
+import com.example.backend.service.searchSpec.CommentLikesSearchSpec;
+import com.example.backend.service.searchSpec.CommentSearchSpec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -37,6 +37,13 @@ public class CommentService {
     private final AlertViewedRepository alertViewedRepository;
     private final UserRepository userRepository;
 
+    /**
+     * 댓글 생성하는 메서드
+     * @param dto 댓글 정보를 담은 DTO
+     * @param user 작성자
+     * @param postsId 게시글 ID
+     * @return 프론트엔드에 표시할 작성된 댓글 정보
+     */
     @Transactional
     public CommentCreateResponse create(CommentCreateRequest dto, User user, Long postsId) {
         Posts posts = postsRepository.findById(postsId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
@@ -73,6 +80,12 @@ public class CommentService {
                 .build();
     }
 
+    /**
+     * 댓글 즐결찾기 증감 메서드
+     * @param user 현재 회원
+     * @param commentId 댓글 ID
+     * @return 현재 회원의 해당 댓글 즐겨찾기 여부
+     */
     @Transactional
     public LikesResponse handleLikes(User user, Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
@@ -101,6 +114,13 @@ public class CommentService {
                 .build();
     }
 
+    /**
+     * 댓글 수정 메서드
+     * @param user 현재 회원
+     * @param commentId 수정할 댓글 ID
+     * @param dto 수정한 댓글 정보
+     * @return 수정한 댓글 내용
+     */
     @Transactional
     public CommentUpdateResponse update(User user, Long commentId, CommentUpdateRequest dto) throws IllegalAccessException {
         Comment target = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
@@ -115,6 +135,15 @@ public class CommentService {
                 .build();
     }
 
+    /**
+     * 자신의 댓글 조회 메서드
+     * @param user 회원 정보
+     * @param pageable 페이지 정보
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @param tab 검색 탭
+     * @return 필터링된 댓글 페이지 리스트
+     */
     public Page<CommentIndexResponse> indexByUser(User user, Pageable pageable, String searchField, String searchTerm, Integer tab) {
         Specification<Comment> spec = CommentSearchSpec.search(user, searchField, searchTerm, tab);
 
@@ -135,6 +164,12 @@ public class CommentService {
                 .build());
     }
 
+    /**
+     * 댓글 삭제 메서드
+     * @param user 현재 회원
+     * @param commentId 삭제할 댓글 ID
+     * @return 삭제된 댓글 ID
+     */
     @Transactional
     public CommentDeleteResponse delete(User user, Long commentId) throws IllegalAccessException {
         Comment target = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
@@ -147,6 +182,15 @@ public class CommentService {
                 .build();
     }
 
+    /**
+     * 즐겨찾기한 댓글 조회 메서드
+     * @param user 회원 정보
+     * @param pageable 페이지 정보
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @param tab 검색 탭
+     * @return 필터링된 댓글 페이지 리스트
+     */
     public Page<CommentIndexResponse> indexFavoriteByUser(User user, Pageable pageable, String searchField, String searchTerm, Integer tab) {
         Specification<CommentLikes> spec = CommentLikesSearchSpec.search(user, searchField, searchTerm, tab);
 
@@ -167,6 +211,11 @@ public class CommentService {
                 .build());
     }
 
+    /**
+     * 게시글 [질문]의 댓글 채택 메서드
+     * @param user 현재 회원
+     * @param commentId 채택할 댓글 ID
+     */
     @Transactional
     public void adopt(User user, Long commentId) throws IllegalAccessException {
         Comment target = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다"));
@@ -190,7 +239,12 @@ public class CommentService {
         }
     }
 
-    // 신청만 하는 것이기 때문에 ALERT에만 저장한 후 게시글 작성자가 수락하면 DB에 저장
+    /**
+     * 게시글 [모집]에 신청하는 메서드
+     * @param dto 신청 정보를 담은 DTO
+     * @param user 현재 회원
+     * @param postsId 게시글 ID
+     */
     @Transactional
     public void applyRecruitment(CommentCreateRequest dto, User user, Long postsId) {
         Posts posts = postsRepository.findById(postsId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));

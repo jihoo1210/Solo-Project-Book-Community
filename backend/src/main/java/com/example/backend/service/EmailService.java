@@ -24,14 +24,15 @@ public class EmailService {
 
     /**
      * Redis에 저장한 후 이메일로 인증 코드를 전송합니다.
-     * @param email
+     * @param email 이메일
+     * @param messageTo 어떤 정보인지(가입 or 비밀번호 초기화)
      * @return 인증 코드
      */
     public String sendAuthCode(String email, String messageTo) {
         String authCode = authCodeGenerator.generateCode();
 
         // 1. Redis에 <이메일, 코드> 저장
-        // Redis key: "AuthCode" + email
+        // Redis key: "AuthCode:" + email
         // 중복된 이메일로 요청하면 자동으로 덮어쓰기 됨
         redisTemplate.opsForValue().set(
                 "AuthCode:" + email,
@@ -54,6 +55,12 @@ public class EmailService {
         return authCode; // 인증을 위해 전송된 인증 코드 리턴
     }
 
+    /**
+     * 인증 코드 검사 메서드
+     * @param email 이메일(key)
+     * @param code 사용자가 입력한 코드
+     * @return 승인 여부 boolean 값
+     */
     public boolean verifyAuthCode(String email, String code) {
         log.info("email: {}, code: {}", email, code);
         String redisKey = "AuthCode:" + email;

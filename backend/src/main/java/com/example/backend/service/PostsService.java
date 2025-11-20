@@ -10,8 +10,8 @@ import com.example.backend.dto.posts.update.PostsUpdateRequest;
 import com.example.backend.entity.*;
 import com.example.backend.entity.utilities.PostsSubject;
 import com.example.backend.repository.*;
-import com.example.backend.service.utilities.PostLikesSpec;
-import com.example.backend.service.utilities.PostSearchSpec;
+import com.example.backend.service.searchSpec.PostLikesSpec;
+import com.example.backend.service.searchSpec.PostSearchSpec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -114,6 +114,16 @@ public class PostsService {
                 .build());
     }
 
+    /**
+     * 특정 사용자의 즐겨찾기 게시글 목록을 검색 조건과 페이징 조건에 따라 조회합니다.
+     *
+     * @param user 현재 로그인된 사용자 (좋아요 여부 확인 및 대상 사용자 지정)
+     * @param pageable 페이징 정보
+     * @param searchField 검색 필드
+     * @param searchTerm 검색어
+     * @param tab 주제별 탭 필터
+     * @return 검색 및 페이징 처리된 해당 사용자의 게시글 목록 DTO
+     */
     public Page<PostsIndexResponse> indexFavoriteByUser(User user, Pageable pageable, String searchField, String searchTerm, Integer tab) {
         Specification<PostsLikes> spec = PostLikesSpec.search(user, searchField, searchTerm, tab);
 

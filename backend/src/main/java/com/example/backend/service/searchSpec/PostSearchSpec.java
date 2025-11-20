@@ -1,6 +1,6 @@
-package com.example.backend.service.utilities;
+package com.example.backend.service.searchSpec;
 
-import com.example.backend.entity.PostsLikes;
+import com.example.backend.entity.Posts;
 import com.example.backend.entity.User;
 import com.example.backend.entity.utilities.PostsSubject;
 import jakarta.persistence.criteria.Expression;
@@ -15,14 +15,23 @@ import java.util.List;
 import static com.example.backend.entity.utilities.PostsSubject.*;
 
 @Slf4j
-public class PostLikesSpec {
+public class PostSearchSpec {
 
-    public static Specification<PostsLikes> search(User user, String searchField, String searchTerm, Integer tab) {
+    /**
+     * 게시글 검색 조건 생성 메서드
+     * @param user 현재 회원
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @param tab 검색 탭
+     * @return 검색 조건
+     */
+    public static Specification<Posts> search(User user, String searchField, String searchTerm, Integer tab) {
         log.info("searchField: {}", searchField);
         log.info("searchTerm: {}", searchTerm);
         log.info("tab: {}", tab);
 
-        return ((root, query, builder) -> {
+        // 검색어가 있으면 동적 조건 생성
+        return (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();
             String cleanSearchTerm = searchTerm.replaceAll("\\s", "").toLowerCase(); // 공백 제거
             String pattern = "%" + cleanSearchTerm.toLowerCase() + "%"; // Like 검색 패턴
@@ -37,7 +46,7 @@ public class PostLikesSpec {
                 if ("제목".equals(searchField)) {
                     Expression<String> nonSpacedLowerTitle = builder.function(
                             "REPLACE", String.class,
-                            builder.lower(root.get("posts").get("title")),
+                            builder.lower(root.get("title")),
                             builder.literal(" "),
                             builder.literal("")
                     );
@@ -46,7 +55,7 @@ public class PostLikesSpec {
                     // 1. CLOB 타입인 content 필드를 빈 문자열과 연결(CONCAT)하여
                     //    Hibernate가 이 Expression을 STRING 타입으로 처리하도록 강제합니다.
                     Expression<String> stringContent = builder.concat(
-                            root.get("posts").get("content"),
+                            root.get("content"),
                             builder.literal("") // ⬅️ 빈 문자열과 연결
                     );
 
@@ -79,13 +88,13 @@ public class PostLikesSpec {
                 }
 
                 log.info("tab: {}, subjectValue: {}", tab, subjectValue);
-                log.info("entity subject: {}, subjectValue: {}", root.get("posts").get("subject").toString(), subjectValue);
+                log.info("entity subject: {}, subjectValue: {}", root.get("subject").toString(), subjectValue);
                 // Enum 값을 사용하여 Posts 엔티티의 subject 필드와 일치하는 조건 추가
-                predicates.add(builder.equal(root.get("posts").get("subject"), subjectValue));
+                predicates.add(builder.equal(root.get("subject"), subjectValue));
             }
 
             // 모든 Predicate을 AND나 OR로 결합하여 최종 Predicate 반환
             return builder.and(predicates.toArray(new Predicate[0]));
-        });
+        };
     }
 }

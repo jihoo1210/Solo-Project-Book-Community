@@ -9,7 +9,7 @@ import com.example.backend.entity.User;
 import com.example.backend.repository.ChatRoomRepository;
 import com.example.backend.repository.PostsRepository;
 import com.example.backend.repository.UserRepository;
-import com.example.backend.service.utilities.ChatRoomSpec;
+import com.example.backend.service.searchSpec.ChatRoomSpec;
 import com.example.backend.socket.RoomChatHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +50,12 @@ public class ChatRoomService {
         return chatRoomRepository.save(room);
     }
 
+    /**
+     * 채팅방에 회원 초대
+     * @param roomId 초대할 채팅방
+     * @param invitedUserIds 초대할 회원 Id 리스트
+     * @return 초대된 채팅방
+     */
     public ChatRoom inviteUser(Long roomId, List<Long> invitedUserIds) {
         log.info("roomId: {}", roomId);
         log.info("invitedUserIds: {}", invitedUserIds);

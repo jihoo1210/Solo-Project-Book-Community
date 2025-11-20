@@ -24,6 +24,11 @@ public class ChatRoomTextService {
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
 
+    /**
+     * 채팅방의 이전 25개의 메시지 가져오는 메서드
+     * @param roomId 가져올 채팅방
+     * @return 25개의 메시지
+     */
     public List<ChatRoomTextResponse> getMessage(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티가 존재하지 않습니다."));
         List<ChatRoomText> chatRoomTextList = chatRoomTextRepository.findTop25ByRoom(chatRoom);
@@ -35,6 +40,13 @@ public class ChatRoomTextService {
                 .build()).toList();
     }
 
+    /**
+     * 메시지 전송할 때 데이터베이스에 저장하는 메서드
+     * @param roomId 채팅방 ID
+     * @param username 작성자
+     * @param message 내용
+     * @return 문자열로 변환된 내용
+     */
     @Transactional
     public String createMessage(Long roomId, String username, TextMessage message) {
 

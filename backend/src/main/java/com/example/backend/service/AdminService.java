@@ -8,14 +8,15 @@ import com.example.backend.entity.Posts;
 import com.example.backend.entity.Report;
 import com.example.backend.entity.User;
 import com.example.backend.repository.*;
-import com.example.backend.service.utilities.ReportCommentSearchSpec;
-import com.example.backend.service.utilities.ReportPostsSearchSpec;
-import com.example.backend.service.utilities.ReportUserSearchSpec;
+import com.example.backend.service.searchSpec.ReportCommentSearchSpec;
+import com.example.backend.service.searchSpec.ReportPostsSearchSpec;
+import com.example.backend.service.searchSpec.ReportUserSearchSpec;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,6 +32,16 @@ public class AdminService {
     private final CommentLikesRepository commentLikesRepository;
     private final UserRepository userRepository;
 
+
+    /**
+     * 신고된 개시글 조회하고 Page<?>로 반환
+     * @param user 현재 회원
+     * @param pageable 페이지 정보
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @param tab 검색 탭
+     * @return 조회된 게시글 페이지
+     */
     public Page<PostsIndexResponse> indexPosts(User user, Pageable pageable, String searchField, String searchTerm, Integer tab) {
         Specification<Report> spec = ReportPostsSearchSpec.search(searchField, searchTerm, tab);
 
@@ -53,6 +64,15 @@ public class AdminService {
         });
     }
 
+    /**
+     * 신고된 댓글 조회하고 Page<?>로 반환
+     * @param user 현재 회원
+     * @param pageable 페이지 정보
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @param tab 검색 탭
+     * @return 조회된 댓글 페이지
+     */
     public Page<CommentIndexResponse> indexComment(User user, Pageable pageable, String searchField, String searchTerm, Integer tab) {
         Specification<Report> spec = ReportCommentSearchSpec.search(searchField, searchTerm, tab);
         Page<Report> reportPage = reportRepository.findAll(spec, pageable);
@@ -75,6 +95,13 @@ public class AdminService {
         });
     }
 
+    /**
+     * 사용자 조회하고 Page<?>로 반환
+     * @param pageable 페이지 정보
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @return 조회된 사용자 페이지
+     */
     public Page<UserIndexResponse> indexUser(Pageable pageable, String searchField, String searchTerm) {
         Specification<User> spec = ReportUserSearchSpec.search(searchField, searchTerm);
         Page<User> userPage = userRepository.findAll(spec, pageable);
@@ -87,6 +114,12 @@ public class AdminService {
                 .build());
     }
 
+    /**
+     * 신고된 객체 무시하는 메서드(부가적인 기능 실행 안하고 바로 신고 삭제)
+     * @param objectType 무시할 객체 타입
+     * @param reportId 무시할 객체 ID
+     */
+    @Transactional
     public void ignore(String objectType, Long reportId) {
         switch (objectType) {
             case "posts" -> {

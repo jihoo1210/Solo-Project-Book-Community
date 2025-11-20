@@ -18,6 +18,11 @@ public class TempService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
 
+    /**
+     * 비밀번호 재성절 메서드
+     * @param email 이메일 - 회원 조회용
+     * @param password 새 비밀번호
+     */
     @Transactional
     public void resetPassword(String email, String password) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
