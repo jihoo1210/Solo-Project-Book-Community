@@ -63,8 +63,7 @@ public class AuthController {
             // 3. 성공 응답 반환
             return ResponseController.success(responseDto);
         } catch (Exception e) {
-            // 4. 예외 처리
-            log.warn("Exception: {}", e.getMessage());
+            log.error("e", e);
 
             // 5. 실패 응답 반환
             return ResponseController.fail(e.getMessage());
@@ -125,7 +124,7 @@ public class AuthController {
 
             return ResponseController.success(responseDto);
         } catch (Exception e) {
-            log.warn("Signin failed: {}", e.getMessage());
+            log.error("e", e);
 
             // 실패 응답 반환
             return ResponseController.fail(e.getMessage());
@@ -175,6 +174,7 @@ public class AuthController {
 
             return ResponseController.success(responseDto);
         } catch (Exception e) {
+            log.error("e", e);
             return ResponseController.fail(e.getMessage());
         }
     }
@@ -203,6 +203,7 @@ public class AuthController {
 
             return ResponseEntity.ok().build();
         } catch (Exception e) {
+            log.error("e", e);
             return ResponseController.fail(e.getMessage());
         }
     }
@@ -222,6 +223,7 @@ public class AuthController {
             }
             throw new IllegalArgumentException("인증 코드가 유효하지 않습니다.");
         } catch (Exception e) {
+            log.error("e", e);
             return ResponseController.fail(e.getMessage());
         }
     }
@@ -260,6 +262,7 @@ public class AuthController {
             }
             throw new IllegalArgumentException("인증 코드가 유효하지 않습니다.");
         } catch (Exception e) {
+            log.error("e", e);
             return ResponseController.fail(e.getMessage());
         }
     }
@@ -284,8 +287,7 @@ public class AuthController {
             // 2. 성공 응답 반환
             return ResponseController.success(responseDto);
         } catch (Exception e) {
-            // 3. 예외 처리
-            log.warn("Exception: {}", e.getMessage());
+            log.error("e", e);
             
             // 4. 실패 응답 반환
             return ResponseController.fail(e.getMessage());

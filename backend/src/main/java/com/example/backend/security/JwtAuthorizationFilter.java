@@ -47,7 +47,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         try {
             // 1. HTTP 요청 헤더에서 Bearer 토큰을 파싱하여 JWT를 추출합니다.
             String token = parseBearerToken(request);
-            log.info("token: {}", token);
             // 2. 토큰이 존재하고 내용이 있는 경우에만 검증을 진행합니다.
             if(StringUtils.hasText(token)) {
                 // 3. TokenProvider를 사용하여 토큰을 검증하고 사용자 이름(PostsSubject)을 추출합니다.
