@@ -22,23 +22,29 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         {
             String email = "jihoostudy1@gmail.com";
-            SignupRequest dto = SignupRequest.builder()
-                    .email(email)
-                    .username("DEV_ADMIN_USER")
-                    .password("password")
-                    .build();
-            userService.signup(dto);
+            if(!userRepository.existsByEmail(email)) {
+                SignupRequest dto = SignupRequest.builder()
+                        .email(email)
+                        .username("DEV_ADMIN_USER")
+                        .password("password")
+                        .build();
+                userService.signup(dto);
 
-            userRepository.findByEmail(email).ifPresent(admin -> admin.setAuthority(Role.ROLE_ADMIN));
+                userRepository.findByEmail(email).ifPresent(admin -> admin.setAuthority(Role.ROLE_ADMIN));
+            }
         }
 
         {
-            SignupRequest dto = SignupRequest.builder()
-                    .email("hello@world.com")
-                    .username("DEV_TEST_USER")
-                    .password("password")
-                    .build();
-            userService.signup(dto);
+            String email = "hello@world.com";
+            if(!userRepository.existsByEmail(email))  {
+                SignupRequest dto = SignupRequest.builder()
+                        .email(email)
+                        .username("DEV_TEST_USER")
+                        .password("password")
+                        .build();
+
+                userService.signup(dto);
+            }
         }
     }
 }

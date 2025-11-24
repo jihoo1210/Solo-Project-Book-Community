@@ -10,7 +10,7 @@ spring:
   # jpa config
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update # none - 사용 가능 | validate - 오류남
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
