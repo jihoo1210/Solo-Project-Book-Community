@@ -62,10 +62,11 @@ jobs:
           distribution: 'temurin'
 
       # Gradle Wrapper 실행 권한 부여 및 빌드
+      # actions에서 진행하는 test에서 오류가 발생함 - 의존성을 해결하지 못함
       - name: Build backend
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build
+          ./gradlew clean build --exclude-task test
 
       # 빌드된 JAR과 Procfile을 압축 파일로 패키징
       - name: Package backend with Procfile

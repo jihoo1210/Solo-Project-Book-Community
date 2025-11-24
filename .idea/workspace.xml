@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#32 주석 추가">
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#34 aws에서 권장하는 CI, CD 명령어 사용">
       <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -197,14 +198,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1762142101641</updated>
-    </task>
-    <task id="LOCAL-00009" summary="#5 Posts Service and Repository">
-      <option name="closed" value="true" />
-      <created>1762228264662</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1762228264662</updated>
     </task>
     <task id="LOCAL-00010" summary="#7 Posts CRUD Page">
       <option name="closed" value="true" />
@@ -590,7 +583,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763967197972</updated>
     </task>
-    <option name="localTasksCounter" value="58" />
+    <task id="LOCAL-00058" summary="#34 aws에서 권장하는 CI, CD 명령어 사용">
+      <option name="closed" value="true" />
+      <created>1763967743657</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1763967743657</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -604,7 +605,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="main" />
+                        <option value="dev" />
                       </list>
                     </value>
                   </entry>
@@ -618,7 +619,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#22 이메일 인증 api 연결" />
     <MESSAGE value="#22 이메일 인증 후 권한 TEMP -&gt; 비밀번호 재설정 로직에 TEMP 권한을 가진 사용자만 접근할 수 있도록 설정" />
     <MESSAGE value="#22 비밀번호 재설정 페이지, axios 최대 대기 가능 시간 증가(이메일 보내는게 오래걸림), 디자인 수정" />
     <MESSAGE value="#22 비밀번호 재설정 페이지" />
@@ -643,6 +643,7 @@
     <MESSAGE value="#32 백엔드 elastic beanstalk 이름 수정" />
     <MESSAGE value="#32 주석 추가" />
     <MESSAGE value="#34 백엔드 gradlew build 권한 오류 수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="#34 백엔드 gradlew build 권한 오류 수정" />
+    <MESSAGE value="#34 aws에서 권장하는 CI, CD 명령어 사용" />
+    <option name="LAST_COMMIT_MESSAGE" value="#34 aws에서 권장하는 CI, CD 명령어 사용" />
   </component>
 </project>
