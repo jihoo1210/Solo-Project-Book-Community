@@ -25,7 +25,7 @@ jobs:
           npm run build
 
       - name: Deploy to S3
-        uses: aws-actions/s3-sync@v2
+        uses: aws-actions/aws-s3-sync@v2
         with:
           bucket: ${{ secrets.AWS_S3_BUCKET }}
           region: ap-northeast-2
@@ -53,7 +53,8 @@ jobs:
           distribution: 'temurin'
 
       - name: Build backend
-        run: ./gradlew clean build -x test
+        run: |
+          chmod +x ./gradlew clean build
 
       - name: Package backend with Procfile
         run: |

@@ -5,13 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#32 주석 추가">
-      <change afterPath="$PROJECT_DIR$/backend/Procfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qodana.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/utilities/HealthCheck.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/utilities/HealthCheck.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,51 +51,60 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="dev" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;history&quot;: [
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "history": [
     {
-      &quot;state&quot;: &quot;OPEN&quot;
+      "state": "OPEN"
     }
   ],
-  &quot;lastFilter&quot;: {}
-}</component>
-  <component name="GitHubPullRequestState">{
-  &quot;prStates&quot;: [
+  "lastFilter": {
+    "state": "OPEN"
+  }
+}]]></component>
+  <component name="GitHubPullRequestState"><![CDATA[{
+  "prStates": [
     {
-      &quot;id&quot;: {
-        &quot;id&quot;: &quot;PR_kwDOQNkMH86yeLIg&quot;,
-        &quot;number&quot;: 20
+      "id": {
+        "id": "PR_kwDOQNkMH86yeLIg",
+        "number": 20
       },
-      &quot;lastSeen&quot;: 1762820567061
+      "lastSeen": 1762820567061
     },
     {
-      &quot;id&quot;: {
-        &quot;id&quot;: &quot;PR_kwDOQNkMH86y4VgO&quot;,
-        &quot;number&quot;: 21
+      "id": {
+        "id": "PR_kwDOQNkMH86y4VgO",
+        "number": 21
       },
-      &quot;lastSeen&quot;: 1763095962768
+      "lastSeen": 1763095962768
     },
     {
-      &quot;id&quot;: {
-        &quot;id&quot;: &quot;PR_kwDOQNkMH86zXhAW&quot;,
-        &quot;number&quot;: 23
+      "id": {
+        "id": "PR_kwDOQNkMH86zXhAW",
+        "number": 23
       },
-      &quot;lastSeen&quot;: 1763095971801
+      "lastSeen": 1763095971801
     },
     {
-      &quot;id&quot;: {
-        &quot;id&quot;: &quot;PR_kwDOQNkMH86z-b_F&quot;,
-        &quot;number&quot;: 25
+      "id": {
+        "id": "PR_kwDOQNkMH86z-b_F",
+        "number": 25
       },
-      &quot;lastSeen&quot;: 1763425295140
+      "lastSeen": 1763425295140
+    },
+    {
+      "id": {
+        "id": "PR_kwDOQNkMH861HZFz",
+        "number": 33
+      },
+      "lastSeen": 1763966490579
     }
   ]
-}</component>
+}]]></component>
   <component name="GitRewordedCommitMessages">
     <option name="commitMessagesMapping">
       <RewordedCommitMessageMapping>
