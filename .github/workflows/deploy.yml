@@ -15,11 +15,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v3 # node 설치
         with:
           node-version: '22'
 
-      - name: Build frontend
+      - name: Build frontend # build로 압축
         run: |
           npm install
           npm run build
@@ -27,12 +27,12 @@ jobs:
       - name: Deploy to S3
         uses: aws-actions/s3-sync@v2
         with:
-          bucket: ${{ secrets.AWS_S3_BUCKET }}
+          bucket: ${{ secrets.AWS_S3_BUCKET }} # s3에 업로드
           region: ap-northeast-2
           source-dir: ./frontend/build
 
       - name: Invalidate CloudFront cache
-        uses: aws-actions/cloudfront-invalidate@v1
+        uses: aws-actions/cloudfront-invalidate@v1 # cloud front 무효화
         with:
           distribution-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
           paths: "/*"
@@ -47,21 +47,21 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v3 # java 설치
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build backend
+      - name: Build backend # build로 압축
         run: ./gradlew build -x test
 
       - name: Deploy to Elastic Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v21
+        uses: einaregilsson/beanstalk-deploy@v21 # elastic beanstalk 연결
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
           aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-          application_name: "book-community"
-          environment_name: "Book-community-env"
+          application_name: "book-community" # 연결할 app 이름
+          environment_name: "Book-community-env" # 연결할 환경 이름
           region: "ap-northeast-2"
-          version_label: github-${{ github.sha }}
+          version_label: github-${{ github.sha }} # 깃허브 자동 생성
           deployment_package: backend/build/libs/backend-0.0.1-SNAPSHOT.jar
