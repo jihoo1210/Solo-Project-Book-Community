@@ -1,5 +1,3 @@
-// src/components/Signin.js
-
 import React, { useEffect, useState } from 'react';
 import {
     Box, Container, Typography, TextField, Button, Grid, Paper,
@@ -89,7 +87,12 @@ const SignIn = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        const newValue = value.replace(/\s/g, '');
+        let newValue;
+        if(name === "password") {
+            newValue = value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣\s]/g, "");
+        } else {
+            newValue = value.replace(/\s/g, '');
+        }
         setFormData((prev) => ({ ...prev, [name]: newValue }));
         setSigninInfos((prev) => ({ ...prev, [name]: '', submit: '' }));
     };
@@ -107,8 +110,8 @@ const SignIn = () => {
             newErrors.email = '이메일을 입력해 주세요.'
             hasError = true
         }
-        if (!formData.password) {
-            newErrors.password = '비밀번호를 입력해 주세요.';
+        if (!formData.password || formData.password.length < 8) {
+            newErrors.password = "비밀번호는 8자 이상이어야 합니다."
             hasError = true
         }
         if(hasError) {
@@ -168,13 +171,13 @@ const SignIn = () => {
                             {/* 비밀번호 입력 필드 */}
                             <Grid size={{ xs: 12 }}>
                                 <FormControl fullWidth variant="outlined" required error={!!signinInfos.password}>
-                                    <InputLabel sx={{ color: LIGHT_TEXT_COLOR }}>비밀번호</InputLabel>
+                                    <InputLabel sx={{ color: LIGHT_TEXT_COLOR }}>비밀번호(8자 이상)</InputLabel>
                                     <OutlinedInput
                                         name="password"
                                         type={showPassword ? 'text' : 'password'}
                                         value={formData.password}
                                         onChange={handleChange}
-                                        label="비밀번호"
+                                        label="비밀번호(8자 이상)"
                                         sx={{
                                             '& fieldset': { borderColor: TEXT_COLOR },
                                             '&:hover fieldset': { borderColor: TEXT_COLOR },

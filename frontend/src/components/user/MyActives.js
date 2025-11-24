@@ -1,5 +1,3 @@
-// src/components/MyActivities.js
-
 import React, { useState, useEffect, useMemo } from 'react';
 import {
     Box, Container, Typography, Button, Table, TableBody,
@@ -21,11 +19,11 @@ import apiClient from '../../api/Api-Service';
 import { 
     BG_COLOR, TEXT_COLOR, LIGHT_TEXT_COLOR, 
     RED_COLOR, PURPLE_COLOR, MODIFIED_COLOR, HEADER_HEIGHT, VIEW_SAVED_COLOR,
-    NEW_COLOR // <<<<<<< 추가됨: 새로운 글 배경색을 위한 상수
+    NEW_COLOR
 } from '../constants/Theme';
 import { getPostDateInfo } from '../utilities/DateUtiles';
 
-// --- 스타일 컴포넌트 정의 (생략) ---
+// --- 스타일 컴포넌트 정의 ---
 const PostsListWrapper = styled(Box)(({ theme }) => ({
     marginTop: HEADER_HEIGHT,
     backgroundColor: BG_COLOR,
@@ -136,20 +134,18 @@ const MyActivities = () => {
     // 내 활동 타입 (0: 게시판, 1: 댓글)
     const [activityType, setActivityType] = useState(0); 
 
-    // API 연동 및 데이터 관련 상태 (게시글 및 댓글 모두에 사용)
+    // API 연동 및 데이터 관련 상태
     const [items, setItems] = useState([]); // 게시글 또는 댓글 목록
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [totalItems, setTotalItems] = useState(0);
 
     // 필터링, 정렬, 페이지네이션 상태
-    // 댓글 리스트에도 탭 검색 기능이 추가되어, activityType과 무관하게 사용됨
     const [selectedTab, setSelectedTab] = useState(0); // 게시글 주제 탭 (전체, 질문, 공유, 모집)
     const [page, setPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [pendingSearchTerm, setPendingSearchTerm] = useState('');
     const [sortOrder, setSortOrder] = useState('desc');
-    // 댓글 검색 필드가 '제목', '내용'을 사용하도록 변경되었으므로, 기본값은 '제목'으로 통일
     const [searchField, setSearchField] = useState('제목');
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -180,17 +176,13 @@ const MyActivities = () => {
                 const searchFieldParam = `searchField=${searchField}`;
                 const searchTermParam = `searchTerm=${searchTerm}`;
                 
-                // 가정: 내가 쓴 게시글을 가져오는 API 엔드포인트
                 url = `/posts/my?page=${pageNumberForBackend}&${sizeParam}&sort=${sortParam}&${searchFieldParam}&${searchTermParam}${tabParam}`;
             } 
             // 2. 댓글 (내가 쓴 댓글)
             else { 
-                // 댓글 API도 게시글과 동일하게 [제목, 내용] 검색 및 탭 필터링을 사용하도록 변경
                 const searchFieldParam = `searchField=${searchField}`;
                 const searchTermParam = `searchTerm=${searchTerm}`;
                 
-                // 가정: 내가 쓴 댓글을 가져오는 API 엔드포인트
-                // 서버에서 댓글 정보를 가져올 때, 해당 댓글이 속한 게시글 정보(제목, 주제, 작성자, 좋아요 수 등)를 함께 반환한다고 가정합니다.
                 url = `/comment/my?page=${pageNumberForBackend}&${sizeParam}&sort=${sortParam}&${searchFieldParam}&${searchTermParam}${tabParam}`;
             }
 
@@ -247,7 +239,7 @@ const MyActivities = () => {
         setSortAnchorEl(null);
     };
 
-    // 검색 필드 선택 핸들러 (댓글 모드에서도 '제목', '내용' 선택 가능하도록 수정)
+    // 검색 필드 선택 핸들러
     const handleFilterClick = (event) => { setFilterAnchorEl(event.currentTarget); };
     const handleFilterClose = () => { setFilterAnchorEl(null); };
     const handleFilterOptionSelect = (field) => {
@@ -275,7 +267,7 @@ const MyActivities = () => {
         setPage(1);
     };
 
-    // Row 클릭 핸들러: 게시글 또는 댓글이 속한 게시글로 이동
+    // 게시글 또는 댓글이 속한 게시글로 이동
     const handleRowClick = (item) => {
         // 댓글/게시글 모두 게시글 ID를 통해 게시글 상세 페이지로 이동
         const targetId = activityType === 0 ? item.id : item.postId; 
@@ -289,9 +281,6 @@ const MyActivities = () => {
 
     // 1. 테이블 헤더 정의
     const tableHeaders = useMemo(() => {
-        // 게시판과 댓글 모두 [ID, 주제, 제목, (내용*), 작성자, 좋아요, 작성일] 필드를 사용하도록 통일
-        // 댓글 리스트의 경우 '내용' 필드를 추가하고 '조회수'를 제거함.
-        // 각 필드의 크기를 게시글 리스트와 동일하게 맞춤 (작성자: 15%, 작성일: 17%로 통일)
         
         return (
             <TableRow>
@@ -325,7 +314,7 @@ const MyActivities = () => {
             <MenuItem key="content" onClick={() => handleFilterOptionSelect('내용')}>내용</MenuItem>,
             <MenuItem key="author" onClick={() => handleFilterOptionSelect('작성자')} disabled>작성자</MenuItem>,
         ];
-    }, [activityType]);
+    }, []);
 
 
     // 3. 테이블 바디 렌더링 (게시글/댓글 구분)
@@ -377,7 +366,7 @@ const MyActivities = () => {
                 textDecoration: 'none',
                 '& > .MuiTableCell-root': { borderBottom: `1px solid ${alpha(LIGHT_TEXT_COLOR, 0.4)}` },
                 '&:last-child > .MuiTableCell-root': { borderBottom: 'none' },
-                // [수정 사항 적용]: activityType이 0 (게시글)일 때만 savedInViews를 사용하여 배경색 설정
+                // activityType이 0 (게시글)일 때만 savedInViews를 사용하여 배경색 설정
                 backgroundColor: activityType === 0 && !item.savedInViews ? alpha(NEW_COLOR, 0.1) : BG_COLOR,
                 '&:hover': {
                     backgroundColor: alpha(TEXT_COLOR, 0.05),
@@ -399,9 +388,6 @@ const MyActivities = () => {
             // 조회수/좋아요 관련 스타일
             const viewColor = item.savedInViews ? VIEW_SAVED_COLOR : LIGHT_TEXT_COLOR;
             const viewFontWeight = item.savedInViews ? 700 : 400;
-
-            // 댓글 모드일 경우: item.id = 댓글 ID, item.postId = 게시글 ID
-            // 게시글 모드일 경우: item.id = 게시글 ID
 
             return (
                 <TableRow key={isCommentMode ? `comment-${item.id}` : `post-${item.id}`} onClick={() => handleRowClick(item)} sx={rowSx}>
@@ -476,7 +462,7 @@ const MyActivities = () => {
                         color: item.savedInLikes ? PURPLE_COLOR : RED_COLOR, fontWeight: 600,
                         [theme.breakpoints.down('sm')]: {
                             display: 'flex', justifyContent: 'flex-start', alignItems: 'center',
-                            fontSize: '0.85rem', padding: theme.spacing(0.5, 2, 0.5, 2), order: isCommentMode ? 6 : 5, // 댓글 모드에서는 순서 변경
+                            fontSize: '0.85rem', padding: theme.spacing(0.5, 2, 0.5, 2), order: isCommentMode ? 6 : 5,
                             color: LIGHT_TEXT_COLOR, fontWeight: 400, 
                             '&::before': { content: `'${mobileLabels[5]}: '`, ...labelStyles }
                         }
@@ -517,7 +503,7 @@ const MyActivities = () => {
         });
     };
     
-    // 4. 게시글 주제 탭 렌더링 (게시판/댓글 모드 모두 표시되도록 수정)
+    // 4. 게시글 주제 탭 렌더링
     const renderSubjectTabs = () => {
         return (
             <Box sx={{
@@ -626,7 +612,7 @@ const MyActivities = () => {
                                         <MenuItem onClick={() => handleSortOptionSelect('asc')}>오름차순 (오래된순)</MenuItem>
                                     </Menu>
 
-                                    {/* 검색 필드 선택 버튼 (댓글 모드에서도 '제목', '내용' 선택 가능하도록 수정) */}
+                                    {/* 검색 필드 선택 버튼 */}
                                     <FilterButton
                                         variant="outlined"
                                         endIcon={<SortIcon />}
@@ -654,14 +640,14 @@ const MyActivities = () => {
                                     onChange={(e) => { setPendingSearchTerm(e.target.value); }}
                                     onKeyDown={(e) => { if (e.key === 'Enter') { handleSearchSubmit(); } }}
                                     sx={{ minWidth: { xs: '100%', md: '200px' }, flexGrow: 1, mt: { xs: 1, md: 0 } }}
-                                    InputProps={{
-                                        endAdornment: (
+                                    slotProps={{
+                                        input: {endAdornment: (
                                             <InputAdornment position="end">
                                                 <IconButton sx={{ color: TEXT_COLOR }} edge="end" onClick={handleSearchSubmit}>
                                                     <SearchIcon />
                                                 </IconButton>
                                             </InputAdornment>
-                                        ),
+                                        )},
                                     }}
                                 />
                                 {/* 몇 개씩 보여줄지 선택 메뉴 */}

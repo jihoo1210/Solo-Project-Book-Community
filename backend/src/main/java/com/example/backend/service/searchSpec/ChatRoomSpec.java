@@ -1,9 +1,10 @@
-package com.example.backend.service.utilities;
+package com.example.backend.service.searchSpec;
 
-import com.example.backend.entity.CommentLikes;
+import com.example.backend.entity.ChatRoom;
 import com.example.backend.entity.User;
-import com.example.backend.entity.utilities.PostsSubject;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,11 +13,18 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.backend.entity.utilities.PostsSubject.*;
-
 @Slf4j
-public class CommentLikesSearchSpec {
-    public static Specification<CommentLikes> search(User user, String searchField, String searchTerm, Integer tab) {
+public class ChatRoomSpec {
+
+    /**
+     * 채팅방 검색 조건 생성 메서드
+     * @param user 현재 회원
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @param tab 검색 탭
+     * @return 검색 조건
+     */
+    public static Specification<ChatRoom> search(User user, String searchField, String searchTerm, Integer tab) {
         log.info("searchField: {}", searchField);
         log.info("searchTerm: {}", searchTerm);
         log.info("tab: {}", tab);
@@ -28,40 +36,43 @@ public class CommentLikesSearchSpec {
             String pattern = "%" + cleanSearchTerm.toLowerCase() + "%"; // Like 검색 패턴
 
             if (user != null) {
-                predicates.add(builder.equal(root.get("user"), user));
+                // 관리자이거나
+                Predicate creatorPredicate = builder.equal(root.get("creator"), user);
+
+                // 초대된 사용자이거나
+                Join<ChatRoom, User> chatRoomUserJoin = root.join("invitedUsers", JoinType.LEFT);
+                log.info("chatRoomUserJoin: {}", chatRoomUserJoin);
+                Predicate invitedPredicate = builder.equal(chatRoomUserJoin, user);
+
+                predicates.add(builder.or(creatorPredicate, invitedPredicate));
             }
 
             // 검색 필드에 따른 조건 추가 (OR 조건으로 검색 가능)
             // 공백 제거
             if (StringUtils.hasText(cleanSearchTerm)) {
-                if ("내용".equals(searchField)) {
-                    // 1. CLOB 타입인 content 필드를 빈 문자열과 연결(CONCAT)하여
-                    //    Hibernate가 이 Expression을 STRING 타입으로 처리하도록 강제합니다.
-                    Expression<String> stringContent = builder.concat(
-                            root.get("comment").get("content"),
-                            builder.literal("") // ⬅️ 빈 문자열과 연결
+                if ("커뮤니티".equals(searchField)) {
+                    Expression<String> nonSpacedLowerTitle = builder.function(
+                            "REPLACE", String.class,
+                            builder.lower(root.get("roomName")),
+                            builder.literal(" "),
+                            builder.literal("")
                     );
+                    predicates.add(builder.like(nonSpacedLowerTitle, pattern));
+                } else if ("관리자".equals(searchField)) {
+                    Expression<String> nonSpacedLowerTitle = builder.function(
+                            "REPLACE", String.class,
+                            builder.lower(root.get("creator").get("username")),
+                            builder.literal(" "),
+                            builder.literal("")
+                    );
+                    predicates.add(builder.like(nonSpacedLowerTitle, pattern));
+                } else if ("참가자".equals(searchField)) {
 
-                    // 2. 이제 STRING 타입으로 강제 변환된 stringContent에 lower()와 REPLACE() 함수를 안전하게 적용합니다.
+                    Join<ChatRoom, User> invitedUserJoin = root.join("invitedUsers", JoinType.LEFT);
+
                     Expression<String> nonSpacedLowerTitle = builder.function(
                             "REPLACE", String.class,
-                            builder.lower(stringContent), // ⬅️ 변환된 Expression 사용
-                            builder.literal(" "),
-                            builder.literal("")
-                    );
-                    predicates.add(builder.like(nonSpacedLowerTitle, pattern));
-                } else if("제목".equals(searchField)) {
-                    Expression<String> nonSpacedLowerTitle = builder.function(
-                            "REPLACE", String.class,
-                            builder.lower(root.get("posts").get("title")),
-                            builder.literal(" "),
-                            builder.literal("")
-                    );
-                    predicates.add(builder.like(nonSpacedLowerTitle, pattern));
-                } else if ("작성자".equals(searchField)) {
-                    Expression<String> nonSpacedLowerTitle = builder.function(
-                            "REPLACE", String.class,
-                            builder.lower(root.get("user").get("username")),
+                            builder.lower(invitedUserJoin.get("username")),
                             builder.literal(" "),
                             builder.literal("")
                     );
@@ -70,18 +81,23 @@ public class CommentLikesSearchSpec {
             }
 
             if (tab != null && tab > 0) {
-                PostsSubject subjectValue;
+                Predicate condition = null;
+
                 switch (tab) {
-                    case 1: subjectValue = QUESTION; break;
-                    case 2: subjectValue = SHARE; break;
-                    case 3: subjectValue = RECRUIT; break;
-                    default: return builder.and(predicates.toArray(new Predicate[0])); // 유효하지 않은 탭은 무시
+                    case 1: // 관리자
+                        condition = builder.equal(root.get("creator"), user);
+                        break;
+                    case 2: // 참가자
+                        Join<ChatRoom, User> invitedUserJoin = root.join("invitedUsers", JoinType.LEFT);
+                        condition = builder.equal(invitedUserJoin, user);
+                        break;
+                    default:
+                        return builder.and(predicates.toArray(new Predicate[0]));
                 }
 
-                log.info("tab: {}, subjectValue: {}", tab, subjectValue);
-                log.info("entity subject: {}, subjectValue: {}", root.get("posts").get("subject").toString(), subjectValue);
-                // Enum 값을 사용하여 Posts 엔티티의 subject 필드와 일치하는 조건 추가
-                predicates.add(builder.equal(root.get("posts").get("subject"), subjectValue));
+                if (condition != null) {
+                    predicates.add(condition);
+                }
             }
 
             // 모든 Predicate을 AND나 OR로 결합하여 최종 Predicate 반환

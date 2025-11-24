@@ -13,9 +13,13 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     private final RoomChatHandler roomChatHandler;
 
+    /**
+     * 웹 소켓 접속 경로 설정 및 Handler 등록
+     * @param registry
+     */
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         // 웹소켓이 실행될 주소
-        registry.addHandler(roomChatHandler, "/community").setAllowedOrigins("*");
+        registry.addHandler(roomChatHandler, "/community").setAllowedOrigins("http://localhost:3000"); // 후에 배포 도메인 등록 필요
     }
 }

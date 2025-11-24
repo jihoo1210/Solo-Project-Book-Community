@@ -1,4 +1,4 @@
-package com.example.backend.service.utilities;
+package com.example.backend.service.searchSpec;
 
 import com.example.backend.entity.Alert;
 import com.example.backend.entity.User;
@@ -17,6 +17,14 @@ import static com.example.backend.entity.utilities.AlertSubject.*;
 @Slf4j
 public class AlertSearchSpec {
 
+    /**
+     * 알림 검색 조건 생성 메서드
+     * @param user 현재 회원
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @param tab 검색 탭
+     * @return 검색 조건
+     */
     public static Specification<Alert> search(User user, String searchField, String searchTerm, Integer tab) {
         log.info("searchField: {}", searchField);
         log.info("searchTerm: {}", searchTerm);

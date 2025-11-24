@@ -31,7 +31,15 @@ public class PostsController {
 
     private final PostsService service;
 
-    // 게시글 목록 조회 (검색 및 페이징 적용)
+    /**
+     * 게시글 조회 매서드
+     * @param userDetails 회원 정보 - 좋아요 여부, 조회 여부 확인용
+     * @param pageable 페이지 정보
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @param tab 현재 필드
+     * @return 필터링된 게시글 페이지
+     */
     @GetMapping
     public ResponseEntity<?> index(@AuthenticationPrincipal CustomUserDetails userDetails,
                                    @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
@@ -50,7 +58,15 @@ public class PostsController {
         return ResponseController.success(responsePage);
     }
 
-    // 내 게시글만 조회
+    /**
+     * 내 게시글만 조회하는 메서드
+     * @param userDetails 회원 정보 - 회원 조회용
+     * @param pageable 페이지 정보
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @param tab 현재 탭
+     * @return 필터링된 내 게시글 페이지 리스트
+     */
     @GetMapping("/my")
     public ResponseEntity<?> indexByUser(@AuthenticationPrincipal CustomUserDetails userDetails,
                                    @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
@@ -67,7 +83,15 @@ public class PostsController {
         return ResponseController.success(responsePage);
     }
 
-    // 내가 좋아요한 게시글 조회
+    /**
+     * 내가 즐겨찾기한 게시글 조회하는 메서드
+     * @param userDetails 회원 정보 - 회원 조회용
+     * @param pageable 페이지 정보
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @param tab 현재 탭
+     * @return 필터링된 즐겨찾기한 게시글 페이지 리스트
+     */
     @GetMapping("/my/favorite")
     public ResponseEntity<?> indexFavoriteByUser(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                  @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
@@ -83,7 +107,12 @@ public class PostsController {
         return ResponseController.success(responsePage);
     }
 
-    // 특정 게시글 상세 조회 및 조회수 증가
+    /**
+     * 게시글 상세 보기 + 조회수 증가 + 현재 회원이 해당 게시글을 보았음을 저장
+     * @param userDetails 회원 정보 - 즐겨찾기 여부, 게시글 보았음 저장용
+     * @param postsId 조회할 게시글 ID
+     * @return 조회할 게시글 세부정보
+     */
     @GetMapping("/{postsId}")
     public ResponseEntity<?> show(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long postsId) {
         try {
@@ -98,7 +127,12 @@ public class PostsController {
         }
     }
 
-    // 게시글 좋아요 수 증감
+    /**
+     * 게시글 즐겨찾기 수 증감 메서드
+     * @param userDetails 회원 정보 - 즐겨찾기 여부 확인용
+     * @param postsId 즐겨찾기 증감할 게시글 ID
+     * @return 현재 회원이 해당 게시글에 즐겨찾기를 한 여부
+     */
     @GetMapping("/{postsId}/handle-likes")
     public ResponseEntity<?> handleLikes(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long postsId) {
         try {
@@ -112,7 +146,13 @@ public class PostsController {
         }
     }
 
-    // 새로운 게시글 생성
+    /**
+     * 게시글 생성 메서드
+     * @param userDetails 회원 정보 - 게시글 작성자 저장용
+     * @param dto 생성할 게시글의 정보를 담은 DTO
+     * @param bindingResult 유효성 검사
+     * @return null
+     */
     @PostMapping
     public ResponseEntity<?> create(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody PostsCreateRequest dto, BindingResult bindingResult) {
         try {
@@ -128,7 +168,14 @@ public class PostsController {
         }
     }
 
-    // 특정 게시글 수정
+    /**
+     * 게시글 수정하는 메서드
+     * @param userDetails 회원 정보 - 수정자 조회용
+     * @param postsId 수정할 게시글 ID
+     * @param dto 수정된 게시글 정보를 담은 DTO
+     * @param bindingResult 유효성 검사
+     * @return null
+     */
     @PatchMapping("/{postsId}")
     public ResponseEntity<?> update(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long postsId, @Valid @RequestBody PostsUpdateRequest dto, BindingResult bindingResult) {
         try {
@@ -141,7 +188,12 @@ public class PostsController {
         }
     }
 
-    // 특정 게시글 삭제
+    /**
+     * 게시글 삭제 메서드
+     * @param userDetails 회원 정보 - 회원 조회용
+     * @param postsId 삭제할 게시글 ID
+     * @return 삭제된 게시글 ID
+     */
     @DeleteMapping("/{postsId}")
     public ResponseEntity<?> delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long postsId) {
         try {

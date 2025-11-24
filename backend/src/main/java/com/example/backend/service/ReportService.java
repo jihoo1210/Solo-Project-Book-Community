@@ -18,6 +18,11 @@ public class ReportService {
     private final PostsRepository postsRepository;
     private final CommentRepository commentRepository;
 
+    /**
+     * 게시글 신고 메서드
+     * @param user 회원 정보 - 신고한 회원 정보
+     * @param postsId 신고할 게시글 ID
+     */
     public void reportPosts(User user, Long postsId) throws IllegalAccessException {
         Posts target = postsRepository.findById(postsId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
         if(reportRepository.existsByUserAndPosts(user, target)) {
@@ -30,6 +35,11 @@ public class ReportService {
         reportRepository.save(report);
     }
 
+    /**
+     * 댓글 신고 메서드
+     * @param user 회원 정보 - 신고한 회원 정보
+     * @param commentId 신고할 게시글 ID
+     */
     public void reportComment(User user, Long commentId) throws IllegalAccessException {
         Comment target = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
         if(reportRepository.existsByUserAndComment(user, target)) {

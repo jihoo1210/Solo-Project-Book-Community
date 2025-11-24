@@ -27,7 +27,6 @@ import {
     Grid,
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import SortIcon from "@mui/icons-material/Sort";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
@@ -52,7 +51,6 @@ import { formatTimeOrDate, getPostDateInfo } from "../utilities/DateUtiles";
 import {
     BlockOutlined,
     Delete,
-    DeleteForeverOutlined,
 } from "@mui/icons-material";
 import { useAuth } from "../auth/AuthContext";
 
@@ -180,7 +178,6 @@ const userMobileLabels = ["ID", "회원명", "이메일", "생성일"];
 // --- '관리자 페이지' 컴포넌트 시작 ---
 const AdminPage = () => {
     const { user } = useAuth();
-    const navigate = useNavigate();
 
     // 관리 대상 타입 (0: 게시글, 1: 댓글)
     const [activityType, setActivityType] = useState(0);
@@ -238,7 +235,6 @@ const AdminPage = () => {
             url = `/admin/comment?page=${pageNumberForBackend}&${sizeParam}&sort=${sortParam}&${searchFieldParam}&${searchTermParam}${tabParam}`;
         } else {
             url = `/admin/user?page=${pageNumberForBackend}&${sizeParam}&${sortParam}&${searchFieldParam}&${searchTermParam}`;
-            console.log(url);
         }
 
         try {
@@ -898,7 +894,6 @@ const AdminPage = () => {
                             </TableCell>
                         </TableRow>
 
-                        {/* [NEW] Collapse Row for Accordion Content (MyAlert.js 디자인 참고) */}
                         <TableRow>
                             <TableCell
                                 colSpan={currentColSpan}
@@ -920,7 +915,6 @@ const AdminPage = () => {
             }
             // 3-2. 댓글 관리 렌더링
             else if (activityType === 1) {
-                // 가정: item은 { id(댓글 ID), postId, postTitle, content, createdDate, modifiedDate, subject, username, likes, commentNumber } 구조
                 return (
                     <React.Fragment key={item.id}>
                         <TableRow
@@ -1160,7 +1154,6 @@ const AdminPage = () => {
                             </TableCell>
                         </TableRow>
 
-                        {/* [NEW] Collapse Row for Accordion Content (MyAlert.js 디자인 참고) */}
                         <TableRow>
                             <TableCell
                                 colSpan={currentColSpan}
@@ -1202,7 +1195,7 @@ const AdminPage = () => {
                                         "&::before": {
                                             content: `'${userMobileLabels[0]}: '`,
                                             ...labelStyles,
-                                        }, // ID
+                                        },
                                     },
                                 })}
                             >
@@ -1229,7 +1222,7 @@ const AdminPage = () => {
                                         "&::before": {
                                             content: `'${userMobileLabels[1]}: '`,
                                             ...labelStyles,
-                                        }, // 제목
+                                        },
                                     },
                                 })}
                             >
@@ -1262,7 +1255,7 @@ const AdminPage = () => {
                                         "&::before": {
                                             content: `'${userMobileLabels[2]}: '`,
                                             ...labelStyles,
-                                        }, // 내용
+                                        },
                                     },
                                 })}
                             >
@@ -1281,7 +1274,7 @@ const AdminPage = () => {
                                         "&::before": {
                                             content: `'${userMobileLabels[3]}: '`,
                                             ...labelStyles,
-                                        }, // 작성일
+                                        },
                                     },
                                 })}
                             >
@@ -1295,7 +1288,6 @@ const AdminPage = () => {
                                     }}
                                 >
                                     <span>{formatTimeOrDate(item.createdDate)}</span>
-                                    {/* [NEW] Accordion Icon */}
                                     <IconButton
                                         size="small"
                                         sx={{

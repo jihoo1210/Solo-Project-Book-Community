@@ -1,5 +1,3 @@
-// src/components/TiptapEditor.js
-
 import React, { useEffect, useRef, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -39,7 +37,6 @@ import {
   LooksTwo,
   Link as LinkIcon,
   Image as ImageIcon,
-  AttachFile,
   ImageSearch,
   FormatColorText,
   FormatColorFill,
@@ -94,7 +91,7 @@ const CustomColorPopover = ({ editor, anchorEl, handleClose, attribute }) => {
         <Typography variant="caption" sx={{ display: 'block', mb: 1 }}>{title}</Typography>
         <Grid container spacing={0.5}>
           {PALETTE_COLORS.map((color) => (
-            <Grid item xs={1.5} key={color}>
+            <Grid size={{xs:1.5}} key={color}>
               <IconButton
                 onClick={() => setColor(color)}
                 sx={{
@@ -216,8 +213,6 @@ const MenuBar = ({ editor, onUploadedKeysChange }) => {
       try {
         const { key, uploadUrl } = await getPresignedUpload(file.name, file.type);
 
-        // fetch → apiClient 기반으로 PUT (절대 URL이면 baseURL 무시됨)
-        // withCredentials가 붙을 수 있지만 대부분 문제없이 동작함
         await import('../../api/Api-Service').then(async ({ default: apiClient }) => {
           await apiClient.put(uploadUrl, file, {
             headers: { 'Content-Type': file.type },
@@ -322,7 +317,7 @@ const MenuBar = ({ editor, onUploadedKeysChange }) => {
       <ButtonGroup variant="text" size="small">
         <TiptapButton icon={ImageSearch} onClick={addImageByUrl} tooltip="이미지 URL 삽입" />
         <FileUploadButton icon={ImageIcon} tooltip="로컬 이미지 선택 (업로드)" accept="image/*" isImage={true} />
-        <FileUploadButton icon={AttachFile} tooltip="일반 파일 첨부" accept="*" isImage={false} />
+        {/* <FileUploadButton icon={AttachFile} tooltip="일반 파일 첨부" accept="*" isImage={false} /> */}
       </ButtonGroup>
 
       <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />

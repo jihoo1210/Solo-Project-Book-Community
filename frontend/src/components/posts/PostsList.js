@@ -1,5 +1,3 @@
-// src/components/PostsList.js
-
 import React, { useState, useEffect } from 'react';
 import {
     Box, Container, Typography, Button, Table, TableBody,
@@ -9,7 +7,7 @@ import {
     CircularProgress
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import SortIcon from '@mui/icons-material/Sort';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -120,7 +118,6 @@ const StyledChip = styled(Chip)(({ theme, subject }) => {
 
 const PostsList = () => {
     const navigate = useNavigate();
-    const location = useLocation();
 
     // API 연동 및 데이터 관련 상태
     const [posts, setPosts] = useState([]);

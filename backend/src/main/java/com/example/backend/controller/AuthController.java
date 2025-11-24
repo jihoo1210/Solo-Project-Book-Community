@@ -112,7 +112,7 @@ public class AuthController {
 
             Cookie cookie = new Cookie("ACCESS_TOKEN", token);
             cookie.setHttpOnly(true); // JavaScript 접근 불가
-            // cookie.setSecure(true); // 운영 환경(HTTPS)에서는 주석 해제 필수
+            cookie.setSecure(true); // 운영 환경(HTTPS)에서는 주석 해제 필수
             cookie.setPath("/");
             cookie.setMaxAge((int) maxAgeSeconds);
 
@@ -141,7 +141,7 @@ public class AuthController {
         // 1. 기존 JWT 쿠키를 덮어쓰고 만료 시간을 0으로 설정하여 삭제
         Cookie cookie = new Cookie("ACCESS_TOKEN", null);
         cookie.setHttpOnly(true);
-        // cookie.setSecure(true); // 운영 환경에서는 주석 해제 필수
+        cookie.setSecure(true); // 운영 환경에서는 주석 해제 필수
         cookie.setPath("/");
         cookie.setMaxAge(0); // 만료 시간을 0으로 설정하여 즉시 삭제
 
@@ -178,6 +178,13 @@ public class AuthController {
             return ResponseController.fail(e.getMessage());
         }
     }
+
+    /**
+     * 인증 코드만 전송하는 메서드(비밀번호 초기화 용)
+     * @param dto 이메일
+     * @param bindingResult 유효성 검증
+     * @return null
+     */
     @GetMapping("/send-code")
     public ResponseEntity<?> sendCode(@Valid @ModelAttribute CheckEmailRequest dto, BindingResult bindingResult) {
         try {
@@ -200,6 +207,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * 인증 코드 검사하는 메서드
+     * @param dto 인증 코드, 이메일
+     * @param bindingResult 유효성 검사
+     * @return null
+     */
     @GetMapping("/verify-code")
     public ResponseEntity<?> verifyCode(@Valid @ModelAttribute VerifyCodeRequest dto, BindingResult bindingResult) {
         try {
@@ -237,7 +250,7 @@ public class AuthController {
 
                 Cookie cookie = new Cookie("ACCESS_TOKEN", token);
                 cookie.setHttpOnly(true);
-                // cookie.setSecure(true) // https에서만 사용
+                cookie.setSecure(true); // https에서만 사용
                 cookie.setPath("/");
                 cookie.setMaxAge((int) maxAgeSeconds);
 
@@ -251,6 +264,11 @@ public class AuthController {
         }
     }
 
+    /**
+     * 회원명 중복 검사 메서드
+     * @param username 회원명
+     * @return 중복 여부 boolean 값
+     */
     @GetMapping("/check-username")
     public ResponseEntity<?> checkUsername(@RequestParam String username) {
         try {

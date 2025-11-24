@@ -17,9 +17,11 @@ public class PostsViewed {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 조회한 사용자
     @ManyToOne
     private User user;
 
+    // 조회한 게시글
     @ManyToOne
     private Posts posts;
 }

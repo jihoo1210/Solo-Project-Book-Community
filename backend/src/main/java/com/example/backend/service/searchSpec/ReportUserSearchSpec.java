@@ -1,4 +1,4 @@
-package com.example.backend.service.utilities;
+package com.example.backend.service.searchSpec;
 
 import com.example.backend.entity.User;
 import jakarta.persistence.criteria.Expression;
@@ -13,6 +13,12 @@ import java.util.List;
 @Slf4j
 public class ReportUserSearchSpec {
 
+    /**
+     * 사용자 검색 조건 생성 메서드
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @return 검색 조건
+     */
     public static Specification<User> search(String searchField, String searchTerm) {
 
         log.info("searchField: {}", searchField);

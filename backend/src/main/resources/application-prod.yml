@@ -1,0 +1,64 @@
+spring:
+  application:
+    name: backend
+  # database config
+  datasource:
+    url: jdbc:mariadb://${RDS_HOST}:${RDS_PORT}/${RDS_DATABASE}
+    driverClassName: org.mariadb.jdbc.Driver
+    username: ${RDS_USERNAME}
+    password: ${RDS_PASSWORD}
+  # jpa config
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+
+  # Redis config
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+  # Mail config
+  mail:
+    # Gmail SMTP 호스트
+    host: smtp.gmail.com
+    # TSL 포트
+    port: 587
+    # 발신자 이메일
+    username: ${MAIL_USERNAME}
+    # 구글 앱 비밀번호
+    password: ${MAIL_PASSWORD} # 커밋할 때 제외해야 함
+    properties:
+      mail:
+        smtp:
+          # SMTP 서버 활성화 여부 (username과 password로 인증 | Gmail은 필수로 허용이 필요)
+          auth: true
+          starttls:
+            # starttls 명령어 활성화 여부(starttls 명령어를 통해 암호화 통신(TLS) 전환)
+            enable: true
+          # 타임아웃
+          # 서버가 응답을 보내는 것을 기다리는 시간(default I/O timeout)
+          timeout: 30000 # 20초
+          # 애플리케이션이 SMTP 서버와 연결을 설정하는 것을 기다리는 최대 시간
+          connectiontimeout: 30000 # 20초
+          # 서버로 데이터(인증 코드)를 보내는 I/O 작업의 최대 시간
+          writetimeout: 30000 # 20초
+
+cloud:
+  aws:
+    region: ap-northeast-2
+    s3:
+      bucket: book-community-s3
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+
+# set jwt variable
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 3600000 # ${jwt_expiration}
+
+server:
+  port: 5000

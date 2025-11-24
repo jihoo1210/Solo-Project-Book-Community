@@ -1,7 +1,5 @@
-// src/utils/dateUtils.js
-
 /**
- * MM/DD HH:MM 포맷으로 반환합니다. (PostsDetail에서 사용)
+ * MM/DD HH:MM 포맷으로 반환합니다.
  * @param {string} dateString 포매팅할 날짜 문자열
  * @returns {string} 포매팅된 날짜 문자열
  */
@@ -16,7 +14,7 @@ export const formatFullDate = (dateString) => {
 };
 
 /**
- * 게시글 날짜를 조건부로 포매팅하는 함수 (오늘: HH:MM, 그 외: MM/DD) (PostsList, MyActives 등에서 사용)
+ * 게시글 날짜를 조건부로 포매팅하는 함수 (오늘: HH:MM, 그 외: MM/DD)
  * 💡 수정: 날짜 비교 로직을 수정하여 올바르게 작동하도록 했습니다.
  * @param {string} dateString 포매팅할 날짜 문자열
  * @returns {string} 포매팅된 시간 또는 날짜 문자열

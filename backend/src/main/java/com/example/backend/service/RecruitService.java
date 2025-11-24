@@ -28,6 +28,11 @@ public class RecruitService {
     private final AlertViewedRepository alertViewedRepository;
     private final ChatRoomService chatRoomService;
 
+    /**
+     * 알림 [신청]을 승인하는 메서드 + 해당 [신청] 알림 삭제 + 게시글 현재 회원수 증가
+     * @param alertId 승인할 알림 ID
+     * @param dto 승인 내용을 담은 DTO
+     */
     @Transactional
     public void accept(Long alertId, AlertAcceptRequest dto) throws IllegalAccessException {
         Alert target = alertRepository.findById(alertId).orElseThrow(() -> new IllegalArgumentException("해당 알림이 존재하지 않습니다."));
@@ -67,6 +72,11 @@ public class RecruitService {
         chatRoomService.inviteUser(posts.getChatRoom().getId(), invitedUserIds);
     }
 
+    /**
+     * 알림 [신청]을 거절하는 메서드 + 해당 [신청] 알림 삭제
+     * @param alertId 승인할 알림 ID
+     * @param dto 승인 내용을 담은 DTO
+     */
     @Transactional
     public void reject(Long alertId, AlertRejectRequest dto) {
         Alert target = alertRepository.findById(alertId).orElseThrow(() -> new IllegalArgumentException("해당 알림이 존재하지 않습니다."));

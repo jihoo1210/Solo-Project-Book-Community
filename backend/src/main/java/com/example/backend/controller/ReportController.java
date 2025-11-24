@@ -21,6 +21,12 @@ public class ReportController {
 
     private final ReportService reportService;
 
+    /**
+     * 게시글 신고 메서드
+     * @param userDetails 회원 정보 - 신고한 회원 정보
+     * @param postsId 신고할 게시글 ID
+     * @return null
+     */
     @PostMapping("/posts/{postsId}")
     public ResponseEntity<?> reportPosts(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long postsId) {
         try {
@@ -32,6 +38,12 @@ public class ReportController {
         }
     }
 
+    /**
+     * 댓글 신고 메서드
+     * @param userDetails 회원 정보 - 신고한 회원 정보
+     * @param commentId 신고할 댓글 ID
+     * @return null
+     */
     @PostMapping("/comment/{commentId}")
     public ResponseEntity<?> reportComment(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long commentId) {
         try {

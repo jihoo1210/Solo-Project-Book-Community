@@ -1,5 +1,3 @@
-// src/components/Signup.js
-
 import React, { useState } from "react";
 import {
   Box,
@@ -55,7 +53,7 @@ const SignupCard = styled(Paper)(({ theme }) => ({
 
 // 텍스트 필드 스타일 (오류 시 붉은색 테두리 유지)
 const CustomTextField = styled(TextField)(({ theme }) => ({
-  "& .MuiInputLabel-root": { color: LIGHT_TEXT_COLOR },
+  "& .MuiInputLabel-root": { color: `${LIGHT_TEXT_COLOR} !important` },
   "& .MuiOutlinedInput-root": {
     "& fieldset": { borderColor: TEXT_COLOR },
     "&:hover fieldset": { borderColor: TEXT_COLOR },
@@ -135,7 +133,12 @@ const Signup = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    let newValue = value.replace(/\s/g, "");
+    let newValue
+    if(name === "password") {
+      newValue = value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣\s]/g, "");
+    } else {
+      newValue = value.replace(/\s/g, "");
+    }
     if (name === "emailVerificationCode") {
       newValue = value
         .toUpperCase()
@@ -282,9 +285,9 @@ const Signup = () => {
       newErrors.username = "회원명 중복 검사를 완료해 주세요.";
       hasError = true;
     }
-    if (!formData.password.trim()) {
-      newErrors.password = "비밀번호를 입력해 주세요.";
-      hasError = true;
+    if (!formData.password || formData.password.length < 8) {
+            newErrors.password = "비밀번호는 8자 이상이어야 합니다."
+            hasError = true
     }
     if (!isEmailVerified) {
       setEmailVerificationInfo("이메일 인증을 완료해 주세요.");
@@ -318,7 +321,7 @@ const Signup = () => {
   const isEmailChanged = formData.email !== lastSentEmail;
   const isVerifyButtonDisabled =
     emailVerificationCode.length !== 6 || isEmailVerified;
-  const isSendButtonDisabled = isLoading || formData.email !== '' || (!isEmailChanged && isEmailVerified);
+  const isSendButtonDisabled = isLoading || formData.email === '' || (!isEmailChanged && isEmailVerified);
 
   const getEmailMessageColor = () => {
     if (!emailVerificationInfo) return RED_COLOR;
@@ -546,7 +549,7 @@ const Signup = () => {
                   error={!!signupInfos.password}
                 >
                   <InputLabel sx={{ color: LIGHT_TEXT_COLOR }}>
-                    비밀번호
+                    비밀번호(8자 이상)
                   </InputLabel>
                   <OutlinedInput
                     name="password"
@@ -577,7 +580,7 @@ const Signup = () => {
                         </IconButton>
                       </InputAdornment>
                     }
-                    label="비밀번호"
+                    label="비밀번호(8자 이상)"
                   />
                 </FormControl>
                 {!!signupInfos.password && (

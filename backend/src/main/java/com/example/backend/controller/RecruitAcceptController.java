@@ -18,6 +18,12 @@ public class RecruitAcceptController {
 
     private final RecruitService service;
 
+    /**
+     * 알림 [신청]을 승인하는 메서드
+     * @param alertId 승인할 알림 ID
+     * @param dto 승인 내용을 담은 DTO
+     * @return null
+     */
     @PostMapping("/{alertId}/accept")
     public ResponseEntity<?> accept(@PathVariable Long alertId, @RequestBody AlertAcceptRequest dto) {
         try {
@@ -31,6 +37,13 @@ public class RecruitAcceptController {
         }
     }
 
+    /**
+     * 알림 [신청]을 거절하는 메서드
+     * @param alertId 알림 ID
+     * @param dto 거절 내용을 담은 DTO
+     * @param bindingResult 유효성 검사
+     * @return null
+     */
     @PostMapping("/{alertId}/reject")
     public ResponseEntity<?> reject(@PathVariable Long alertId, @RequestBody AlertRejectRequest dto, BindingResult bindingResult) {
         try {

@@ -2,6 +2,7 @@ package com.example.backend.dto.temp;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,5 +19,6 @@ public class PasswordResetRequest {
     private String email;
 
     @NotBlank
+    @Size(min = 8)
     private String password;
 }

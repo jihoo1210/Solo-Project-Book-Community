@@ -18,6 +18,11 @@ public class ChatRoomTextController {
 
     private final ChatRoomTextService chatRoomTextService;
 
+    /**
+     * 채팅방 최근 25개의 메시지를 반환하는 메서드
+     * @param roomId 반환받을 채팅방 ID
+     * @return 최근 25개의 메시지
+     */
     @GetMapping("/{roomId}")
     public ResponseEntity<?> getTextTop25(@PathVariable Long roomId) {
         try {

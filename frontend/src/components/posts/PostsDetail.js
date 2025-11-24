@@ -1,5 +1,3 @@
-// src/components/PostsDetail.js
-
 import React, { useState, useEffect } from 'react';
 import {
   Box, Container, Typography, Paper, Chip, Button, Divider,

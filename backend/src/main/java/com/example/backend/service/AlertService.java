@@ -7,7 +7,7 @@ import com.example.backend.entity.AlertViewed;
 import com.example.backend.entity.User;
 import com.example.backend.repository.AlertRepository;
 import com.example.backend.repository.AlertViewedRepository;
-import com.example.backend.service.utilities.AlertSearchSpec;
+import com.example.backend.service.searchSpec.AlertSearchSpec;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +28,16 @@ public class AlertService {
     private final AlertRepository alertRepository;
     private final AlertViewedRepository alertViewedRepository;
 
+
+    /**
+     * 알림 조회하고 Page<?>로 반환
+     * @param user 현재 회원
+     * @param pageable 페이지 정보
+     * @param searchField 검색 필드
+     * @param searchTerm 검색 단어
+     * @param tab 검색 탭
+     * @return 조회된 알림 조회 페이지
+     */
     @Transactional
     public Page<AlertIndexResponse> index(User user, Pageable pageable, String searchField, String searchTerm, Integer tab) {
         Specification<Alert> spec = AlertSearchSpec.search(user, searchField, searchTerm, tab);
@@ -56,11 +66,11 @@ public class AlertService {
         return responses;
     }
 
-    public boolean isExistsAlert(User user) {
-        // 알림이 존재하고, 읽지 않은 알림이 있을 때
-        return !alertViewedRepository.existsByUser(user) && alertRepository.existsByUser(user);
-    }
-
+    /**
+     * 읽지 않은 알림 여부 조회 메서드
+     * @param user 현재 회원
+     * @return 읽지 않은 알림 있는지를 표시하는 boolean 값
+     */
     public CheckNewAlertResponse checkNewAlert(User user) {
         // 알림이 존재하고, 읽지 않은 알림이 있을 때
         boolean isExistsNewAlert = alertRepository.findAllByUser(user).stream().anyMatch(item -> !alertViewedRepository.existsByAlert(item));

@@ -4,47 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#26 Implement S3">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AdminController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/ReportController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/UsernameAndRoleResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/user/UserIndexResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Report.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/ReportRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/AdminService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/ReportService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/ReportCommentSearchSpec.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/ReportPostsSearchSpec.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/ReportUserSearchSpec.java" afterDir="false" />
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#32 주석 추가">
+      <change afterPath="$PROJECT_DIR$/backend/Procfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/UsernameResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/UsernameResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/signin/SigninResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/signin/SigninResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Alert.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Alert.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Comment.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Comment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/Posts.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/PostsLikes.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/PostsLikes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/utilities/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/entity/utilities/Role.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/AlertRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/AlertRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/repository/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/CommentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/CommentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/CommentLikesSearchSpec.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/CommentLikesSearchSpec.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/CommentSearchSpec.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/utilities/CommentSearchSpec.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/web/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/web/DataInitializer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/AuthContext.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/AuthContext.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/chat/ChatList.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/chat/ChatList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/chat/ChatRoom.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/chat/ChatRoom.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/PostsDetail.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/posts/comment/CommentSection.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/posts/comment/CommentSection.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/templates/Navigation.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyActives.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyAlert.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyFavorite.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyFavorite.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/utilities/HealthCheck.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/utilities/HealthCheck.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -146,7 +113,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/jihoo1210/Solo-Project-Book-Community.git&quot;,
-    &quot;accountId&quot;: &quot;2851e419-635c-4983-9c5d-41855a7be81c&quot;
+    &quot;accountId&quot;: &quot;981623e4-9cc5-4c69-9507-d334c6a6570f&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -160,32 +127,32 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
-    "Gradle.backend [:com.example.backend.DemoApplication.main()].executor": "Run",
-    "Gradle.소스 다운로드.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "dev",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "모듈",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "editor.preferences.import"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
+    &quot;Gradle.backend [:com.example.backend.DemoApplication.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.소스 다운로드.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;모듈&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.import&quot;
   },
-  "keyToStringList": {
-    "GitStage.ChangesTree.GroupingKeys": [
-      "directory",
-      "module",
-      "repository"
+  &quot;keyToStringList&quot;: {
+    &quot;GitStage.ChangesTree.GroupingKeys&quot;: [
+      &quot;directory&quot;,
+      &quot;module&quot;,
+      &quot;repository&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.example.backend.service.utilities" />
@@ -225,62 +192,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1762142101641</updated>
-    </task>
-    <task id="LOCAL-00001" summary="fix files to commit">
-      <option name="closed" value="true" />
-      <created>1762143567031</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1762143567031</updated>
-    </task>
-    <task id="LOCAL-00002" summary="delete error folder">
-      <option name="closed" value="true" />
-      <created>1762144021597</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1762144021597</updated>
-    </task>
-    <task id="LOCAL-00003" summary="#3 회원명 중복 검사 로직">
-      <option name="closed" value="true" />
-      <created>1762219583388</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1762219583388</updated>
-    </task>
-    <task id="LOCAL-00004" summary="#3 주석 수정 및 약간의 오류 수정">
-      <option name="closed" value="true" />
-      <created>1762219618142</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1762219618142</updated>
-    </task>
-    <task id="LOCAL-00005" summary="#3 회원명 중복 검사 api 연동">
-      <option name="closed" value="true" />
-      <created>1762219653594</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1762219653594</updated>
-    </task>
-    <task id="LOCAL-00006" summary="#3 내비게이션 로고 크기 및 클릭 범위 수정">
-      <option name="closed" value="true" />
-      <created>1762219928297</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1762219928297</updated>
-    </task>
-    <task id="LOCAL-00007" summary="#5 Posts Entity">
-      <option name="closed" value="true" />
-      <created>1762228237120</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1762228237120</updated>
     </task>
     <task id="LOCAL-00008" summary="#5 Posts Controller and Dto">
       <option name="closed" value="true" />
@@ -554,7 +465,127 @@
       <option name="project" value="LOCAL" />
       <updated>1763430216114</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="#28 관리자 페이지, 디자인 및 약간의 오류 수정">
+      <option name="closed" value="true" />
+      <created>1763537265853</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1763537265853</updated>
+    </task>
+    <task id="LOCAL-00043" summary="#28 관리자 기능 및 프론트엔드로 현재 사용자가 관리자임을 알려주기 위한 기능 추가">
+      <option name="closed" value="true" />
+      <created>1763537300024</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1763537300024</updated>
+    </task>
+    <task id="LOCAL-00044" summary="#28 알림 조회 오류 수정">
+      <option name="closed" value="true" />
+      <created>1763537320819</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1763537320819</updated>
+    </task>
+    <task id="LOCAL-00045" summary="#30 프론트엔드 utilities/.. 제외한 파일 주석 및 비밀번호 입력시 소문자 변환 설정">
+      <option name="closed" value="true" />
+      <created>1763541948106</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1763541948106</updated>
+    </task>
+    <task id="LOCAL-00046" summary="#30 프론트엔드 주석 정리 완료">
+      <option name="closed" value="true" />
+      <created>1763605718361</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1763605718361</updated>
+    </task>
+    <task id="LOCAL-00047" summary="#30 백엔드 컨트롤러 부분 주석 추가 및 수정">
+      <option name="closed" value="true" />
+      <created>1763609645061</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1763609645061</updated>
+    </task>
+    <task id="LOCAL-00048" summary="#30 백엔드 엔티티 부분 주석 추가 및 수정">
+      <option name="closed" value="true" />
+      <created>1763610558073</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1763610558073</updated>
+    </task>
+    <task id="LOCAL-00049" summary="#30 백엔드 시큐리티 부분 주석 추가 및 수정">
+      <option name="closed" value="true" />
+      <created>1763610674392</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1763610674392</updated>
+    </task>
+    <task id="LOCAL-00050" summary="#30 백엔드 서비스 부분 주석 추가 및 수정">
+      <option name="closed" value="true" />
+      <created>1763613197228</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1763613197228</updated>
+    </task>
+    <task id="LOCAL-00051" summary="#30 백엔드 Web 부분 주석 추가 및 수정 - 주석 작업 완료">
+      <option name="closed" value="true" />
+      <created>1763614215984</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1763614215984</updated>
+    </task>
+    <task id="LOCAL-00052" summary="#30 채팅방에 초대된 사용자 제거할 때 발생하던 오류 수정 - 컬렉션 순환중 다중 수정 오류">
+      <option name="closed" value="true" />
+      <created>1763627802919</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1763627802919</updated>
+    </task>
+    <task id="LOCAL-00053" summary="#30 비밀번호 한글 금지, 최소 8자 이상 기능 추가">
+      <option name="closed" value="true" />
+      <created>1763628844619</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1763628844619</updated>
+    </task>
+    <task id="LOCAL-00054" summary="#32 배포 설정">
+      <option name="closed" value="true" />
+      <created>1763950091772</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1763950091772</updated>
+    </task>
+    <task id="LOCAL-00055" summary="#32 백엔드 elastic beanstalk 이름 수정">
+      <option name="closed" value="true" />
+      <created>1763950188612</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1763950188612</updated>
+    </task>
+    <task id="LOCAL-00056" summary="#32 주석 추가">
+      <option name="closed" value="true" />
+      <created>1763952310589</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1763952310589</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -582,21 +613,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#19 Create Favorite and My Actives Function" />
-    <MESSAGE value="#19 Create Favorite and My Actives Pages and delete alert" />
-    <MESSAGE value="#20 알림 읽음 상태 로직 비활성화(오류 발생: 추가 후에 바로 삭제하면 안됨)" />
-    <MESSAGE value="#20 알림을 읽지 않았을 때 녹색 표시 비활성화(오류)" />
-    <MESSAGE value="#20 이전 커밋과 동일" />
-    <MESSAGE value="#20 회원가입 이메일 검증 Page" />
-    <MESSAGE value="#20 모임 신청 상태에 따라 모임 신청란 다르게 표시" />
-    <MESSAGE value="#20 읽은 알림 구분을 기능 및 UserViewed -&gt; PostsViewed로 이름 변경" />
-    <MESSAGE value="#20 useLocation을 이용해서 매 랜더링마다 새로운 알림이 있는지 검사 및 표시, 읽지 않은 알림을 NEW_COLOR로 표시" />
-    <MESSAGE value="#20 UserViewedRepository.java -&gt; PostsViewedRepository.java 이름 변경" />
-    <MESSAGE value="#22 git ignore" />
-    <MESSAGE value="#22 이메일 서버(Gmail SMTP) 및 Redis 연결 정보 설정" />
-    <MESSAGE value="#22 인증 코드 생성 클래스" />
-    <MESSAGE value="#22 인증코드 전송 및 검사 서비스" />
-    <MESSAGE value="#22 약간의 오류 수정" />
     <MESSAGE value="#22 이메일 인증 컨트롤러 및 이메일 의존성 추가" />
     <MESSAGE value="#22 이메일 인증 api 연결" />
     <MESSAGE value="#22 이메일 인증 후 권한 TEMP -&gt; 비밀번호 재설정 로직에 TEMP 권한을 가진 사용자만 접근할 수 있도록 설정" />
@@ -607,6 +623,21 @@
     <MESSAGE value="#24 약간의 오류 수정 및 정리" />
     <MESSAGE value="#26 댓글 삭제 -&gt; 알림 삭제, 채택 댓글 오류 수정" />
     <MESSAGE value="#26 Implement S3" />
-    <option name="LAST_COMMIT_MESSAGE" value="#26 Implement S3" />
+    <MESSAGE value="#28 관리자 페이지, 디자인 및 약간의 오류 수정" />
+    <MESSAGE value="#28 관리자 기능 및 프론트엔드로 현재 사용자가 관리자임을 알려주기 위한 기능 추가" />
+    <MESSAGE value="#28 알림 조회 오류 수정" />
+    <MESSAGE value="#30 프론트엔드 utilities/.. 제외한 파일 주석 및 비밀번호 입력시 소문자 변환 설정" />
+    <MESSAGE value="#30 프론트엔드 주석 정리 완료" />
+    <MESSAGE value="#30 백엔드 컨트롤러 부분 주석 추가 및 수정" />
+    <MESSAGE value="#30 백엔드 엔티티 부분 주석 추가 및 수정" />
+    <MESSAGE value="#30 백엔드 시큐리티 부분 주석 추가 및 수정" />
+    <MESSAGE value="#30 백엔드 서비스 부분 주석 추가 및 수정" />
+    <MESSAGE value="#30 백엔드 Web 부분 주석 추가 및 수정 - 주석 작업 완료" />
+    <MESSAGE value="#30 채팅방에 초대된 사용자 제거할 때 발생하던 오류 수정 - 컬렉션 순환중 다중 수정 오류" />
+    <MESSAGE value="#30 비밀번호 한글 금지, 최소 8자 이상 기능 추가" />
+    <MESSAGE value="#32 배포 설정" />
+    <MESSAGE value="#32 백엔드 elastic beanstalk 이름 수정" />
+    <MESSAGE value="#32 주석 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="#32 주석 추가" />
   </component>
 </project>
