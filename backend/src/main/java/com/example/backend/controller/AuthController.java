@@ -112,7 +112,7 @@ public class AuthController {
 
             Cookie cookie = new Cookie("ACCESS_TOKEN", token);
             cookie.setHttpOnly(true); // JavaScript 접근 불가
-            // cookie.setSecure(true); // 운영 환경(HTTPS)에서는 주석 해제 필수
+            cookie.setSecure(true); // 운영 환경(HTTPS)에서는 주석 해제 필수
             cookie.setPath("/");
             cookie.setMaxAge((int) maxAgeSeconds);
 
@@ -141,7 +141,7 @@ public class AuthController {
         // 1. 기존 JWT 쿠키를 덮어쓰고 만료 시간을 0으로 설정하여 삭제
         Cookie cookie = new Cookie("ACCESS_TOKEN", null);
         cookie.setHttpOnly(true);
-        // cookie.setSecure(true); // 운영 환경에서는 주석 해제 필수
+        cookie.setSecure(true); // 운영 환경에서는 주석 해제 필수
         cookie.setPath("/");
         cookie.setMaxAge(0); // 만료 시간을 0으로 설정하여 즉시 삭제
 
@@ -250,7 +250,7 @@ public class AuthController {
 
                 Cookie cookie = new Cookie("ACCESS_TOKEN", token);
                 cookie.setHttpOnly(true);
-                // cookie.setSecure(true) // https에서만 사용
+                cookie.setSecure(true); // https에서만 사용
                 cookie.setPath("/");
                 cookie.setMaxAge((int) maxAgeSeconds);
 

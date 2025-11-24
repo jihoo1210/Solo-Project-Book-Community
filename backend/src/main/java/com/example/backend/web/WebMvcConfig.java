@@ -24,7 +24,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addMapping("/**")
                 // 2. 허용할 출처(Origin) 설정:
                 // 요청을 허용할 특정 도메인(여기서는 로컬 개발 환경의 프런트엔드 주소)을 명시합니다.
-                .allowedOrigins("http://localhost:3000")
+                .allowedOrigins("http://localhost:3000", "d3n2d8ntt37qie.cloudfront.net")
                 // 3. 허용할 HTTP 메서드 설정:
                 // 클라이언트가 사용할 수 있는 HTTP 메서드 목록을 허용합니다.
                 .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS")

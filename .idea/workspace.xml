@@ -4,14 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#30 채팅방에 초대된 사용자 제거할 때 발생하던 오류 수정 - 컬렉션 순환중 다중 수정 오류">
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#30 비밀번호 한글 금지, 최소 8자 이상 기능 추가">
+      <change afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/utilities/HealthCheck.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/signin/SigninRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/signin/SigninRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/signup/SignupRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/auth/signup/SignupRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/temp/PasswordResetRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/temp/PasswordResetRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/ResetPassword.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/ResetPassword.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/web/WebMvcConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/web/WebMvcConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/user/MyPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user/MyPage.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -193,14 +196,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1762142101641</updated>
-    </task>
-    <task id="LOCAL-00004" summary="#3 주석 수정 및 약간의 오류 수정">
-      <option name="closed" value="true" />
-      <created>1762219618142</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1762219618142</updated>
     </task>
     <task id="LOCAL-00005" summary="#3 회원명 중복 검사 api 연동">
       <option name="closed" value="true" />
@@ -586,7 +581,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763627802919</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="#30 비밀번호 한글 금지, 최소 8자 이상 기능 추가">
+      <option name="closed" value="true" />
+      <created>1763628844619</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1763628844619</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -614,7 +617,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#22 이메일 서버(Gmail SMTP) 및 Redis 연결 정보 설정" />
     <MESSAGE value="#22 인증 코드 생성 클래스" />
     <MESSAGE value="#22 인증코드 전송 및 검사 서비스" />
     <MESSAGE value="#22 약간의 오류 수정" />
@@ -639,6 +641,7 @@
     <MESSAGE value="#30 백엔드 서비스 부분 주석 추가 및 수정" />
     <MESSAGE value="#30 백엔드 Web 부분 주석 추가 및 수정 - 주석 작업 완료" />
     <MESSAGE value="#30 채팅방에 초대된 사용자 제거할 때 발생하던 오류 수정 - 컬렉션 순환중 다중 수정 오류" />
-    <option name="LAST_COMMIT_MESSAGE" value="#30 채팅방에 초대된 사용자 제거할 때 발생하던 오류 수정 - 컬렉션 순환중 다중 수정 오류" />
+    <MESSAGE value="#30 비밀번호 한글 금지, 최소 8자 이상 기능 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="#30 비밀번호 한글 금지, 최소 8자 이상 기능 추가" />
   </component>
 </project>

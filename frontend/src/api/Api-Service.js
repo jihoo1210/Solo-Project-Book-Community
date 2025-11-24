@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const apiClient = axios.create({
-    baseURL: 'http://localhost:8080',
+    baseURL: 'http://Book-community-env.eba-hjibhpx7.ap-northeast-2.elasticbeanstalk.com,
     timeout: 7200,
     withCredentials: true // 쿠키를 같이 보냄
 })

@@ -212,7 +212,7 @@ const MyPage = () => {
             return;
         }
 
-        if (formData.passwordConfirm < 8 || formData.password.length < 8) {
+        if (formData.passwordConfirm.length < 8 || formData.password.length < 8) {
             alert("비밀번호는 8자 이상이어야 합니다.")
             return;
         }

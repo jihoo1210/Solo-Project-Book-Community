@@ -1,0 +1,67 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]   # main 브랜치에 push될 때 실행
+
+jobs:
+  frontend-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend   # frontend 디렉토리 기준
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Build frontend
+        run: |
+          npm install
+          npm run build
+
+      - name: Deploy to S3
+        uses: aws-actions/s3-sync@v2
+        with:
+          bucket: ${{ secrets.AWS_S3_BUCKET }}
+          region: ap-northeast-2
+          source-dir: ./frontend/build
+
+      - name: Invalidate CloudFront cache
+        uses: aws-actions/cloudfront-invalidate@v1
+        with:
+          distribution-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          paths: "/*"
+
+  backend-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend   # backend 디렉토리 기준
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build backend
+        run: ./gradlew build -x test
+
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+          application_name: "book-community-app"
+          environment_name: "Book-community-app-env"
+          region: "ap-northeast-2"
+          version_label: github-${{ github.sha }}
+          deployment_package: backend/build/libs/backend-0.0.1-SNAPSHOT.jar
