@@ -60,8 +60,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
           aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-          application_name: "book-community-app"
-          environment_name: "Book-community-app-env"
+          application_name: "book-community"
+          environment_name: "Book-community-env"
           region: "ap-northeast-2"
           version_label: github-${{ github.sha }}
           deployment_package: backend/build/libs/backend-0.0.1-SNAPSHOT.jar
