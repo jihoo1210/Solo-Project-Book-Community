@@ -3,14 +3,14 @@ spring:
     name: backend
   # database config
   datasource:
-    url: jdbc:mariadb://${RDS.HOST}:${RDS.PORT}/${RDS.DATABASE}
+    url: jdbc:mariadb://${RDS_HOST}:${RDS_PORT}/${RDS_DATABASE}
     driverClassName: org.mariadb.jdbc.Driver
-    username: ${RDS.USERNAME}
-    password: ${RDS.PASSWORD}
+    username: ${RDS_USERNAME}
+    password: ${RDS_PASSWORD}
   # jpa config
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
@@ -18,8 +18,8 @@ spring:
   # Redis config
   data:
     redis:
-      host: ${REDIS.HOST}
-      port: ${REDIS.PORT}
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
   # Mail config
   mail:
     # Gmail SMTP 호스트
@@ -27,9 +27,9 @@ spring:
     # TSL 포트
     port: 587
     # 발신자 이메일
-    username: ${MAIL.USERNAME}
+    username: ${MAIL_USERNAME}
     # 구글 앱 비밀번호
-    password: ${MAIL.PASSWORD} # 커밋할 때 제외해야 함
+    password: ${MAIL_PASSWORD} # 커밋할 때 제외해야 함
     properties:
       mail:
         smtp:
@@ -52,13 +52,13 @@ cloud:
     s3:
       bucket: book-community-s3
     credentials:
-      access-key: ${AWS.ACCESS.KEY}
-      secret-key: ${AWS.SECRET.KEY}
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
 
 # set jwt variable
 jwt:
-  secret: ${JWT.SECRET}
-  expiration: 3600000 # ${jwt.expiration}
+  secret: ${JWT_SECRET}
+  expiration: 3600000 # ${jwt_expiration}
 
 server:
   port: 5000

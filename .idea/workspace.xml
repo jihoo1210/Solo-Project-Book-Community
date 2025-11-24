@@ -4,9 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#32 백엔드 elastic beanstalk 이름 수정">
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#32 주석 추가">
+      <change afterPath="$PROJECT_DIR$/backend/Procfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/utilities/HealthCheck.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/utilities/HealthCheck.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -187,14 +192,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1762142101641</updated>
-    </task>
-    <task id="LOCAL-00007" summary="#5 Posts Entity">
-      <option name="closed" value="true" />
-      <created>1762228237120</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1762228237120</updated>
     </task>
     <task id="LOCAL-00008" summary="#5 Posts Controller and Dto">
       <option name="closed" value="true" />
@@ -580,7 +577,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763950188612</updated>
     </task>
-    <option name="localTasksCounter" value="56" />
+    <task id="LOCAL-00056" summary="#32 주석 추가">
+      <option name="closed" value="true" />
+      <created>1763952310589</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1763952310589</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -608,7 +613,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#22 약간의 오류 수정" />
     <MESSAGE value="#22 이메일 인증 컨트롤러 및 이메일 의존성 추가" />
     <MESSAGE value="#22 이메일 인증 api 연결" />
     <MESSAGE value="#22 이메일 인증 후 권한 TEMP -&gt; 비밀번호 재설정 로직에 TEMP 권한을 가진 사용자만 접근할 수 있도록 설정" />
@@ -633,6 +637,7 @@
     <MESSAGE value="#30 비밀번호 한글 금지, 최소 8자 이상 기능 추가" />
     <MESSAGE value="#32 배포 설정" />
     <MESSAGE value="#32 백엔드 elastic beanstalk 이름 수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="#32 백엔드 elastic beanstalk 이름 수정" />
+    <MESSAGE value="#32 주석 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="#32 주석 추가" />
   </component>
 </project>
