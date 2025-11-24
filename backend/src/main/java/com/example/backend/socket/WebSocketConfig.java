@@ -20,6 +20,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         // 웹소켓이 실행될 주소
-        registry.addHandler(roomChatHandler, "/community").setAllowedOrigins("http://localhost:3000"); // 후에 배포 도메인 등록 필요
+        registry.addHandler(roomChatHandler, "/api/community").setAllowedOrigins("https://projectbbbb.p-e.kr"); // 후에 배포 도메인 등록 필요
     }
 }

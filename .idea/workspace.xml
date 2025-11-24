@@ -4,14 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#32 주석 추가">
-      <change afterPath="$PROJECT_DIR$/backend/Procfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="웹소켓 주소 변경 -- squash 필요">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/utilities/HealthCheck.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/utilities/HealthCheck.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,7 +49,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="dev" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -66,7 +60,9 @@
       &quot;state&quot;: &quot;OPEN&quot;
     }
   ],
-  &quot;lastFilter&quot;: {}
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;
+  }
 }</component>
   <component name="GitHubPullRequestState">{
   &quot;prStates&quot;: [
@@ -97,6 +93,13 @@
         &quot;number&quot;: 25
       },
       &quot;lastSeen&quot;: 1763425295140
+    },
+    {
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOQNkMH861HZFz&quot;,
+        &quot;number&quot;: 33
+      },
+      &quot;lastSeen&quot;: 1763966490579
     }
   ]
 }</component>
@@ -137,7 +140,7 @@
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;project.structure.last.edited&quot;: &quot;모듈&quot;,
@@ -182,6 +185,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="애플리케이션.DemoApplication" />
+        <item itemvalue="애플리케이션.DemoApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -192,94 +196,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1762142101641</updated>
-    </task>
-    <task id="LOCAL-00008" summary="#5 Posts Controller and Dto">
-      <option name="closed" value="true" />
-      <created>1762228254052</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1762228254052</updated>
-    </task>
-    <task id="LOCAL-00009" summary="#5 Posts Service and Repository">
-      <option name="closed" value="true" />
-      <created>1762228264662</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1762228264662</updated>
-    </task>
-    <task id="LOCAL-00010" summary="#7 Posts CRUD Page">
-      <option name="closed" value="true" />
-      <created>1762246326210</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1762246326210</updated>
-    </task>
-    <task id="LOCAL-00011" summary="#7 주석 수정">
-      <option name="closed" value="true" />
-      <created>1762246345634</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1762246345634</updated>
-    </task>
-    <task id="LOCAL-00012" summary="#7 Update Posts Dto">
-      <option name="closed" value="true" />
-      <created>1762246387004</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1762246387004</updated>
-    </task>
-    <task id="LOCAL-00013" summary="#7 검색 및 페이지네이션 기능 구현">
-      <option name="closed" value="true" />
-      <created>1762246403562</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1762246403562</updated>
-    </task>
-    <task id="LOCAL-00014" summary="#14 Create myPage function + 내 게시판, 본 게시글 저장, 수정 내역 저장">
-      <option name="closed" value="true" />
-      <created>1762488186919</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1762488186919</updated>
-    </task>
-    <task id="LOCAL-00015" summary="#19 Create Favorite and My Actives Function">
-      <option name="closed" value="true" />
-      <created>1762758666086</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1762758666086</updated>
-    </task>
-    <task id="LOCAL-00016" summary="#19 Create Favorite and My Actives Pages and delete alert">
-      <option name="closed" value="true" />
-      <created>1762758713976</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1762758713976</updated>
-    </task>
-    <task id="LOCAL-00017" summary="#20 알림 읽음 상태 로직 비활성화(오류 발생: 추가 후에 바로 삭제하면 안됨)">
-      <option name="closed" value="true" />
-      <created>1762851264270</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1762851264270</updated>
-    </task>
-    <task id="LOCAL-00018" summary="#20 알림을 읽지 않았을 때 녹색 표시 비활성화(오류)">
-      <option name="closed" value="true" />
-      <created>1762851428092</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1762851428092</updated>
     </task>
     <task id="LOCAL-00019" summary="#20 모임 신청 상태에 따라 모임 신청란 다르게 표시">
       <option name="closed" value="true" />
@@ -585,7 +501,95 @@
       <option name="project" value="LOCAL" />
       <updated>1763952310589</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="#34 백엔드 gradlew build 권한 오류 수정">
+      <option name="closed" value="true" />
+      <created>1763967197972</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1763967197972</updated>
+    </task>
+    <task id="LOCAL-00058" summary="#34 aws에서 권장하는 CI, CD 명령어 사용">
+      <option name="closed" value="true" />
+      <created>1763967743657</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1763967743657</updated>
+    </task>
+    <task id="LOCAL-00059" summary="#34 DataInitializer 회원이 없을 때만 만들도록 수정">
+      <option name="closed" value="true" />
+      <created>1763969244033</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1763969244033</updated>
+    </task>
+    <task id="LOCAL-00060" summary="#34 DataInitializer 회원이 없을 때만 만들도록 수정 -- squash 필요">
+      <option name="closed" value="true" />
+      <created>1763969256203</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1763969256203</updated>
+    </task>
+    <task id="LOCAL-00061" summary="#34 DataInitializer 코드 오류 수정 -- squash 필요">
+      <option name="closed" value="true" />
+      <created>1763969506421</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1763969506421</updated>
+    </task>
+    <task id="LOCAL-00062" summary="CORS 설정 수정">
+      <option name="closed" value="true" />
+      <created>1763973901557</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1763973901557</updated>
+    </task>
+    <task id="LOCAL-00063" summary="CloudFront 설정을 위한 api 접두사 추가">
+      <option name="closed" value="true" />
+      <created>1764030469083</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1764030469083</updated>
+    </task>
+    <task id="LOCAL-00064" summary="https 연결 테스트">
+      <option name="closed" value="true" />
+      <created>1764036959915</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1764036959915</updated>
+    </task>
+    <task id="LOCAL-00065" summary="재배포용 커밋 -- squash 필요">
+      <option name="closed" value="true" />
+      <created>1764041726037</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1764041726037</updated>
+    </task>
+    <task id="LOCAL-00066" summary="ico 및 title 변경, sitemap 추가 -- squash 필요">
+      <option name="closed" value="true" />
+      <created>1764043745960</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1764043745960</updated>
+    </task>
+    <task id="LOCAL-00067" summary="웹소켓 주소 변경 -- squash 필요">
+      <option name="closed" value="true" />
+      <created>1764046573639</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1764046573639</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -599,7 +603,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="dev" />
+                        <option value="main" />
                       </list>
                     </value>
                   </entry>
@@ -613,19 +617,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#22 이메일 인증 컨트롤러 및 이메일 의존성 추가" />
-    <MESSAGE value="#22 이메일 인증 api 연결" />
-    <MESSAGE value="#22 이메일 인증 후 권한 TEMP -&gt; 비밀번호 재설정 로직에 TEMP 권한을 가진 사용자만 접근할 수 있도록 설정" />
-    <MESSAGE value="#22 비밀번호 재설정 페이지, axios 최대 대기 가능 시간 증가(이메일 보내는게 오래걸림), 디자인 수정" />
-    <MESSAGE value="#22 비밀번호 재설정 페이지" />
-    <MESSAGE value="#24 Implement Web Socket" />
-    <MESSAGE value="#24 백엔드 웹소켓 설정 (기능 api 미구현)" />
-    <MESSAGE value="#24 약간의 오류 수정 및 정리" />
-    <MESSAGE value="#26 댓글 삭제 -&gt; 알림 삭제, 채택 댓글 오류 수정" />
-    <MESSAGE value="#26 Implement S3" />
-    <MESSAGE value="#28 관리자 페이지, 디자인 및 약간의 오류 수정" />
-    <MESSAGE value="#28 관리자 기능 및 프론트엔드로 현재 사용자가 관리자임을 알려주기 위한 기능 추가" />
-    <MESSAGE value="#28 알림 조회 오류 수정" />
     <MESSAGE value="#30 프론트엔드 utilities/.. 제외한 파일 주석 및 비밀번호 입력시 소문자 변환 설정" />
     <MESSAGE value="#30 프론트엔드 주석 정리 완료" />
     <MESSAGE value="#30 백엔드 컨트롤러 부분 주석 추가 및 수정" />
@@ -638,6 +629,34 @@
     <MESSAGE value="#32 배포 설정" />
     <MESSAGE value="#32 백엔드 elastic beanstalk 이름 수정" />
     <MESSAGE value="#32 주석 추가" />
-    <option name="LAST_COMMIT_MESSAGE" value="#32 주석 추가" />
+    <MESSAGE value="#34 백엔드 gradlew build 권한 오류 수정" />
+    <MESSAGE value="#34 aws에서 권장하는 CI, CD 명령어 사용" />
+    <MESSAGE value="#34 DataInitializer 회원이 없을 때만 만들도록 수정" />
+    <MESSAGE value="#34 DataInitializer 회원이 없을 때만 만들도록 수정 -- squash 필요" />
+    <MESSAGE value="#34 DataInitializer 코드 오류 수정 -- squash 필요" />
+    <MESSAGE value="resolves #34 CI, CD 완성 (#35)" />
+    <MESSAGE value="resolves #34 CI, CD 완성 (#35)" />
+    <MESSAGE value="CORS 설정 수정" />
+    <MESSAGE value="CloudFront 설정을 위한 api 접두사 추가" />
+    <MESSAGE value="https 연결 테스트" />
+    <MESSAGE value="재배포용 커밋 -- squash 필요" />
+    <MESSAGE value="ico 및 title 변경, sitemap 추가 -- squash 필요" />
+    <MESSAGE value="웹소켓 주소 변경 -- squash 필요" />
+    <option name="LAST_COMMIT_MESSAGE" value="웹소켓 주소 변경 -- squash 필요" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java</url>
+          <line>298</line>
+          <properties class="com.example.backend.service.PostsService" method="update">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

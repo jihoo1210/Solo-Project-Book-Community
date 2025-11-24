@@ -10,7 +10,7 @@ spring:
   # jpa config
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update # none - 사용 가능 | validate - 오류남
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
@@ -20,6 +20,8 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
+      ssl:
+        enabled: true # ssl 활성화 (필수)
   # Mail config
   mail:
     # Gmail SMTP 호스트

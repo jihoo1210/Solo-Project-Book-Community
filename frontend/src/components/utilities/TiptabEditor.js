@@ -91,7 +91,7 @@ const CustomColorPopover = ({ editor, anchorEl, handleClose, attribute }) => {
         <Typography variant="caption" sx={{ display: 'block', mb: 1 }}>{title}</Typography>
         <Grid container spacing={0.5}>
           {PALETTE_COLORS.map((color) => (
-            <Grid size={{xs:1.5}} key={color}>
+            <Grid size={{xs:1.2}} key={color}>
               <IconButton
                 onClick={() => setColor(color)}
                 sx={{
@@ -389,7 +389,7 @@ const EditorWrapper = styled(Box)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 const TiptapEditor = ({ initialContent, onContentChange, error, onUploadedKeysChange, placeholderText }) => {
-
+  const [editorStateKey, setEditorStateKey] = useState(0);
   const CustomResizableImage = ResizableImage.extend({
   addAttributes() {
     return {
@@ -446,6 +446,10 @@ const TiptapEditor = ({ initialContent, onContentChange, error, onUploadedKeysCh
       const newHtml = editor.getHTML();
       onContentChange(newHtml);
     },
+    onSelectionUpdate: () => {
+      // 선택 영역(포커스)이 변경될 때마다 상태 키를 업데이트하여 MenuBar 리렌더링을 강제합니다.
+      setEditorStateKey(prev => prev + 1);
+    },
     editorProps: {
       attributes: {
         class: `ProseMirror focus:outline-none`,
@@ -469,7 +473,7 @@ const TiptapEditor = ({ initialContent, onContentChange, error, onUploadedKeysCh
         borderColor: error ? 'error.main' : 'inherit',
       }}
     >
-      <MenuBar editor={editor} onUploadedKeysChange={onUploadedKeysChange} />
+      <MenuBar editor={editor} onUploadedKeysChange={onUploadedKeysChange} key={editorStateKey}/>
       <EditorWrapper>
         <EditorContent editor={editor} />
       </EditorWrapper>

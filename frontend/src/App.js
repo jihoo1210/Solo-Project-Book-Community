@@ -1,5 +1,5 @@
 import "./index.css";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Signup from "./components/auth/Signup";
 import Signin from "./components/auth/Signin";
 import Navigation from "./components/templates/Navigation";

@@ -137,7 +137,7 @@ const ChatRoom = () => {
       }
     }
 
-    const socketUrl = `ws://localhost:8080/community?roomId=${roomId}&username=${user.username}`;
+    const socketUrl = `wss://projectbbbbackend.p-e.kr/api/community?roomId=${roomId}&username=${user.username}`;
     ws.current = new WebSocket(socketUrl);
 
     ws.current.onopen = async () => {
