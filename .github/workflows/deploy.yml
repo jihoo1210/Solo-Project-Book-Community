@@ -24,18 +24,27 @@ jobs:
           npm install
           npm run build
 
-      - name: Deploy to S3
-        uses: aws-actions/s3-sync@v2
+      # AWS 공식 인증 액션 사용: 이후 AWS CLI 명령을 사용하기 위해 자격 증명을 설정합니다.
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          bucket: ${{ secrets.AWS_S3_BUCKET }}
-          region: ap-northeast-2
-          source-dir: ./frontend/build
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ap-northeast-2
 
-      - name: Invalidate CloudFront cache
-        uses: aws-actions/cloudfront-invalidate@v1
-        with:
-          distribution-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
-          paths: "/*"
+      # S3 동기화 (오류 났던 aws-actions/aws-s3-sync 대신 AWS CLI 사용)
+      # build 폴더의 내용을 S3 버킷으로 동기화합니다.
+      - name: Deploy to S3 using AWS CLI
+        run: |
+          aws s3 sync ./build s3://${{ secrets.AWS_S3_BUCKET }} --delete --region ap-northeast-2
+
+      # CloudFront 무효화 (오류 났던 aws-actions/cloudfront-invalidate 대신 AWS CLI 사용)
+      # CloudFront 배포 ID는 Secrets에서 가져옵니다.
+      - name: Invalidate CloudFront cache using AWS CLI
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
 
   backend-deploy:
     runs-on: ubuntu-latest
@@ -52,9 +61,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      # Gradle Wrapper 실행 권한 부여 및 빌드
       - name: Build backend
-        run: ./gradlew clean build -x test
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build
 
+      # 빌드된 JAR과 Procfile을 압축 파일로 패키징
       - name: Package backend with Procfile
         run: |
           cp Procfile build/libs/
@@ -66,8 +79,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
           aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-          application_name: "book-community-elasticbeanstalk"
-          environment_name: "Book-community-elasticbeanstalk-env"
+          application_name: "book-community-app"
+          environment_name: "Book-community-app-env"
           region: "ap-northeast-2"
           version_label: github-${{ github.sha }}
           deployment_package: backend/build/libs/backend-package.zip

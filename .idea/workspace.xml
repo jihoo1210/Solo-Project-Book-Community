@@ -5,13 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="#32 주석 추가">
-      <change afterPath="$PROJECT_DIR$/backend/Procfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/utilities/HealthCheck.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/utilities/HealthCheck.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/Api-Service.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,51 +50,60 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="dev" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;history&quot;: [
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "history": [
     {
-      &quot;state&quot;: &quot;OPEN&quot;
+      "state": "OPEN"
     }
   ],
-  &quot;lastFilter&quot;: {}
-}</component>
-  <component name="GitHubPullRequestState">{
-  &quot;prStates&quot;: [
+  "lastFilter": {
+    "state": "OPEN"
+  }
+}]]></component>
+  <component name="GitHubPullRequestState"><![CDATA[{
+  "prStates": [
     {
-      &quot;id&quot;: {
-        &quot;id&quot;: &quot;PR_kwDOQNkMH86yeLIg&quot;,
-        &quot;number&quot;: 20
+      "id": {
+        "id": "PR_kwDOQNkMH86yeLIg",
+        "number": 20
       },
-      &quot;lastSeen&quot;: 1762820567061
+      "lastSeen": 1762820567061
     },
     {
-      &quot;id&quot;: {
-        &quot;id&quot;: &quot;PR_kwDOQNkMH86y4VgO&quot;,
-        &quot;number&quot;: 21
+      "id": {
+        "id": "PR_kwDOQNkMH86y4VgO",
+        "number": 21
       },
-      &quot;lastSeen&quot;: 1763095962768
+      "lastSeen": 1763095962768
     },
     {
-      &quot;id&quot;: {
-        &quot;id&quot;: &quot;PR_kwDOQNkMH86zXhAW&quot;,
-        &quot;number&quot;: 23
+      "id": {
+        "id": "PR_kwDOQNkMH86zXhAW",
+        "number": 23
       },
-      &quot;lastSeen&quot;: 1763095971801
+      "lastSeen": 1763095971801
     },
     {
-      &quot;id&quot;: {
-        &quot;id&quot;: &quot;PR_kwDOQNkMH86z-b_F&quot;,
-        &quot;number&quot;: 25
+      "id": {
+        "id": "PR_kwDOQNkMH86z-b_F",
+        "number": 25
       },
-      &quot;lastSeen&quot;: 1763425295140
+      "lastSeen": 1763425295140
+    },
+    {
+      "id": {
+        "id": "PR_kwDOQNkMH861HZFz",
+        "number": 33
+      },
+      "lastSeen": 1763966490579
     }
   ]
-}</component>
+}]]></component>
   <component name="GitRewordedCommitMessages">
     <option name="commitMessagesMapping">
       <RewordedCommitMessageMapping>
@@ -182,6 +186,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="애플리케이션.DemoApplication" />
+        <item itemvalue="애플리케이션.DemoApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -192,14 +197,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1762142101641</updated>
-    </task>
-    <task id="LOCAL-00008" summary="#5 Posts Controller and Dto">
-      <option name="closed" value="true" />
-      <created>1762228254052</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1762228254052</updated>
     </task>
     <task id="LOCAL-00009" summary="#5 Posts Service and Repository">
       <option name="closed" value="true" />
@@ -585,7 +582,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763952310589</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="#34 백엔드 gradlew build 권한 오류 수정">
+      <option name="closed" value="true" />
+      <created>1763967197972</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1763967197972</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -599,7 +604,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="dev" />
+                        <option value="main" />
                       </list>
                     </value>
                   </entry>
@@ -613,7 +618,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#22 이메일 인증 컨트롤러 및 이메일 의존성 추가" />
     <MESSAGE value="#22 이메일 인증 api 연결" />
     <MESSAGE value="#22 이메일 인증 후 권한 TEMP -&gt; 비밀번호 재설정 로직에 TEMP 권한을 가진 사용자만 접근할 수 있도록 설정" />
     <MESSAGE value="#22 비밀번호 재설정 페이지, axios 최대 대기 가능 시간 증가(이메일 보내는게 오래걸림), 디자인 수정" />
@@ -638,6 +642,7 @@
     <MESSAGE value="#32 배포 설정" />
     <MESSAGE value="#32 백엔드 elastic beanstalk 이름 수정" />
     <MESSAGE value="#32 주석 추가" />
-    <option name="LAST_COMMIT_MESSAGE" value="#32 주석 추가" />
+    <MESSAGE value="#34 백엔드 gradlew build 권한 오류 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="#34 백엔드 gradlew build 권한 오류 수정" />
   </component>
 </project>
