@@ -20,7 +20,8 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
-      ssl: true # ssl 활성화 (필수)
+      ssl:
+        enabled: true # ssl 활성화 (필수)
   # Mail config
   mail:
     # Gmail SMTP 호스트

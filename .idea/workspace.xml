@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="예외 처리 및 오류 확인 log -- squash 필요">
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="setSecure 비활성화 (https 사용 안함), Redis ssl: true -- squash 필요">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/controller/AuthController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -198,14 +197,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1762142101641</updated>
-    </task>
-    <task id="LOCAL-00014" summary="#14 Create myPage function + 내 게시판, 본 게시글 저장, 수정 내역 저장">
-      <option name="closed" value="true" />
-      <created>1762488186919</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1762488186919</updated>
     </task>
     <task id="LOCAL-00015" summary="#19 Create Favorite and My Actives Function">
       <option name="closed" value="true" />
@@ -591,7 +582,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763987261886</updated>
     </task>
-    <option name="localTasksCounter" value="63" />
+    <task id="LOCAL-00063" summary="setSecure 비활성화 (https 사용 안함), Redis ssl: true -- squash 필요">
+      <option name="closed" value="true" />
+      <created>1763988124023</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1763988124023</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -619,7 +618,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#26 댓글 삭제 -&gt; 알림 삭제, 채택 댓글 오류 수정" />
     <MESSAGE value="#26 Implement S3" />
     <MESSAGE value="#28 관리자 페이지, 디자인 및 약간의 오류 수정" />
     <MESSAGE value="#28 관리자 기능 및 프론트엔드로 현재 사용자가 관리자임을 알려주기 위한 기능 추가" />
@@ -644,7 +642,8 @@
     <MESSAGE value="resolves #34 CI, CD 완성 (#35)" />
     <MESSAGE value="resolves #34 CI, CD 완성 (#35)" />
     <MESSAGE value="예외 처리 및 오류 확인 log -- squash 필요" />
-    <option name="LAST_COMMIT_MESSAGE" value="예외 처리 및 오류 확인 log -- squash 필요" />
+    <MESSAGE value="setSecure 비활성화 (https 사용 안함), Redis ssl: true -- squash 필요" />
+    <option name="LAST_COMMIT_MESSAGE" value="setSecure 비활성화 (https 사용 안함), Redis ssl: true -- squash 필요" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
