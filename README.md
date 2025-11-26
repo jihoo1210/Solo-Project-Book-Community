@@ -333,14 +333,15 @@ PASSWORD: password
 
 * 사진 파일을 첨부할 경우
 1. 사용자가 업로드한 사진의 정보를 /api/files/presign-upload에 전달
-2. 백엔드에서 S3 pre signed url로 S3에 사진 저장 후 Key 반환
+2. 백엔드에서 S3 pre signed upload url 및 key 반환
 3. 반환된 Key 값을 data-key에 저장
-4. 백엔드로 데이터 전달할 때 img 태그의 src 속성 제거 후 data-key를 저장
-5. 미리보기를 위해 해당 key를 /api/files/url에 요청
-6. S3 pre signed GET url 반환
-7. 미리보기될 src 속성에 GET url 추가
-8. 제출할 때 현재 존재하는 data-key 값과 저장되었던 모든 data-key를 비교
-9. 현재 존재하지 않는 key 값을 전부 DELETE /api/files에 전달하여 쓰레기 데이터 삭제
+4. upload url로 파일 저장
+6. 미리보기를 위해 해당 key를 /api/files/url에 요청
+7. S3 pre signed GET url 반환
+8. 미리보기될 src 속성에 GET url 추가
+9. 백엔드로 데이터 전달할 때 img 태그의 src 속성 제거 후 data-key를 저장
+10. 제출할 때 현재 존재하는 data-key 값과 저장되었던 모든 data-key를 비교
+11. 현재 존재하지 않는 key 값을 전부 DELETE /api/files에 전달하여 쓰레기 데이터 삭제
 
 <관련 컨트롤러>
 1. 게시글 생성 관련 컨트롤러
