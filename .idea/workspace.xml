@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="웹소켓 주소 변경 -- squash 필요">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="Update README.md" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -119,6 +117,9 @@
     &quot;accountId&quot;: &quot;981623e4-9cc5-4c69-9507-d334c6a6570f&quot;
   }
 }</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/README.md" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 2
@@ -196,30 +197,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1762142101641</updated>
-    </task>
-    <task id="LOCAL-00019" summary="#20 모임 신청 상태에 따라 모임 신청란 다르게 표시">
-      <option name="closed" value="true" />
-      <created>1762851450015</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1762851450015</updated>
-    </task>
-    <task id="LOCAL-00020" summary="#20 이전 커밋과 동일">
-      <option name="closed" value="true" />
-      <created>1762851463852</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1762851463852</updated>
-    </task>
-    <task id="LOCAL-00021" summary="#20 회원가입 이메일 검증 Page">
-      <option name="closed" value="true" />
-      <created>1762851489416</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1762851489416</updated>
     </task>
     <task id="LOCAL-00022" summary="#20 읽은 알림 구분을 기능 및 UserViewed -&gt; PostsViewed로 이름 변경">
       <option name="closed" value="true" />
@@ -589,7 +566,31 @@
       <option name="project" value="LOCAL" />
       <updated>1764046573639</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="웹소켓 주소 변경 -- squash 필요">
+      <option name="closed" value="true" />
+      <created>1764116519176</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1764116519176</updated>
+    </task>
+    <task id="LOCAL-00069" summary="Update README.md">
+      <option name="closed" value="true" />
+      <created>1764131609176</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1764131609176</updated>
+    </task>
+    <task id="LOCAL-00070" summary="Update README.md">
+      <option name="closed" value="true" />
+      <created>1764131910599</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1764131910599</updated>
+    </task>
+    <option name="localTasksCounter" value="71" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -617,7 +618,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="#30 프론트엔드 utilities/.. 제외한 파일 주석 및 비밀번호 입력시 소문자 변환 설정" />
     <MESSAGE value="#30 프론트엔드 주석 정리 완료" />
     <MESSAGE value="#30 백엔드 컨트롤러 부분 주석 추가 및 수정" />
     <MESSAGE value="#30 백엔드 엔티티 부분 주석 추가 및 수정" />
@@ -642,21 +642,7 @@
     <MESSAGE value="재배포용 커밋 -- squash 필요" />
     <MESSAGE value="ico 및 title 변경, sitemap 추가 -- squash 필요" />
     <MESSAGE value="웹소켓 주소 변경 -- squash 필요" />
-    <option name="LAST_COMMIT_MESSAGE" value="웹소켓 주소 변경 -- squash 필요" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/PostsService.java</url>
-          <line>298</line>
-          <properties class="com.example.backend.service.PostsService" method="update">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Update README.md" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update README.md" />
   </component>
 </project>
