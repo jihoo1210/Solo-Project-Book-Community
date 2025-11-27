@@ -10,12 +10,21 @@
 - 느낀점
 
 ## 1. 결과 요약
-![MainImg](img/img_7.png)
-![DetailImg](img/img_3.png)
-![AlertImg](img/img_2.png)
-![CommunityImg](img/img_4.png)
-![EmailImg](img/img_5.png)
-![AdminImg](img/img_6.png)
+<p align="center">
+  <img src="img/img_7.png" alt="MainImg" width="48%" />
+  <img src="img/img_3.png" alt="DetailImg" width="48%" />
+</p>
+
+<p align="center">
+  <img src="img/img_2.png" alt="AlertImg" width="48%" />
+  <img src="img/img_4.png" alt="CommunityImg" width="48%" />
+</p>
+
+<p align="center">
+  <img src="img/img_5.png" alt="EmailImg" width="48%" />
+  <img src="img/img_6.png" alt="AdminImg" width="48%" />
+</p>
+
 
 ## 2. 프로젝트 개요
 
