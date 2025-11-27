@@ -1,12 +1,21 @@
 # Solo-Project-Book-Community - [바로가기](https://projectbbbb.p-e.kr)
 
-## 1. Index
+## Index
 
+- 결과 요약
 - 프로젝트 개요
 - 기술 스택
 - 주요 기능
 - 에러 슈팅
 - 느낀점
+
+## 1. 결과 요약
+![MainImg](img/img_7.png)
+![DetailImg](img/img_3.png)
+![AlertImg](img/img_2.png)
+![CommunityImg](img/img_4.png)
+![EmailImg](img/img_5.png)
+![AdminImg](img/img_6.png)
 
 ## 2. 프로젝트 개요
 
@@ -493,7 +502,51 @@
 > * 웹 소켓 연결 끊음
   - 메모리로 관리되는 온리인 사용자 관리 Map에서 접속한 회원과 roomId를 제거한다.
 
+- __<참고 코드>__
+    - 웹 소켓 핸들러 관련 코드
+      - /backend/src/.../socket/*
+      - /backend/src/.../service/ChatRoomService
+### F. 관리자 기능
 
+**주요 기능 상단에 공유된 관리자 계정으로 접속해주세요.**
+
+#### [_신고된 게시글 조회 및 삭제_](https://projectbbbb.p-e.kr/admin/report)
+`GET /api/admin/posts`
+`DELETE /api/admin/posts/{postsId}`
+- __<절차>__
+> * 신고된 게시글 조회
+  - Pageable 정보와 세부 검색 조건을 받음
+  - 세부 검색 조건을 통해서 Specification<?> 생성
+  - Pageable과 Specification<?> 객체를 이용하여 findAll(...) 실행
+  - 반환된 엔티티 정보를 Page<DTO>에 담아서 반환
+  - 프론트엔드에서 현재 페이지 및 반환된 전체 객체 수 등을 참고하여 페이지 생성
+> * 신고된 게시글 삭제
+  - postsId로 삭제할 게시글 조회
+  - 관리자이거나 작성자 인지 검사
+  - 게시글 삭제
+  - 세부 데이터들 자동 삭제됨 cascade, orphanRemoval
+- __<참고 컨트롤러>__
+    - 신고된 게시글 조회 및 삭제 관련 컨트롤러
+        - /backend/src/.../controller/AdminController
+          - indexPosts(...): 게시글 조회
+          - deletePosts(...): 게시글 삭제
+
+#### [_신고된 댓글 조회 및 삭제_](https://projectbbbb.p-e.kr/admin/report)
+**'신고된 게시글 조회 및 삭제'와 유사하므로 생략하겠습니다.**
+
+#### [_사용자 강제 삭제_](https://projectbbbb.p-e.kr/admin/report)
+**'신고된 게시글 조회 및 삭제'와 유사하므로 생략하겠습니다.**
+
+#### [_신고 무시_](https://projectbbbb.p-e.kr/admin/report)
+`DELETE /api/admin/ignore/{objectType}/{reportId}`
+- __<절차>__
+    - objectType으로 무시할 신고의 타입(게시글, 댓글)을 확인한다.
+    - reportId로 얻은 신고 엔티티에서 각 타입에 맞는 엔티티를 추출한다.
+    - 해당 엔티티로 Report 테이블의 데이터를 조회하여 전부 삭제한다.
+- __<참고 컨트롤러>__
+    - 신고 무시 관련 컨트롤러
+        - /backend/src/.../controller/AdminController
+            - ignore(...): 신고 무시
 ## 5. 에러 슈팅
 
 ### A. 개발 중 발생한 에러

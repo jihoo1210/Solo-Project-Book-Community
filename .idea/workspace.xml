@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="Update README.md" />
+    <list default="true" id="0515f7f3-daa1-45db-aa51-7217b5678dc2" name="변경" comment="Update README.md">
+      <change afterPath="$PROJECT_DIR$/img/img_1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/img_2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/img_3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/img_4.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/img_5.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/img_6.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -197,14 +206,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1762142101641</updated>
-    </task>
-    <task id="LOCAL-00022" summary="#20 읽은 알림 구분을 기능 및 UserViewed -&gt; PostsViewed로 이름 변경">
-      <option name="closed" value="true" />
-      <created>1762914861081</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1762914861081</updated>
     </task>
     <task id="LOCAL-00023" summary="#20 useLocation을 이용해서 매 랜더링마다 새로운 알림이 있는지 검사 및 표시, 읽지 않은 알림을 NEW_COLOR로 표시">
       <option name="closed" value="true" />
@@ -590,7 +591,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764131910599</updated>
     </task>
-    <option name="localTasksCounter" value="71" />
+    <task id="LOCAL-00071" summary="Update README.md">
+      <option name="closed" value="true" />
+      <created>1764132199516</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1764132199516</updated>
+    </task>
+    <option name="localTasksCounter" value="72" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
