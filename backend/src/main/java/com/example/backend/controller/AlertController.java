@@ -66,6 +66,7 @@ public class AlertController {
             CheckNewAlertResponse responseDto = service.checkNewAlert(user);
             return ResponseController.success(responseDto);
         } catch (Exception e) {
+            log.error("e", e);
             return ResponseController.fail(e.getMessage());
         }
     }
