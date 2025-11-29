@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/alert")
+@RequestMapping("/api/alert")
 public class AlertController {
 
     private final AlertService service;

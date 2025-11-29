@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @AllArgsConstructor
 @RestController
-@RequestMapping("/temp")
+@RequestMapping("/api/temp")
 public class TempController {
 
     private final TempService service;

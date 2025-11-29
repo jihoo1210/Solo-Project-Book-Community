@@ -1,8 +1,7 @@
 import axios from 'axios'
 
 const apiClient = axios.create({
-//    baseURL: 'http://localhost:8080',
-    baseURL: 'http://book-community-app-env.eba-rri3mbcp.ap-northeast-2.elasticbeanstalk.com',
+    baseURL: 'https://projectbbbbackend.p-e.kr/api',
     timeout: 20000,
     withCredentials: true // 쿠키를 같이 보냄
 })
@@ -13,7 +12,6 @@ apiClient.interceptors.response.use(response => {
 },
 error => {
     const { response } = error
-    console.log(response)
     if(response && (response.status === 401 || response.status === 403)) {
         alert("로그인이 필요한 서비스 입니다.")
         window.location.href = "/auth/signin";

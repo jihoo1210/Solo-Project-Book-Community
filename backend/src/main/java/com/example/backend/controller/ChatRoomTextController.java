@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/chatroom/text")
+@RequestMapping("/api/chatroom/text")
 public class ChatRoomTextController {
 
     private final ChatRoomTextService chatRoomTextService;
